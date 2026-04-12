@@ -17,8 +17,10 @@ import { Input } from "@/components/ui/input"
 
 const Login = () => {
     return (
-        <div className="flex items-center justify-center h-screen">
-            <Card className="min-w-xl">
+        <div className="flex flex-col gap-4 items-center justify-center h-screen">
+            <h1 className="text-3xl font-bold text-primary">Fitify</h1>
+            <div className="w-96 max-[480px]:w-48 h-[1px] bg-gray-200"></div>
+            <Card className="max-[480px]:mx-4">
                 <CardHeader>
                     <CardTitle className="text-xl">Login</CardTitle>
                     <CardDescription>Login to Fitify and work out with us!</CardDescription>
@@ -36,7 +38,7 @@ const Login = () => {
                         <FieldDescription>Use a strong password.</FieldDescription>
                     </Field>
                 </CardContent>
-                <Button className="mx-4"></Button>
+                <Button className="mx-4">Login</Button>
                 <CardFooter>
                     <p>All rights reserved 2026. © Fitify</p>
                 </CardFooter>
