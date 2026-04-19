@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Search, BellDot } from 'lucide-react'
 
-const Home = () => {
+const Progress = () => {
   return (
     <div className="flex flex-col gap-4">
       <header className="flex items-center gap-4 border-b border-border pb-4 px-4">
@@ -23,4 +23,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Progress
