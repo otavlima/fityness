@@ -6,6 +6,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { Toaster } from '@/components/ui/sonner.tsx'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { initTheme } from './hooks/useTheme.ts'
+import { UserProfileProvider } from './contexts/UserProfileContext'
+
+initTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,9 +23,11 @@ createRoot(document.getElementById('root')!).render(
     />
     <BrowserRouter>
       <AuthProvider>
-        <TooltipProvider>
-          <App />
-        </TooltipProvider>
+        <UserProfileProvider>
+          <TooltipProvider>
+            <App />
+          </TooltipProvider>
+        </UserProfileProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

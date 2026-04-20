@@ -26,7 +26,7 @@ import Loading from "@/components/Loading"
 type IErrors = Partial<Record<keyof RegisterSchema, string>>
 
 const Register = () => {
-    const [user, setUser] = useState<RegisterSchema>({ name: '', email: '', password: '', confirmPassword: '' })
+    const [user, setUser] = useState<RegisterSchema>({ name: '', username: '', email: '', password: '', confirmPassword: '' })
     const [loading, setLoading] = useState(false)
     const { register } = useAuth()
     const navigate = useNavigate()
@@ -53,7 +53,7 @@ const Register = () => {
         setLoading(true)
 
         try {
-          await register(user.name, user.email, user.password)
+          await register(user.name, user.username, user.email, user.password)
           toast.success('Account created successfully!')
           navigate('/')
         } catch (err) {
@@ -97,7 +97,21 @@ const Register = () => {
                             : <FieldDescription>Enter your full name.</FieldDescription>
                         }
                         </Field>
-
+                        <Field>
+                            <FieldLabel htmlFor="username">Username</FieldLabel>
+                            <Input
+                                id="username"
+                                autoComplete="off"
+                                placeholder="@johndoe"
+                                value={user.username}
+                                onChange={e => setUser(old => ({ ...old, username: e.target.value }))}
+                                className={errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}
+                            />
+                            {errors.username
+                                ? <p className="text-destructive text-sm">{errors.username}</p>
+                                : <FieldDescription>Enter your username.</FieldDescription>
+                            }
+                        </Field>
                         <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
                         <Input
@@ -163,8 +177,8 @@ const Register = () => {
                         </Field>
                 </CardContent>
                 <Button onClick={() => {
-                     console.log('botão clicado')
-                     handleRegister()}} disabled={loading} className="mx-4">{loading ? <Loading text="Registering" isCol={false}/> : "Register"}</Button>
+                    handleRegister()}} disabled={loading} className="mx-4">{loading ? <Loading text="Registering" isCol={false}/> : "Register"}
+                </Button>
                 <CardFooter>
                     <p className="font-medium">All rights reserved 2026. © Fitify</p>
                 </CardFooter>

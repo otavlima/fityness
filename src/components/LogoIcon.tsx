@@ -3,9 +3,10 @@ import logoWhite from '../../public/logo-white.png'
 import logoBlack from '../../public/logo-black.png'
 
 const LogoIcon = () => {
-  const [isDark, setIsDark] = useState(
-    document.documentElement.classList.contains('dark')
-  )
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme')
+    return saved ? saved === 'dark' : document.documentElement.classList.contains('dark')
+  })
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
