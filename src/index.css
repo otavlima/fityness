@@ -46,6 +46,8 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+    --image-card-gradient: var(--card-gradient);
+    --image-brand-gradient: var(--brand-gradient);
 }
 
 :root {
@@ -81,12 +83,14 @@
     --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
     --sidebar-border: oklch(0.92 0.004 286.32);
     --sidebar-ring: oklch(0.705 0.015 286.067);
+    --card-gradient: linear-gradient(135deg, oklch(0.95 0.005 285.823), oklch(1 0 0));
+    --brand-gradient: linear-gradient(to right, oklch(0.21 0.006 285.885), oklch(0.45 0.01 285.885));
 }
 
 .dark {
     --background: oklch(15.434% 0.00002 271.152);
     --foreground: oklch(0.985 0 0);
-    --card: oklch(17.853% 0.00409 285.914);
+    --card: oklch(18.717% 0.00202 286.054);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.21 0.006 285.885);
     --popover-foreground: oklch(0.985 0 0);
@@ -115,6 +119,8 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(0.274 0.006 286.033);
     --sidebar-ring: oklch(0.552 0.016 285.938);
+    --card-gradient: linear-gradient(135deg, oklch(25% 0.006 285.914), oklch(15% 0 0));
+    --brand-gradient: linear-gradient(to right, oklch(0.985 0 0), oklch(0.75 0 0));
 }
 
 @layer base {

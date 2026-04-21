@@ -5,7 +5,7 @@ export const registerSchema = z.object({
     .string()
     .min(1, 'Name is required.')
     .min(3, 'Name must be at least 3 characters.')
-    .max(24, 'Name cannot exceed 24 characters.'),
+    .max(12, 'Name cannot exceed 12 characters.'),
   username: z
     .string()
     .min(1, 'Username is required.')

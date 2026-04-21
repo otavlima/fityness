@@ -81,7 +81,7 @@ function Sidebar() {
             <SidebarTrigger className="shrink-0" />
           </div>
           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <FieldDescription className="tracking-widest text-[12px]">TRAIN. TRACK. EVOLVE.</FieldDescription>
+            <FieldDescription className="tracking-widest text-[12px]">TRAIN. TRACK. TRANSFORM.</FieldDescription>
           </div>
         </Field>
         <div className={`w-[calc(100%+2rem)] -mx-4 ${isOpen ? 'mt-4' : ''} h-[1px] bg-sidebar-border`} />

@@ -29,20 +29,20 @@ import Loading from '@/components/Loading'
 import { useUserProfile } from '@/contexts/UserProfileContext'
 
 const Configurations = () => {
-  const { user, logout }                    = useAuth()
-  const { theme, toggleTheme }              = useTheme()
-  const { language, changeLanguage }        = useLanguage()
+  const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
+  const { language, changeLanguage } = useLanguage()
   const { profile, avatarUrl, uploadingAvatar, setProfile, updateProfileData, updateAvatar } = useUserProfile()
 
-  const [passwords, setPasswords]           = useState({ current: '', newPass: '', confirm: '' })
-  const [showCurrent, setShowCurrent]       = useState(false)
-  const [showNew, setShowNew]               = useState(false)
-  const [showConfirm, setShowConfirm]       = useState(false)
-  const [savingProfile, setSavingProfile]   = useState(false)
+  const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' })
+  const [showCurrent, setShowCurrent] = useState(false)
+  const [showNew, setShowNew] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [savingProfile, setSavingProfile] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
   const [deletingAccount, setDeletingAccount] = useState(false)
-  const [openDelete, setOpenDelete]         = useState(false)
-  const fileInputRef                        = useRef<HTMLInputElement>(null)
+  const [openDelete, setOpenDelete] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const initials = profile?.name
     ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -117,7 +117,6 @@ const Configurations = () => {
             <FieldTitle className="text-3xl font-semibold tracking-tight">Configurations</FieldTitle>
             <FieldDescription>Manage your profile, preferences and plan.</FieldDescription>
           </Field>
-
           <Card>
             <CardHeader className="flex justify-between items-center">
               <CardTitle className="font-semibold tracking-tight">Profile</CardTitle>
@@ -162,7 +161,6 @@ const Configurations = () => {
               </div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <CardTitle className="font-semibold tracking-tight">Preferences</CardTitle>
@@ -189,7 +187,6 @@ const Configurations = () => {
               </Field>
             </CardContent>
           </Card>
-
           <div className="rounded-xl bg-primary p-4 flex flex-col gap-3">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
@@ -203,7 +200,6 @@ const Configurations = () => {
               <FieldDescription className="text-sm text-background/80">Unlock an intelligent assistant and get answers...</FieldDescription>
             </Field>
           </div>
-
           <Card>
             <CardHeader className="flex justify-between items-center">
               <CardTitle className="font-semibold tracking-tight">Security</CardTitle>
@@ -246,7 +242,6 @@ const Configurations = () => {
               </div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <CardTitle className="font-semibold tracking-tight">Danger zone</CardTitle>
