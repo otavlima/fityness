@@ -9,20 +9,23 @@ import Calendary from './pages/Calendary'
 import History from './pages/History'
 import Progress from './pages/Progress'
 import Configurations from './pages/Configurations'
+import PublicRoute from './components/PublicRoute'
 
 const App = () => {
   return (
     <Routes>
-      <Route element={<Login />} path='/login' />
-      <Route element={<Register />} path='/register' />
-      
+      <Route element={<PublicRoute />}>
+        <Route element={<Login />} path='/login' />
+        <Route element={<Register />} path='/register' />
+      </Route>
+
       <Route element={<PrivateRoute />}>
         <Route element={<SidebarLayout />}>
           <Route index element={<Home />} />
           <Route path="/workouts"       element={<Workouts />} />
-          <Route path="/calendary"    element={<Calendary />} />
-          <Route path="/history"     element={<History />} />
-          <Route path="/progress"     element={<Progress />} />
+          <Route path="/calendary"      element={<Calendary />} />
+          <Route path="/history"        element={<History />} />
+          <Route path="/progress"       element={<Progress />} />
           <Route path="/configurations" element={<Configurations />} />
         </Route>
       </Route>
