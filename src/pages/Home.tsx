@@ -12,6 +12,7 @@ import {
   Timer,
   ArrowUpRight,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const Home = () => {
   const { user } = useAuth()
@@ -39,8 +40,6 @@ const Home = () => {
   return (
     <Header>
       <div className="flex flex-col w-full px-4 md:px-10 gap-8 pb-10">
-        
-        {/* HERO CARD */}
         <Card className="relative w-full bg-card-gradient border-border shadow-lg rounded-[2.5rem] overflow-hidden shrink-0">
           <div className="absolute inset-0 opacity-[0.1] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(circle_at_top_right,var(--foreground),transparent)]" />
           <CardContent className="p-8 md:p-12 flex flex-col gap-8 relative z-10">
@@ -70,8 +69,6 @@ const Home = () => {
                 View weekly plan <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </div>
-            
-            {/* WEEKLY PROGRESS MINI CARD */}
             <div className="relative lg:absolute lg:bottom-12 lg:right-12 mt-4 lg:mt-0 w-full lg:w-[260px]">
               <div className="bg-card/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-xl">
                 <div className="flex justify-between items-center mb-6">
@@ -98,8 +95,6 @@ const Home = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* METRICS SECTION - Vertical on Mobile, Grid on Desktop */}
         <div className="flex flex-col w-full gap-4 md:grid md:grid-cols-4">
           {metrics.map((metric, index) => (
             <Card
@@ -163,7 +158,6 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-
               <div className="mt-8 pt-6 border-t border-border/50">
                 <div className="flex justify-between items-end mb-4">
                   <div>
@@ -180,15 +174,12 @@ const Home = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* RECENT ACTIVITY CARD */}
           <Card className="rounded-[2.5rem] border-border bg-card shadow-sm flex flex-col">
             <CardContent className="p-8 flex-1 flex flex-col">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-xl font-bold">Atividade recente</h2>
                 <Button variant="link" className="text-muted-foreground text-xs p-0 h-auto">Ver tudo</Button>
               </div>
-
               <div className="space-y-8 flex-1">
                 {recentActivity.map((item, i) => (
                   <div key={i} className="relative pl-6 border-l-2 border-muted/20 last:border-0 pb-2">
@@ -210,14 +201,12 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-
-              <Button variant="outline" className="w-full mt-8 border-dashed rounded-2xl h-14 border-2 hover:bg-secondary/50 transition-colors">
-                <Dumbbell />
+              <Link to="/workouts" className="flex items-center justify-center  gap-2 w-full mt-8 border-dashed rounded-2xl h-14 border-2 hover:bg-secondary/50 transition-colors">
+                <Dumbbell size={16}/>
                 Manage workouts
-              </Button>
+              </Link>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </Header>
