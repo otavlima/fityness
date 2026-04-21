@@ -71,13 +71,13 @@ const Register = () => {
         <div className="flex items-center justify-center h-screen">
             <Card className="w-md max-[480px]:w-full max-[480px]:mx-4">
                 <CardHeader>
-                    <h1 className="text-3xl font-bold text-primary">Fitify - Sign up</h1>
+                    <h1 className="text-3xl font-bold text-primary">Fity.ness - Sign up</h1>
                     <div className="w-full mt-4 h-[1px] bg-muted"></div>
                 </CardHeader>
                 <CardHeader className="flex justify-between">
                     <div>
                       <CardTitle className="text-xl">Create your account</CardTitle>
-                      <CardDescription>Register to Fitify and work out with us!</CardDescription>
+                      <CardDescription>Register to Fity.ness and work out with us!</CardDescription>
                     </div>
                     <Link className="p-2 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/80 transition duration-300 cursor-pointer" to="/login">Sign in</Link>
                 </CardHeader>
@@ -180,7 +180,7 @@ const Register = () => {
                     handleRegister()}} disabled={loading} className="mx-4">{loading ? <Loading text="Registering" isCol={false}/> : "Register"}
                 </Button>
                 <CardFooter>
-                    <p className="font-medium">All rights reserved 2026. © Fitify</p>
+                    <p className="font-medium">All rights reserved 2026. © Fity.ness</p>
                 </CardFooter>
             </Card>
         </div>

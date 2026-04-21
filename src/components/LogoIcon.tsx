@@ -21,7 +21,7 @@ const LogoIcon = () => {
     return () => observer.disconnect()
   }, [])
 
-  return <img src={isDark ? logoWhite : logoBlack} alt='Fitify' className='w-6 h-6' />
+  return <img src={isDark ? logoWhite : logoBlack} alt='Fityness' className='w-6 h-6' />
 }
 
 export default LogoIcon

@@ -76,7 +76,7 @@ function Sidebar() {
               <div className="rounded-lg bg-sidebar-accent shrink-0 p-2">
                 <LogoIcon />
               </div>
-              <FieldTitle className="text-2xl font-bold whitespace-nowrap">Fitify</FieldTitle>
+              <FieldTitle className="text-2xl font-bold whitespace-nowrap">Fity.ness</FieldTitle>
             </div>
             <SidebarTrigger className="shrink-0" />
           </div>
@@ -171,7 +171,7 @@ function Sidebar() {
                   <Sparkles size={16} className="mr-2" />
                   Active AI
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
+                <DropdownMenuItem onClick={logout} variant="destructive">
                   <LogOut size={16} className="mr-2" />
                   Logout
                 </DropdownMenuItem>

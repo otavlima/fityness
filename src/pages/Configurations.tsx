@@ -194,7 +194,7 @@ const Configurations = () => {
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-background" />
-                <span className="text-xs font-bold tracking-widest text-background">FITIFY WITH AI</span>
+                <span className="text-xs font-bold tracking-widest text-background">FITY.NESS WITH AI</span>
               </div>
               <Button variant="secondary" className="max-w-32">Get Started <CornerUpRight /></Button>
             </div>
@@ -216,7 +216,7 @@ const Configurations = () => {
               <div className="flex flex-col gap-4 w-full">
                 <div className="flex gap-2">
                   <Field>
-                    <FieldTitle>Current password</FieldTitle>
+                    <FieldTitle>Password</FieldTitle>
                     <div className="relative">
                       <Input type={showCurrent ? 'text' : 'password'} placeholder="********" autoComplete="new-password" value={passwords.current} onChange={e => setPasswords(p => ({ ...p, current: e.target.value }))} />
                       <button type="button" onClick={() => setShowCurrent(p => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition">
