@@ -39,10 +39,10 @@ import { useUserProfile } from "@/contexts/UserProfileContext"
 
 const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Workouts",  icon: Dumbbell,        path: "/workouts" },
-  { label: "Calendary", icon: Calendar,        path: "/calendary" },
-  { label: "History",   icon: History,         path: "/history" },
-  { label: "Progress",  icon: TrendingUp,      path: "/progress" },
+  { label: "Workouts",  icon: Dumbbell, path: "/workouts" },
+  { label: "Calendar", icon: Calendar, path: "/calendar" },
+  { label: "History",   icon: History, path: "/history" },
+  { label: "Progress",  icon: TrendingUp, path: "/progress" },
 ]
 
 const generalItems = [

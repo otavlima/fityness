@@ -21,7 +21,7 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input 
             placeholder='Search for workouts, exercises...' 
-            className='pl-8 w-full max-w-96 bg-background/50'
+            className='pl-8 w-full max-w-96 bg-muted/20 border-none'
           />
         </div>
         <div className="flex items-center gap-2">

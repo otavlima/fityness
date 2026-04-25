@@ -5,7 +5,7 @@ import Register from './pages/auth/Register'
 import PrivateRoute from './components/PrivateRoute'
 import SidebarLayout from './components/SidebarLayout'
 import Workouts from './pages/Workouts'
-import Calendary from './pages/Calendary'
+import Calendar from './pages/Calendar'
 import History from './pages/History'
 import Progress from './pages/Progress'
 import Configurations from './pages/Configurations'
@@ -22,10 +22,10 @@ const App = () => {
       <Route element={<PrivateRoute />}>
         <Route element={<SidebarLayout />}>
           <Route index element={<Home />} />
-          <Route path="/workouts"       element={<Workouts />} />
-          <Route path="/calendary"      element={<Calendary />} />
-          <Route path="/history"        element={<History />} />
-          <Route path="/progress"       element={<Progress />} />
+          <Route path="/workouts" element={<Workouts />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/progress" element={<Progress />} />
           <Route path="/configurations" element={<Configurations />} />
         </Route>
       </Route>

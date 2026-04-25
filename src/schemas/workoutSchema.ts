@@ -3,8 +3,8 @@ import { z } from "zod"
 export const workoutSchema = z.object({
   name: z
     .string()
-    .min(3, "Workout name must have at least 3 characters")
-    .max(12, "The training name cannot exceed 12 characters."),
+    .min(3, "Min 3 characters")
+    .max(12, "Max 12 characters."),
 
   category: z.enum([
     "upper-body",
