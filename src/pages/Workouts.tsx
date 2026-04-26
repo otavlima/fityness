@@ -18,9 +18,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { z } from 'zod'
 
 const initialWorkout: Workout = {
-  name:      '',
-  category:  'upper-body',
-  notes:     '',
+  name: '',
+  category: 'upper-body',
+  notes: '',
   exercises: [],
 }
 
@@ -30,26 +30,26 @@ type WorkoutErrors = {
 }
 
 const tabOptions = [
-  { value: 'all',        label: 'All' },
+  { value: 'all', label: 'All' },
   { value: 'upper-body', label: 'Upper' },
   { value: 'lower-body', label: 'Lower' },
-  { value: 'push',       label: 'Push' },
-  { value: 'pull',       label: 'Pull' },
-  { value: 'full-body',  label: 'Full' },
+  { value: 'push', label: 'Push' },
+  { value: 'pull', label: 'Pull' },
+  { value: 'full-body', label: 'Full' },
 ]
 
 const Workouts = () => {
-  const { user }                            = useAuth()
-  const [isModalOpen, setIsModalOpen]       = useState(false)
-  const [workout, setWorkout]               = useState<Workout>(initialWorkout)
-  const [workouts, setWorkouts]             = useState<WorkoutDocument[]>([])
-  const [editingId, setEditingId]           = useState<string | null>(null)
-  const [loading, setLoading]               = useState(true)
-  const [saving, setSaving]                 = useState(false)
-  const [search, setSearch]                 = useState('')
-  const [activeTab, setActiveTab]           = useState('all')
-  const [errors, setErrors]                 = useState<WorkoutErrors>({})
-  const [isMobile, setIsMobile]             = useState(window.innerWidth < 500)
+  const { user } = useAuth()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [workout, setWorkout] = useState<Workout>(initialWorkout)
+  const [workouts, setWorkouts] = useState<WorkoutDocument[]>([])
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [search, setSearch] = useState('')
+  const [activeTab, setActiveTab] = useState('all')
+  const [errors, setErrors] = useState<WorkoutErrors>({})
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 500)
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 500)
@@ -159,9 +159,9 @@ const Workouts = () => {
 
   const handleEdit = (w: WorkoutDocument) => {
     setWorkout({
-      name:      w.name,
-      category:  w.category,
-      notes:     w.notes ?? '',
+      name: w.name,
+      category: w.category,
+      notes: w.notes ?? '',
       exercises: w.exercises,
     })
     setEditingId(w.id)
@@ -237,7 +237,6 @@ const Workouts = () => {
               <Plus size={18} /> New workout
             </Button>
           </div>
-
           <Modal
             open={isModalOpen}
             onOpenChange={open => { if (!open) handleCloseModal(); else setIsModalOpen(true) }}
@@ -370,7 +369,6 @@ const Workouts = () => {
               </div>
             </div>
           </Modal>
-
           {loading ? (
             <div className="flex justify-center py-20">
               <Loader2 className="animate-spin text-muted-foreground" size={32} />

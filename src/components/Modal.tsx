@@ -16,7 +16,7 @@ export const Modal = ({ open, onOpenChange, icon, title, description, children, 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 overflow-hidden border-border bg-card text-card-foreground sm:rounded-2xl shadow-none">
-        <div className="p-6 flex justify-between items-start">
+        <div className="px-6 pt-6 flex justify-between items-start">
           <div className="flex gap-4 items-center">
             {icon && (
               <div className="w-10 h-10 flex items-center justify-center bg-primary rounded-xl text-primary-foreground">
