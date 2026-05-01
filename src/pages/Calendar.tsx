@@ -102,7 +102,7 @@ const Calendar = () => {
           </div>
           <ScheduleModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
           <Card className="overflow-hidden border-border shadow-sm">
-            <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-b border-border bg-card">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-card">
               <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" onClick={prevMonth} className="rounded-full"><ChevronLeft size={20} /></Button>
                 <h2 className="text-lg min-w-[140px] text-center font-semibold">{MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>

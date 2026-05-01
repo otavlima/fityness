@@ -104,7 +104,7 @@ const Workouts = () => {
           <Dumbbell size={24} className="text-muted-foreground" />
         </div>
         <h3 className="font-bold text-lg mb-1 text-foreground">Create new workout</h3>
-        <p className="text-sm text-muted-foreground">Build from scratch or use a template</p>
+        <p className="text-sm text-muted-foreground">Build your workout from scratch</p>
       </button>
     </div>
   )
@@ -113,15 +113,12 @@ const Workouts = () => {
     <Header>
       <div className="flex flex-1 w-full justify-center px-4">
         <div className="flex flex-col gap-4 w-full max-w-5xl">
-
-          {/* HEADER */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <Field className="flex flex-col gap-1">
               <FieldDescription className="text-xs font-semibold tracking-widest uppercase">Library</FieldDescription>
               <FieldTitle className="text-3xl font-bold tracking-tight">Workouts</FieldTitle>
               <FieldDescription>Organize, edit, and start any routine in seconds.</FieldDescription>
             </Field>
-
             <Button
               onClick={() => {
                 setSelectedWorkout(null)
@@ -132,8 +129,6 @@ const Workouts = () => {
               <Plus size={18} /> New workout
             </Button>
           </div>
-
-          {/* FILTER */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div className="hidden sm:block">
               <Tabs>
@@ -151,7 +146,6 @@ const Workouts = () => {
                 </TabsList>
               </Tabs>
             </div>
-
             <div className="block sm:hidden w-full max-w-32">
               <Select value={activeTab} onValueChange={setActiveTab}>
                 <SelectTrigger className="w-full">
@@ -164,7 +158,6 @@ const Workouts = () => {
                 </SelectContent>
               </Select>
             </div>
-
             <div className="relative flex items-center w-full sm:w-auto max-[640px]:mt-2">
               <Search size={16} className="absolute left-3 text-muted-foreground" />
               <Input
@@ -175,8 +168,6 @@ const Workouts = () => {
               />
             </div>
           </div>
-
-          {/* LIST */}
           {loading ? (
             <div className="flex justify-center py-20">
               <Loader2 className="animate-spin text-muted-foreground" size={32} />
@@ -184,8 +175,6 @@ const Workouts = () => {
           ) : (
             renderList(activeList)
           )}
-
-          {/* MODAL */}
           <WorkoutModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
