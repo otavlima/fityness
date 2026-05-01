@@ -49,18 +49,21 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
   }, [])
 
   useEffect(() => {
-    if (editingWorkout) {
-      setWorkout({
-        name: editingWorkout.name,
-        category: editingWorkout.category,
-        notes: editingWorkout.notes ?? '',
-        exercises: editingWorkout.exercises,
-      })
-    } else {
-      setWorkout(initialWorkout)
-    }
-    setErrors({})
-  }, [editingWorkout])
+  if (!isOpen) return
+
+  if (editingWorkout) {
+    setWorkout({
+      name: editingWorkout.name,
+      category: editingWorkout.category,
+      notes: editingWorkout.notes ?? '',
+      exercises: editingWorkout.exercises,
+    })
+  } else {
+    setWorkout(initialWorkout)
+  }
+
+  setErrors({})
+}, [editingWorkout, isOpen])
 
   const addExercise = () => {
     setWorkout(old => ({
@@ -264,29 +267,30 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
                           onChange={e => updateExercise(ex.id, 'name', e.target.value)}
                           className={`border-none bg-transparent shadow-none focus-visible:ring-0 p-0 font-medium ${exErr?.name ? 'placeholder:text-destructive' : ''}`}
                         />
-
                         <div className="flex items-center gap-2">
                           <Input
                             value={ex.sets}
                             onChange={e => updateExercise(ex.id, 'sets', e.target.value)}
                             className={`w-12 h-8 text-center bg-muted ${exErr?.sets ? 'border-destructive' : ''}`}
                           />
-
                           <span className="text-muted-foreground/40 text-xs">×</span>
-
                           <Input
                             value={ex.reps}
                             onChange={e => updateExercise(ex.id, 'reps', e.target.value)}
                             className={`w-12 h-8 text-center bg-muted ${exErr?.reps ? 'border-destructive' : ''}`}
                           />
-
-                          <Input
-                            value={ex.rest}
-                            onChange={e => updateExercise(ex.id, 'rest', e.target.value)}
-                            className={`w-16 h-8 text-center bg-card border rounded-md text-[10px] font-bold text-muted-foreground ${exErr?.rest ? 'border-destructive' : ''}`}
-                            placeholder="90s"
-                          />
-
+                          <div className="flex items-center h-8 bg-card border rounded-md px-2">
+                            <input
+                                value={ex.rest}
+                                onChange={e => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '')
+                                updateExercise(ex.id, 'rest', onlyNumbers)
+                                }}
+                                className="w-8 text-center bg-transparent outline-none text-sm font-medium"
+                                placeholder="90"
+                            />
+                            <span className="text-sm font-medium text-muted-foreground">s</span>
+                          </div>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -297,7 +301,6 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
                           </Button>
                         </div>
                       </div>
-
                       {(exErr?.name || exErr?.sets || exErr?.reps || exErr?.rest) && (
                         <p className="text-destructive text-xs px-2">
                           {exErr.name || exErr.sets || exErr.reps || exErr.rest}
@@ -307,7 +310,6 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
                   )
                 })}
               </div>
-
               <div className="grid grid-cols-12 px-10 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 <span className="col-span-6">Exercise</span>
                 <div className="col-span-6 flex justify-between text-right">
