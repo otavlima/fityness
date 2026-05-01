@@ -151,7 +151,12 @@ const Configurations = () => {
                   </Field>
                   <Field>
                     <FieldTitle>Username</FieldTitle>
-                    <Input value={profile?.username ?? ''} onChange={e => setProfile(p => p ? { ...p, username: e.target.value } : null)} className="w-full" />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground text-sm">
+                          @
+                      </span>
+                      <Input value={profile?.username ?? ''} onChange={e => setProfile(p => p ? { ...p, username: e.target.value } : null)} className="w-full pl-7" />
+                    </div>
                   </Field>
                 </div>
                 <Field>

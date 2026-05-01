@@ -22,6 +22,7 @@ import { toast } from "sonner"
 import { loginSchema, type LoginSchema } from "@/schemas/loginSchema"
 import { z } from "zod"
 import Loading from "@/components/Loading"
+import { Separator } from "@/components/ui/separator"
 
 type IErrors = Partial<Record<keyof LoginSchema, string>>
 
@@ -65,7 +66,7 @@ const Login = () => {
       <Card className="w-md max-[480px]:w-full max-[480px]:mx-4">
         <CardHeader>
           <h1 className="text-3xl font-bold text-primary">Fity.ness - Sign in</h1>
-          <div className="w-full mt-4 h-[1px] bg-muted"></div>
+          <Separator className="mt-4"/>
         </CardHeader>
         <CardHeader className="flex justify-between">
           <div>
