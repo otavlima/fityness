@@ -72,6 +72,20 @@ const TimeInput = ({ className }: { className?: string }) => {
 }
 
 const ScheduleModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+  const parseLocalDate = (dateString: string) => {
+    const [y, m, d] = dateString.split("-").map(Number)
+    const date = new Date(y, m - 1, d)
+    date.setHours(12, 0, 0, 0)
+    return date
+  }
+
+  const toLocalDateString = (date: Date) => {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, "0")
+    const d = String(date.getDate()).padStart(2, "0")
+    return `${y}-${m}-${d}`
+  }
+
   const form = useForm<ScheduleFormData>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
@@ -89,8 +103,8 @@ const ScheduleModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, 
   })
   const startDate = form.watch("date")
   const endDate = form.watch("recurrence.endDate")
-  const startDateValue = startDate ? new Date(startDate) : undefined
-  const endDateValue = endDate ? new Date(endDate) : undefined
+  const startDateValue = startDate ? parseLocalDate(startDate) : undefined
+  const endDateValue = endDate ? parseLocalDate(endDate) : undefined
   const isRepeating = form.watch("isRecurring")
   const frequency = form.watch("recurrence.type")
   const selectedDays = form.watch("recurrence.weekdays") || []
@@ -178,16 +192,21 @@ const ScheduleModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, 
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full h-11 justify-start text-left font-normal rounded-lg">
                     <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    {startDate ? format(startDate, "dd MMM yyyy", { locale: enUS }) : <span>Date</span>}
+                    {startDate ? format(parseLocalDate(startDate), "dd MMM yyyy", { locale: enUS }) : <span>Date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 rounded-xl" align="start">
                   <CalendarComponent
                     mode="single"
                     selected={startDateValue}
-                    onSelect={(date) =>
-                      form.setValue("date", format(date!, "yyyy-MM-dd"))
-                    }
+                    onSelect={(date) => {
+                      if (!date) return
+
+                      const fixed = new Date(date)
+                      fixed.setHours(12, 0, 0, 0)
+
+                      form.setValue("date", toLocalDateString(fixed))
+                    }}
                     fixedWeeks
                   />
                 </PopoverContent>
@@ -292,16 +311,21 @@ const ScheduleModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, 
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full h-11 justify-start text-left font-normal rounded-lg">
                         <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                        {endDate ? format(endDate, "dd MMM yyyy", { locale: enUS }) : <span>End date</span>}
+                        {endDate ? format(parseLocalDate(endDate), "dd MMM yyyy", { locale: enUS }) : <span>End date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 rounded-xl" align="start">
                       <CalendarComponent
                         mode="single"
                         selected={endDateValue}
-                        onSelect={(date) =>
-                          form.setValue("recurrence.endDate", format(date!, "yyyy-MM-dd"))
-                        }
+                        onSelect={(date) => {
+                          if (!date) return
+
+                          const fixed = new Date(date)
+                          fixed.setHours(12, 0, 0, 0)
+
+                          form.setValue("recurrence.endDate", toLocalDateString(fixed))
+                        }}
                         fixedWeeks
                       />
                     </PopoverContent>

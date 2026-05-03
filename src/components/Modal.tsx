@@ -30,7 +30,7 @@ export const Modal = ({ open, onOpenChange, icon, title, description, children, 
           </div>
         </div>
         <Separator />
-        <div className="px-6 max-h-[70vh] overflow-y-auto">
+        <div className="px-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
           {children}
         </div>
 

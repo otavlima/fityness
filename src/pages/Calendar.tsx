@@ -7,6 +7,7 @@ import { Plus, ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip } from "recharts"
 import { cn } from "@/lib/utils"
 import ScheduleModal from '@/components/modals/ScheduleModal'
+import DialogSchedules from '@/components/DialogSchedules'
 
 export type WorkoutStatus = 'completed' | 'scheduled' | 'rest'
 
@@ -25,6 +26,18 @@ type CalendarDay = {
 }
 
 const MOCK_EVENTS: WorkoutEvent[] = [
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'rest' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'rest' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'scheduled' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'rest' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
+  { id: '1', date: '2026-04-01', title: 'Push', status: 'rest' },
   { id: '1', date: '2026-04-01', title: 'Push', status: 'completed' },
   { id: '2', date: '2026-04-02', title: 'Pull', status: 'completed' },
   { id: '3', date: '2026-04-03', title: 'Rest', status: 'rest' },
@@ -47,6 +60,9 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [events] = useState<WorkoutEvent[]>(MOCK_EVENTS)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedEvents, setSelectedEvents] = useState<WorkoutEvent[]>([])
+  const [selectedDate, setSelectedDate] = useState<string | undefined>()
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
   const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
@@ -101,6 +117,12 @@ const Calendar = () => {
             </Button>
           </div>
           <ScheduleModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+          <DialogSchedules
+            isOpen={isDialogOpen}
+            onClose={() => setIsDialogOpen(false)}
+            events={selectedEvents}
+            date={selectedDate}
+          />
           <Card className="overflow-hidden border-border shadow-sm">
             <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-card">
               <div className="flex items-center gap-4">
@@ -134,14 +156,36 @@ const Calendar = () => {
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      {!dayObj.isOtherMonth && dayObj.events?.map(event => (
-                        <div key={event.id} className={cn("flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold", 
-                          event.status === 'completed' ? 'bg-primary text-primary-foreground border-transparent' : 
-                          event.status === 'scheduled' ? 'bg-transparent border-border text-foreground' : 'bg-muted text-muted-foreground border-transparent')}>
-                          {event.status === 'completed' && <Check size={12} strokeWidth={3} />}
-                          <span className="truncate">{event.title}</span>
-                        </div>
-                      ))}
+                     {!dayObj.isOtherMonth && (
+                      <>
+                        {dayObj.events?.slice(0, 1).map(event => (
+                          <div key={event.id} className={cn(
+                            "flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold",
+                            event.status === 'completed'
+                              ? 'bg-primary text-primary-foreground border-transparent'
+                              : event.status === 'scheduled'
+                              ? 'bg-transparent border-border text-foreground'
+                              : 'bg-muted text-muted-foreground border-transparent'
+                          )}>
+                            {event.status === 'completed' && <Check size={12} strokeWidth={3} />}
+                            <span className="truncate">{event.title}</span>
+                          </div>
+                        ))}
+
+                        {dayObj.events && dayObj.events.length > 1 && (
+                          <button
+                            onClick={() => {
+                              setSelectedEvents(dayObj.events!)
+                              setSelectedDate(dayObj.dateString)
+                              setIsDialogOpen(true)
+                            }}
+                            className="w-full text-[10px] px-3 py-1.5 rounded-full border border-dashed border-border text-muted-foreground font-bold hover:bg-muted/40 transition"
+                          >
+                            +{dayObj.events.length - 1} more
+                          </button>
+                        )}
+                      </>
+                    )}
                     </div>
                   </div>
                 )
