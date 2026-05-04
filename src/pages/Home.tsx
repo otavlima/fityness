@@ -39,7 +39,7 @@ const Home = () => {
 
   return (
     <Header>
-      <div className="flex flex-col w-full px-4 md:px-10 gap-8 pb-10">
+      <div className="flex flex-col w-full px-4 md:px-10 gap-8">
         <Card className="relative w-full bg-card-gradient border-border shadow-lg rounded-[2.5rem] overflow-hidden shrink-0">
           <div className="absolute inset-0 opacity-[0.1] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(circle_at_top_right,var(--foreground),transparent)]" />
           <CardContent className="p-8 md:p-12 flex flex-col gap-8 relative z-10">
