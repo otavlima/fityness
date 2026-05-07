@@ -14,6 +14,10 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .bg-brand-gradient {
+    background-image: var(--brand-gradient);
+  }
 }
 
 @theme inline {

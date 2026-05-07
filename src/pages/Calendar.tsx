@@ -8,8 +8,9 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip } from "recharts"
 import { cn } from "@/lib/utils"
 import ScheduleModal from '@/components/modals/ScheduleModal'
 import DialogSchedules from '@/components/DialogSchedules'
-import { getSchedules, generateOccurrencesForMonth, type ScheduleRule, type GeneratedEvent } from '@/services/firebase/schedule'
+import { getSchedules, generateOccurrencesForMonth, type ScheduleRule } from '@/services/firebase/schedule'
 import { useAuth } from '@/contexts/AuthContext'
+import ScheduleDialog from '@/components/ScheduleDialog'
 
 export type WorkoutStatus = 'completed' | 'scheduled' | 'rest'
 
@@ -41,6 +42,8 @@ const Calendar = () => {
   const [selectedEvents, setSelectedEvents] = useState<WorkoutEvent[]>([])
   const [selectedDate, setSelectedDate]   = useState<string | undefined>()
   const [isDialogOpen, setIsDialogOpen]   = useState(false)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [selectedDetailEvent, setSelectedDetailEvent] = useState<WorkoutEvent | null>(null)
 
   const loadSchedules = useCallback(async () => {
     if (!user) return
@@ -52,6 +55,11 @@ const Calendar = () => {
       setLoading(false)
     }
   }, [user])
+
+  const handleOpenDetail = (event: WorkoutEvent) => {
+    setSelectedDetailEvent(event)
+    setIsDetailOpen(true)
+  }
 
   useEffect(() => { loadSchedules() }, [loadSchedules])
 
@@ -153,6 +161,12 @@ const Calendar = () => {
             date={selectedDate}
           />
 
+          <ScheduleDialog 
+            isOpen={isDetailOpen} 
+            onClose={() => setIsDetailOpen(false)} 
+            event={selectedDetailEvent} 
+          />
+
           {loading ? (
             <div className="flex justify-center py-20">
               <Loader2 className="animate-spin text-muted-foreground" size={32} />
@@ -168,7 +182,7 @@ const Calendar = () => {
                   </div>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mt-4 sm:mt-0">
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-primary" /> Completed</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground" /> Scheduled</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground bg-muted" /> Scheduled</div>
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-muted" /> Rest</div>
                   </div>
                 </div>
@@ -209,12 +223,13 @@ const Calendar = () => {
                             {dayObj.events?.slice(0, 1).map(event => (
                               <div
                                 key={event.id}
+                                onClick={() => handleOpenDetail(event)}
                                 className={cn(
                                   "flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold",
                                   event.status === 'completed'
                                     ? 'bg-primary text-primary-foreground border-transparent'
                                     : event.status === 'scheduled'
-                                    ? 'bg-transparent border-border text-foreground'
+                                    ? 'bg-muted border-border text-foreground'
                                     : 'bg-muted text-muted-foreground border-transparent'
                                 )}
                               >
