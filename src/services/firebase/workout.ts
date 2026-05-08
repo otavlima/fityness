@@ -2,6 +2,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -49,4 +50,14 @@ export const updateWorkout = async (id: string, data: Partial<Workout>) => {
 
 export const deleteWorkout = async (id: string) => {
   await deleteDoc(doc(db, COLLECTION, id))
+}
+
+export const getWorkout = async (id: string): Promise<WorkoutDocument | null> => {
+  const snap = await getDoc(doc(db, COLLECTION, id))
+  if (!snap.exists()) return null
+  return {
+    ...(snap.data() as Omit<WorkoutDocument, 'id' | 'createdAt'>),
+    id: snap.id,
+    createdAt: snap.data().createdAt?.toDate(),
+  }
 }

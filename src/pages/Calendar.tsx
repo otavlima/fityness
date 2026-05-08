@@ -12,10 +12,11 @@ import { getSchedules, generateOccurrencesForMonth, type ScheduleRule } from '@/
 import { useAuth } from '@/contexts/AuthContext'
 import ScheduleDialog from '@/components/ScheduleDialog'
 
-export type WorkoutStatus = 'completed' | 'scheduled' | 'rest'
+export type WorkoutStatus = 'completed' | 'scheduled'
 
 export interface WorkoutEvent {
   id: string
+  scheduleId: string
   date: string
   title: string
   time: string
@@ -30,19 +31,21 @@ type CalendarDay = {
 }
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const MONTHS   = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 const Calendar = () => {
   const { user } = useAuth()
-  const today = new Date()
-  const [currentDate, setCurrentDate]     = useState(new Date(today.getFullYear(), today.getMonth(), 1))
-  const [schedules, setSchedules]         = useState<ScheduleRule[]>([])
-  const [loading, setLoading]             = useState(true)
-  const [isModalOpen, setIsModalOpen]     = useState(false)
-  const [selectedEvents, setSelectedEvents] = useState<WorkoutEvent[]>([])
-  const [selectedDate, setSelectedDate]   = useState<string | undefined>()
-  const [isDialogOpen, setIsDialogOpen]   = useState(false)
-  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const today    = new Date()
+
+  const [currentDate, setCurrentDate]               = useState(new Date(today.getFullYear(), today.getMonth(), 1))
+  const [schedules, setSchedules]                   = useState<ScheduleRule[]>([])
+  const [completedIds, setCompletedIds]             = useState<Set<string>>(new Set())
+  const [loading, setLoading]                       = useState(true)
+  const [isModalOpen, setIsModalOpen]               = useState(false)
+  const [selectedEvents, setSelectedEvents]         = useState<WorkoutEvent[]>([])
+  const [selectedDate, setSelectedDate]             = useState<string | undefined>()
+  const [isDialogOpen, setIsDialogOpen]             = useState(false)
+  const [isDetailOpen, setIsDetailOpen]             = useState(false)
   const [selectedDetailEvent, setSelectedDetailEvent] = useState<WorkoutEvent | null>(null)
 
   const loadSchedules = useCallback(async () => {
@@ -56,12 +59,30 @@ const Calendar = () => {
     }
   }, [user])
 
+  useEffect(() => { loadSchedules() }, [loadSchedules])
+
   const handleOpenDetail = (event: WorkoutEvent) => {
     setSelectedDetailEvent(event)
     setIsDetailOpen(true)
   }
 
-  useEffect(() => { loadSchedules() }, [loadSchedules])
+  const handleDeleted = useCallback((scheduleId: string) => {
+    setSchedules(old => old.filter(s => s.id !== scheduleId))
+    setIsDetailOpen(false)
+    setSelectedDetailEvent(null)
+  }, [])
+
+  const handleCompleted = useCallback((eventId: string) => {
+    setCompletedIds(old => {
+      const next = new Set(old)
+      if (next.has(eventId)) {
+        next.delete(eventId)
+      } else {
+        next.add(eventId)
+      }
+      return next
+    })
+  }, [])
 
   const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
   const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
@@ -71,14 +92,15 @@ const Calendar = () => {
     const month = currentDate.getMonth()
     return schedules.flatMap(rule =>
       generateOccurrencesForMonth(rule, year, month).map(e => ({
-        id:     e.id,
-        date:   e.date,
-        title:  e.title,
-        time:   e.time,
-        status: e.status,
+        id:         e.id,
+        scheduleId: e.scheduleId,
+        date:       e.date,
+        title:      e.title,
+        time:       e.time,
+        status:     completedIds.has(e.id) ? 'completed' : 'scheduled' as WorkoutStatus,
       }))
     )
-  }, [schedules, currentDate])
+  }, [schedules, currentDate, completedIds])
 
   const calendarDays = useMemo<CalendarDay[]>(() => {
     const year  = currentDate.getFullYear()
@@ -128,10 +150,17 @@ const Calendar = () => {
   const upcomingWorkouts = useMemo(() => {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
     return events
-      .filter(e => e.date >= todayStr)
+      .filter(e => e.date >= todayStr && e.status !== 'completed')
       .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
       .slice(0, 3)
   }, [events])
+
+  // Atualiza o selectedDetailEvent quando o status muda
+  useEffect(() => {
+    if (!selectedDetailEvent) return
+    const updated = events.find(e => e.id === selectedDetailEvent.id)
+    if (updated) setSelectedDetailEvent(updated)
+  }, [completedIds])
 
   return (
     <Header>
@@ -159,12 +188,16 @@ const Calendar = () => {
             onClose={() => setIsDialogOpen(false)}
             events={selectedEvents}
             date={selectedDate}
+            onOpenDetail={handleOpenDetail}
           />
 
-          <ScheduleDialog 
-            isOpen={isDetailOpen} 
-            onClose={() => setIsDetailOpen(false)} 
-            event={selectedDetailEvent} 
+          <ScheduleDialog
+            isOpen={isDetailOpen}
+            onClose={() => setIsDetailOpen(false)}
+            event={selectedDetailEvent}
+            schedules={schedules}
+            onDeleted={handleDeleted}
+            onCompleted={handleCompleted}
           />
 
           {loading ? (
@@ -183,7 +216,6 @@ const Calendar = () => {
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mt-4 sm:mt-0">
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-primary" /> Completed</div>
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground bg-muted" /> Scheduled</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-muted" /> Rest</div>
                   </div>
                 </div>
 
@@ -225,12 +257,10 @@ const Calendar = () => {
                                 key={event.id}
                                 onClick={() => handleOpenDetail(event)}
                                 className={cn(
-                                  "flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold",
+                                  "cursor-pointer flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold",
                                   event.status === 'completed'
                                     ? 'bg-primary text-primary-foreground border-transparent'
-                                    : event.status === 'scheduled'
-                                    ? 'bg-muted border-border text-foreground'
-                                    : 'bg-muted text-muted-foreground border-transparent'
+                                    : 'bg-muted border-border text-foreground'
                                 )}
                               >
                                 {event.status === 'completed' && <Check size={12} strokeWidth={3} />}
