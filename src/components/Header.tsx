@@ -1,5 +1,5 @@
 import { SidebarTrigger, useSidebar } from "./ui/sidebar"
-import { Search, BellDot } from "lucide-react"
+import { Search, Bot } from "lucide-react"
 import { Input } from "./ui/input"
 import type React from "react"
 
@@ -25,8 +25,8 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <div className="hover:bg-muted transition duration-300 p-2 rounded-2xl cursor-pointer">
-            <BellDot className="w-5 h-5" />
+          <div className="bg-muted/60 hover:bg-muted transition duration-300 p-2 rounded-2xl cursor-pointer">
+            <Bot className="w-5 h-5" />
           </div>
           <div className="flex items-center gap-2 max-[768px]:hidden rounded-2xl border border-muted py-1.5 px-4 bg-background/50">
             <div className="bg-orange-500 h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.6)]"></div>

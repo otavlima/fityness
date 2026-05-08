@@ -1,15 +1,42 @@
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Clock, Timer, Dumbbell, RotateCcw, Trash2, CheckCircle2, X, Loader2 } from "lucide-react"
+
+import {
+  Clock,
+  Timer,
+  Dumbbell,
+  RotateCcw,
+  Trash2,
+  CheckCircle2,
+  X,
+  Loader2,
+} from "lucide-react"
+
 import { cn } from "@/lib/utils"
+
 import { type WorkoutEvent } from "@/pages/Calendar"
-import { type ScheduleRule, deleteSchedule } from "@/services/firebase/schedule"
-import { getWorkout, type WorkoutDocument } from "@/services/firebase/workout"
+
+import {
+  type ScheduleRule,
+  deleteSchedule,
+} from "@/services/firebase/schedule"
+
+import {
+  getWorkout,
+  type WorkoutDocument,
+} from "@/services/firebase/workout"
+
 import { toast } from "sonner"
 
 interface ScheduleDialogProps {
@@ -23,33 +50,72 @@ interface ScheduleDialogProps {
 
 const formatRecurrence = (rule: ScheduleRule): string => {
   if (!rule.isRecurring) return "Once"
+
   const r = rule.recurrence
+
   if (!r) return "Once"
-  if (r.type === "weekly")   return "Weekly"
+
+  if (r.type === "weekly") return "Weekly"
+
   if (r.type === "biweekly") return "Every 2 weeks"
-  if (r.type === "specific_days" && r.weekdays && r.weekdays.length > 0) {
+
+  if (
+    r.type === "specific_days" &&
+    r.weekdays &&
+    r.weekdays.length > 0
+  ) {
     const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    return r.weekdays.sort((a, b) => a - b).map(d => names[d]).join(', ')
+
+    return r.weekdays
+      .sort((a, b) => a - b)
+      .map(d => names[d])
+      .join(', ')
   }
+
   return "Once"
 }
 
 const formatDate = (dateStr: string): string => {
   const [y, m, d] = dateStr.split("-").map(Number)
+
   const date = new Date(y, m - 1, d)
-  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
-const ScheduleDialog = ({ isOpen, onClose, event, schedules, onDeleted, onCompleted }: ScheduleDialogProps) => {
-  const [workout, setWorkout]   = useState<WorkoutDocument | null>(null)
-  const [loading, setLoading]   = useState(false)
+const ScheduleDialog = ({
+  isOpen,
+  onClose,
+  event,
+  schedules,
+  onDeleted,
+  onCompleted,
+}: ScheduleDialogProps) => {
+  const [workout, setWorkout] =
+    useState<WorkoutDocument | null>(null)
+
+  const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  const schedule = event ? schedules.find(s => s.id === event.scheduleId) : null
+  const schedule = event
+    ? schedules.find(s => s.id === event.scheduleId)
+    : null
 
   useEffect(() => {
-    if (!event || !schedule) return
+    setWorkout(null)
+
+    if (!event || !schedule) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
+
     getWorkout(schedule.workoutId)
       .then(setWorkout)
       .finally(() => setLoading(false))
@@ -59,35 +125,54 @@ const ScheduleDialog = ({ isOpen, onClose, event, schedules, onDeleted, onComple
 
   const isCompleted = event.status === "completed"
 
-  const totalRestSecs = workout?.exercises.reduce((acc, ex) => {
-    const num = parseInt(ex.rest?.replace(/\D/g, '') || '0')
-    return acc + (isNaN(num) ? 0 : num)
-  }, 0) ?? 0
+  const totalRestSecs =
+    workout?.exercises.reduce((acc, ex) => {
+      const num = parseInt(
+        ex.rest?.replace(/\D/g, '') || '0'
+      )
+
+      return acc + (isNaN(num) ? 0 : num)
+    }, 0) ?? 0
 
   const formatRest = (secs: number): string => {
     if (secs === 0) return "—"
-    if (secs < 60)  return `${secs}s`
+
+    if (secs < 60) return `${secs}s`
+
     const m = Math.floor(secs / 60)
     const s = secs % 60
-    return s > 0 ? `${m}m ${s}s` : `${m}m`
+
+    return s > 0
+      ? `${m}m ${s}s`
+      : `${m}m`
   }
 
   const handleDelete = async () => {
     if (!schedule) return
+
     setDeleting(true)
+
     try {
       await deleteSchedule(schedule.id)
+
       toast.success("Schedule deleted.")
+
       onDeleted?.(schedule.id)
     } catch {
       toast.error("Error deleting schedule.")
+    } finally {
       setDeleting(false)
     }
   }
 
   const handleComplete = () => {
     onCompleted?.(event.id)
-    toast.success(isCompleted ? "Workout marked as scheduled." : "Workout completed!")
+
+    toast.success(
+      isCompleted
+        ? "Workout marked as scheduled."
+        : "Workout completed!"
+    )
   }
 
   return (

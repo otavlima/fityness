@@ -11,6 +11,11 @@ import DialogSchedules from '@/components/DialogSchedules'
 import { getSchedules, generateOccurrencesForMonth, type ScheduleRule } from '@/services/firebase/schedule'
 import { useAuth } from '@/contexts/AuthContext'
 import ScheduleDialog from '@/components/ScheduleDialog'
+import {
+  getCompletedEventIds,
+  markEventCompleted,
+  unmarkEventCompleted,
+} from '@/services/firebase/scheduleStatus'
 
 export type WorkoutStatus = 'completed' | 'scheduled'
 
@@ -50,10 +55,17 @@ const Calendar = () => {
 
   const loadSchedules = useCallback(async () => {
     if (!user) return
+
     setLoading(true)
+
     try {
-      const data = await getSchedules(user.uid)
+      const [data, completed] = await Promise.all([
+        getSchedules(user.uid),
+        getCompletedEventIds(user.uid),
+      ])
+
       setSchedules(data)
+      setCompletedIds(new Set(completed))
     } finally {
       setLoading(false)
     }
@@ -72,17 +84,43 @@ const Calendar = () => {
     setSelectedDetailEvent(null)
   }, [])
 
-  const handleCompleted = useCallback((eventId: string) => {
+  const handleCompleted = useCallback(async (eventId: string) => {
+    if (!user) return
+
+    const alreadyCompleted = completedIds.has(eventId)
+
     setCompletedIds(old => {
       const next = new Set(old)
-      if (next.has(eventId)) {
+
+      if (alreadyCompleted) {
         next.delete(eventId)
       } else {
         next.add(eventId)
       }
+
       return next
     })
-  }, [])
+
+    try {
+      if (alreadyCompleted) {
+        await unmarkEventCompleted(user.uid, eventId)
+      } else {
+        await markEventCompleted(user.uid, eventId)
+      }
+    } catch {
+      setCompletedIds(old => {
+        const next = new Set(old)
+
+        if (alreadyCompleted) {
+          next.add(eventId)
+        } else {
+          next.delete(eventId)
+        }
+
+        return next
+      })
+    }
+  }, [user, completedIds])
 
   const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
   const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
@@ -101,6 +139,9 @@ const Calendar = () => {
       }))
     )
   }, [schedules, currentDate, completedIds])
+
+console.log(events)
+console.log(completedIds)
 
   const calendarDays = useMemo<CalendarDay[]>(() => {
     const year  = currentDate.getFullYear()

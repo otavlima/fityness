@@ -114,10 +114,23 @@ export const generateOccurrencesForMonth = (
   const { type, weekdays, startDate, endCondition, occurrences, endDate } = rule.recurrence
   const [hh, mm] = rule.time.split(":").map(Number)
 
+
+  const today = new Date()
+
   let dtstart: Date
 
   if (type === "specific_days" && weekdays && weekdays.length > 0) {
-    dtstart = findFirstOccurrenceForDaysOfWeek(weekdays, rule.time)
+    if (startDate) {
+      dtstart = parseLocalDateUTC(startDate, hh, mm)
+    } else {
+      dtstart = toUTC(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        hh,
+        mm
+      )
+    }
   } else if (startDate) {
     dtstart = parseLocalDateUTC(startDate, hh, mm)
   } else {
@@ -156,8 +169,8 @@ export const generateOccurrencesForMonth = (
   const rrule = new RRule(rruleOptions)
   const dates = rrule.between(monthStart, monthEnd, true)
 
-  return dates.map((date, idx) => ({
-    id:         `${rule.id}-${idx}`,
+  return dates.map((date) => ({
+    id: `${rule.id}-${toLocalDateString(date)}`,
     scheduleId: rule.id,
     workoutId:  rule.workoutId,
     date:       toLocalDateString(date),
