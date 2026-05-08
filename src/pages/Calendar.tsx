@@ -181,12 +181,32 @@ console.log(completedIds)
   }, [calendarDays])
 
   const frequencyData = useMemo(() => {
-    const months = ['J','F','M','A','M','J','J','A','S','O','N','D']
-    return months.map((m, idx) => ({
-      month: m,
-      total: schedules.reduce((acc, rule) => acc + generateOccurrencesForMonth(rule, today.getFullYear(), idx).length, 0)
-    }))
-  }, [schedules])
+    const months = [
+      'J', 'F', 'M', 'A', 'M', 'J',
+      'J', 'A', 'S', 'O', 'N', 'D'
+    ]
+
+    const year = currentDate.getFullYear()
+
+    return months.map((monthLabel, monthIndex) => {
+      let total = 0
+
+      for (const rule of schedules) {
+        const occurrences = generateOccurrencesForMonth(
+          rule,
+          year,
+          monthIndex
+        )
+
+        total += occurrences.length
+      }
+
+      return {
+        month: monthLabel,
+        total,
+      }
+    })
+  }, [schedules, currentDate])
 
   const upcomingWorkouts = useMemo(() => {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
@@ -365,21 +385,19 @@ console.log(completedIds)
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={frequencyData} margin={{ top: 0, right: 5, left: 5, bottom: 0 }}>
                           <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} dy={10} interval={0} fontWeight="bold" />
-                          <Tooltip
-                            cursor={{ fill: 'var(--muted)', opacity: 0.1 }}
-                            content={({ active, payload }) =>
-                              active && payload?.length
-                                ? <div className="bg-popover border border-border p-2 rounded-lg shadow-md text-xs font-bold">{`${payload[0].value} workouts`}</div>
-                                : null
-                            }
-                          />
                           <Bar dataKey="total" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={20} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                     <div className="mt-6 pt-4 border-t border-border">
                       <p className="text-sm text-muted-foreground font-medium">
-                        Total this month: <span className="text-foreground font-bold">{events.length} workouts</span>
+                        Total this month:{' '}
+                        <span className="text-foreground font-bold">
+                          {
+                            frequencyData[currentDate.getMonth()]
+                              ?.total ?? 0
+                          } workouts
+                        </span>
                       </p>
                     </div>
                   </CardContent>
