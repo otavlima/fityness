@@ -161,11 +161,11 @@ export const CardWorkout = ({
 
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
-          Last done: {lastDone}
+          Last done:
         </span>
 
         <span className="text-sm font-semibold text-primary">
-          Start
+          {lastDone}
         </span>
       </div>
     </div>

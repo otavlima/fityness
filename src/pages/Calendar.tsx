@@ -42,15 +42,15 @@ const Calendar = () => {
   const { user } = useAuth()
   const today    = new Date()
 
-  const [currentDate, setCurrentDate]               = useState(new Date(today.getFullYear(), today.getMonth(), 1))
-  const [schedules, setSchedules]                   = useState<ScheduleRule[]>([])
-  const [completedIds, setCompletedIds]             = useState<Set<string>>(new Set())
-  const [loading, setLoading]                       = useState(true)
-  const [isModalOpen, setIsModalOpen]               = useState(false)
-  const [selectedEvents, setSelectedEvents]         = useState<WorkoutEvent[]>([])
-  const [selectedDate, setSelectedDate]             = useState<string | undefined>()
-  const [isDialogOpen, setIsDialogOpen]             = useState(false)
-  const [isDetailOpen, setIsDetailOpen]             = useState(false)
+  const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
+  const [schedules, setSchedules] = useState<ScheduleRule[]>([])
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedEvents, setSelectedEvents] = useState<WorkoutEvent[]>([])
+  const [selectedDate, setSelectedDate] = useState<string | undefined>()
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [selectedDetailEvent, setSelectedDetailEvent] = useState<WorkoutEvent | null>(null)
 
   const loadSchedules = useCallback(async () => {
@@ -351,7 +351,6 @@ console.log(completedIds)
                                 <span className="text-xs text-muted-foreground font-medium">{event.time}</span>
                               </div>
                             </div>
-                            <Button variant="outline" size="sm" className="rounded-full text-xs px-4 h-8 font-semibold">Reschedule</Button>
                           </div>
                         )
                       })
