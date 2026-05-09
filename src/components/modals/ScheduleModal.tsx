@@ -424,7 +424,7 @@ const ScheduleModal = ({
         </div>
       }
     >
-      <div className="flex flex-col gap-5 py-2">
+      <div className="flex flex-col gap-5">
 
         {!preselectedWorkout && (
           <div className="flex flex-col gap-2">

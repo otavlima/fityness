@@ -1,5 +1,5 @@
 import {
-  collection, addDoc, getDocs, deleteDoc,
+  collection, addDoc, getDocs, writeBatch,
   doc, query, where, Timestamp
 } from "firebase/firestore"
 import { db } from "../firebase"
@@ -200,5 +200,21 @@ export const getSchedules = async (uid: string): Promise<ScheduleRule[]> => {
 }
 
 export const deleteSchedule = async (id: string): Promise<void> => {
-  await deleteDoc(doc(db, "schedules", id))
+  const batch = writeBatch(db)
+
+  const scheduleRef = doc(db, "schedules", id)
+  batch.delete(scheduleRef)
+
+  const statusQuery = query(
+    collection(db, "schedule_status"),
+    where("scheduleId", "==", id)
+  )
+
+  const statusSnap = await getDocs(statusQuery)
+
+  statusSnap.docs.forEach(d => {
+    batch.delete(doc(db, "schedule_status", d.id))
+  })
+
+  await batch.commit()
 }

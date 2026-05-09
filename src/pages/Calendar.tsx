@@ -4,7 +4,7 @@ import { Field, FieldDescription, FieldTitle } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react'
-import { Bar, BarChart, ResponsiveContainer, XAxis, Tooltip } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts"
 import { cn } from "@/lib/utils"
 import ScheduleModal from '@/components/modals/ScheduleModal'
 import DialogSchedules from '@/components/DialogSchedules'
@@ -84,18 +84,18 @@ const Calendar = () => {
     setSelectedDetailEvent(null)
   }, [])
 
-  const handleCompleted = useCallback(async (eventId: string) => {
+  const handleCompleted = useCallback(async (event: WorkoutEvent) => {
     if (!user) return
 
-    const alreadyCompleted = completedIds.has(eventId)
+    const alreadyCompleted = completedIds.has(event.id)
 
     setCompletedIds(old => {
       const next = new Set(old)
 
       if (alreadyCompleted) {
-        next.delete(eventId)
+        next.delete(event.id)
       } else {
-        next.add(eventId)
+        next.add(event.id)
       }
 
       return next
@@ -103,18 +103,22 @@ const Calendar = () => {
 
     try {
       if (alreadyCompleted) {
-        await unmarkEventCompleted(user.uid, eventId)
+        await unmarkEventCompleted(user.uid, event.id)
       } else {
-        await markEventCompleted(user.uid, eventId)
+        await markEventCompleted(
+          user.uid,
+          event.id,
+          event.scheduleId // ✅ agora existe
+        )
       }
     } catch {
       setCompletedIds(old => {
         const next = new Set(old)
 
         if (alreadyCompleted) {
-          next.add(eventId)
+          next.add(event.id)
         } else {
-          next.delete(eventId)
+          next.delete(event.id)
         }
 
         return next
@@ -262,8 +266,13 @@ console.log(completedIds)
           />
 
           {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="animate-spin text-muted-foreground" size={32} />
+            <div className="flex flex-1 w-full justify-center items-center py-24">
+              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="text-sm font-medium">
+                  Loading calendar...
+                </span>
+              </div>
             </div>
           ) : (
             <>
@@ -391,12 +400,8 @@ console.log(completedIds)
                     </div>
                     <div className="mt-6 pt-4 border-t border-border">
                       <p className="text-sm text-muted-foreground font-medium">
-                        Total this month:{' '}
-                        <span className="text-foreground font-bold">
-                          {
-                            frequencyData[currentDate.getMonth()]
-                              ?.total ?? 0
-                          } workouts
+                        Average: <span className="font-bold text-foreground">
+                          {(frequencyData.reduce((acc, curr) => acc + curr.total, 0) / 52).toFixed(1)} workouts/week
                         </span>
                       </p>
                     </div>

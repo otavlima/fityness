@@ -45,7 +45,7 @@ interface ScheduleDialogProps {
   event: WorkoutEvent | null
   schedules: ScheduleRule[]
   onDeleted?: (scheduleId: string) => void
-  onCompleted?: (eventId: string) => void
+  onCompleted: (event: WorkoutEvent) => void
 }
 
 const formatRecurrence = (rule: ScheduleRule): string => {
@@ -166,7 +166,8 @@ const ScheduleDialog = ({
   }
 
   const handleComplete = () => {
-    onCompleted?.(event.id)
+    if (!event) return
+    onCompleted?.(event)
 
     toast.success(
       isCompleted

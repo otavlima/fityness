@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select"
 import WorkoutModal from '@/components/modals/WorkoutModal'
 import ScheduleModal from '@/components/modals/ScheduleModal'
+import StartExercises from '@/components/modals/StartExercises'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -90,6 +91,8 @@ const Workouts = () => {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] =
     useState(false)
+
+  const [startWorkout, setStartWorkout] = useState<WorkoutDocument | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -166,6 +169,7 @@ const Workouts = () => {
           exerciseCount={w.exercises.length}
           duration="45m"
           lastDone={w.lastDone ?? 'Never'}
+          onStart={() => setStartWorkout(w)}
           onDelete={() => {
             setDeleteWorkoutId(w.id!)
             setIsDeleteModalOpen(true)
@@ -210,23 +214,18 @@ const Workouts = () => {
     <Header>
       <div className="flex flex-1 w-full justify-center px-4">
         <div className="flex flex-col gap-4 w-full max-w-5xl">
-
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-
             <Field className="flex flex-col gap-1">
               <FieldDescription className="text-xs font-semibold tracking-widest uppercase">
                 Library
               </FieldDescription>
-
               <FieldTitle className="text-3xl font-bold tracking-tight">
                 Workouts
               </FieldTitle>
-
               <FieldDescription>
                 Organize, edit, and start any routine in seconds.
               </FieldDescription>
             </Field>
-
             <Button
               onClick={() => {
                 setSelectedWorkout(null)
@@ -304,13 +303,15 @@ const Workouts = () => {
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2
-                className="animate-spin text-muted-foreground"
-                size={32}
-              />
+            <div className="flex flex-1 w-full justify-center items-center py-24">
+              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="text-sm font-medium">
+                  Loading workouts...
+                </span>
+              </div>
             </div>
-          ) : (
+          ): (
             renderList(activeList)
           )}
 
@@ -332,6 +333,13 @@ const Workouts = () => {
               selectedScheduleWorkout
             }
             redirectToCalendar
+          />
+
+          <StartExercises
+            open={!!startWorkout}
+            onOpenChange={open => { if (!open) setStartWorkout(null) }}
+            workout={startWorkout}
+            onDone={() => toast.success('Workout completed!')}
           />
 
         </div>

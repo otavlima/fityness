@@ -16,6 +16,7 @@ export interface ScheduleStatusDocument {
   id: string
   uid: string
   eventId: string
+  scheduleId: string
   completed: boolean
 }
 
@@ -35,11 +36,13 @@ export const getCompletedEventIds = async (
 
 export const markEventCompleted = async (
   uid: string,
-  eventId: string
+  eventId: string,
+  scheduleId: string
 ) => {
   await addDoc(collection(db, COLLECTION), {
     uid,
     eventId,
+    scheduleId,
     completed: true,
   })
 }
