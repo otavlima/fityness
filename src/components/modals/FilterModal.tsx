@@ -1,33 +1,113 @@
-import { useState } from "react"
-import { Modal } from "../Modal"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Filter } from "lucide-react"
+import { useEffect, useState } from 'react'
 
-const FilterModal = ({ open, onOpenChange }: any) => {
-  const [period, setPeriod] = useState("30d")
-  const [categories, setCategories] = useState<string[]>([])
-  const [duration, setDuration] = useState("any")
-  const [orderBy, setOrderBy] = useState("recent")
-  const [onlyPR, setOnlyPR] = useState(false)
+import { Modal } from '../Modal'
 
-  const toggleCategory = (value: string) => {
-    setCategories(prev =>
-      prev.includes(value)
-        ? prev.filter(c => c !== value)
-        : [...prev, value]
-    )
+import { Button } from '@/components/ui/button'
+
+import { Label } from '@/components/ui/label'
+
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@/components/ui/toggle-group'
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import { Switch } from '@/components/ui/switch'
+
+import { Filter } from 'lucide-react'
+
+import type { HistoryFilters } from '@/pages/History'
+
+type Props = {
+  open: boolean
+
+  onOpenChange: (
+    open: boolean
+  ) => void
+
+  filters: HistoryFilters
+
+  onApplyFilters: (
+    filters: HistoryFilters
+  ) => void
+}
+
+const defaultFilters: HistoryFilters =
+  {
+    period: '30d',
+    categories: [],
+    duration: 'any',
+    orderBy: 'recent',
+    onlyPR: false,
+  }
+
+const categories = [
+  {
+    label: 'Push',
+    value: 'push',
+  },
+  {
+    label: 'Pull',
+    value: 'pull',
+  },
+  {
+    label: 'Legs',
+    value: 'lower-body',
+  },
+  {
+    label: 'Upper',
+    value: 'upper-body',
+  },
+  {
+    label: 'Full',
+    value: 'full-body',
+  },
+]
+
+const FilterModal = ({
+  open,
+  onOpenChange,
+  filters,
+  onApplyFilters,
+}: Props) => {
+  const [
+    localFilters,
+    setLocalFilters,
+  ] = useState(filters)
+
+  useEffect(() => {
+    if (open) {
+      setLocalFilters(filters)
+    }
+  }, [open, filters])
+
+  const updateFilter = <
+    K extends keyof HistoryFilters
+  >(
+    key: K,
+    value: HistoryFilters[K]
+  ) => {
+    setLocalFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
   }
 
   const clearFilters = () => {
-    setPeriod("30d")
-    setCategories([])
-    setDuration("any")
-    setOrderBy("recent")
-    setOnlyPR(false)
+    setLocalFilters(defaultFilters)
+  }
+
+  const handleApply = () => {
+    onApplyFilters(localFilters)
+
+    onOpenChange(false)
   }
 
   return (
@@ -39,91 +119,219 @@ const FilterModal = ({ open, onOpenChange }: any) => {
       icon={<Filter />}
       footer={
         <>
-          <Button variant="ghost" onClick={clearFilters}>
+          <Button
+            variant="ghost"
+            onClick={clearFilters}
+          >
             Clear
           </Button>
-          <Button className="rounded-xl px-6">
+
+          <Button
+            className="rounded-xl px-6"
+            onClick={handleApply}
+          >
             Apply filters
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-6">
+
+        {/* PERIOD */}
         <div className="flex flex-col gap-2">
+
           <Label>Period</Label>
-          <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-full">
+
+          <Select
+            value={
+              localFilters.period
+            }
+            onValueChange={(value) =>
+              updateFilter(
+                'period',
+                value
+              )
+            }
+          >
+            <SelectTrigger className="w-full rounded-2xl">
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
+
             <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-              <SelectItem value="all">All time</SelectItem>
+              <SelectItem value="7d">
+                Last 7 days
+              </SelectItem>
+
+              <SelectItem value="30d">
+                Last 30 days
+              </SelectItem>
+
+              <SelectItem value="90d">
+                Last 90 days
+              </SelectItem>
+
+              <SelectItem value="all">
+                All time
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col gap-2">
+
+        {/* CATEGORY */}
+        <div className="flex flex-col gap-3">
+
           <Label>Category</Label>
+
           <ToggleGroup
             type="multiple"
-            value={categories}
-            onValueChange={setCategories}
-            className="flex flex-wrap gap-2"
-            >
-            {["Push", "Pull", "Legs", "Upper", "Full"].map(cat => (
+            value={
+              localFilters.categories
+            }
+            onValueChange={(value) =>
+              updateFilter(
+                'categories',
+                value
+              )
+            }
+            className="flex flex-wrap justify-start gap-2"
+          >
+            {categories.map(
+              (category) => (
                 <ToggleGroupItem
-                    key={cat}
-                    value={cat}
-                    className="
-                        rounded-full px-3 py-1 text-xs border
-                        data-[state=on]:bg-primary
-                        data-[state=on]:text-primary-foreground
-                        hover:bg-muted/60
-                        transition-colors
-                    "
-                    >
-                    {cat}
+                  key={
+                    category.value
+                  }
+                  value={
+                    category.value
+                  }
+                  className="
+                    h-10 rounded-full border border-border/60
+                    bg-card px-4 text-xs font-semibold
+                    text-muted-foreground transition-all
+
+                    hover:border-primary/40
+                    hover:bg-primary/5
+                    hover:text-foreground
+
+                    data-[state=on]:border-primary
+                    data-[state=on]:bg-primary
+                    data-[state=on]:text-primary-foreground
+                    data-[state=on]:shadow-sm
+                  "
+                >
+                  {category.label}
                 </ToggleGroupItem>
-            ))}
+              )
+            )}
           </ToggleGroup>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+
+        {/* GRID */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
           <div className="flex flex-col gap-2">
+
             <Label>Duration</Label>
-            <Select value={duration} onValueChange={setDuration}>
-              <SelectTrigger className="w-full">
+
+            <Select
+              value={
+                localFilters.duration
+              }
+              onValueChange={(value) =>
+                updateFilter(
+                  'duration',
+                  value
+                )
+              }
+            >
+              <SelectTrigger className="w-full rounded-2xl">
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="any">Any</SelectItem>
-                <SelectItem value="short">Short</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="long">Long</SelectItem>
+                <SelectItem value="any">
+                  Any
+                </SelectItem>
+
+                <SelectItem value="short">
+                  Up to 30 minutes
+                </SelectItem>
+
+                <SelectItem value="medium">
+                  30-60min
+                </SelectItem>
+
+                <SelectItem value="long">
+                  More than 60min
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
+
             <Label>Order by</Label>
-            <Select value={orderBy} onValueChange={setOrderBy}>
-              <SelectTrigger className="w-full">
+
+            <Select
+              value={
+                localFilters.orderBy
+              }
+              onValueChange={(value) =>
+                updateFilter(
+                  'orderBy',
+                  value
+                )
+              }
+            >
+              <SelectTrigger className="w-full rounded-2xl">
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent>
-                <SelectItem value="recent">Most recent</SelectItem>
-                <SelectItem value="oldest">Oldest</SelectItem>
+                <SelectItem value="recent">
+                  Most recent
+                </SelectItem>
+
+                <SelectItem value="volume">
+                  Most volume
+                </SelectItem>
+
+                <SelectItem value="duration">
+                  Most duration
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
-        <div className="flex items-center justify-between p-4 border rounded-xl bg-muted/20">
+
+        {/* ONLY PR */}
+        <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-muted/20 p-4">
+
           <div className="flex flex-col">
-            <span className="text-sm font-medium">Only PR workouts</span>
+
+            <span className="text-sm font-semibold">
+              Only PR workouts
+            </span>
+
             <span className="text-xs text-muted-foreground">
-              Show only personal records
+              Show only personal
+              records
             </span>
           </div>
-          <Switch checked={onlyPR} onCheckedChange={setOnlyPR} />
+
+          <Switch
+            checked={
+              localFilters.onlyPR
+            }
+            onCheckedChange={(
+              checked
+            ) =>
+              updateFilter(
+                'onlyPR',
+                checked
+              )
+            }
+          />
         </div>
       </div>
     </Modal>

@@ -8,6 +8,7 @@ import {
   Timestamp,
   limit,
   startAfter,
+  writeBatch,
   type QueryDocumentSnapshot,
   type DocumentData,
 } from "firebase/firestore"
@@ -35,6 +36,18 @@ export interface WorkoutHistoryDocument {
   exercises: ExerciseResult[]
   duration: number
   completedAt: Date
+}
+
+export const updateWorkoutNameInHistory = async (
+  workoutId: string,
+  newName: string
+): Promise<void> => {
+  const q    = query(collection(db, "workout_history"), where("workoutId", "==", workoutId))
+  const snap = await getDocs(q)
+
+  const batch = writeBatch(db)
+  snap.docs.forEach(d => batch.update(d.ref, { workoutName: newName }))
+  await batch.commit()
 }
 
 export const saveWorkoutHistory =

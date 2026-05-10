@@ -1,28 +1,39 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '@/components/Header'
+
 import {
   Field,
   FieldDescription,
   FieldTitle,
 } from '@/components/ui/field'
+
 import { Button } from '@/components/ui/button'
+
 import {
   Filter as FilterIcon,
   Loader2,
 } from 'lucide-react'
+
 import { Card } from '@/components/ui/card'
+
 import { useAuth } from '@/contexts/AuthContext'
+
 import {
   getWorkoutHistory,
   type WorkoutHistoryDocument,
 } from '@/services/firebase/workoutHistory'
+
 import {
   getWorkouts,
   type WorkoutDocument,
 } from '@/services/firebase/workout'
+
 import FilterModal from '@/components/modals/FilterModal'
+
 import HistoryWorkoutCard from '@/components/history/HistoryWorkoutCard'
+
 import WorkoutHistoryModal from '@/components/history/WorkoutHistoryModal'
+
 import SessionHistoryModal from '@/components/history/SessionHistoryModal'
 
 export type WorkoutSession = {
@@ -48,6 +59,14 @@ export type WorkoutGroup = {
   category?: string
 }
 
+export type HistoryFilters = {
+  period: string
+  categories: string[]
+  duration: string
+  orderBy: string
+  onlyPR: boolean
+}
+
 const formatVolume = (
   volume: number
 ) => {
@@ -59,6 +78,15 @@ const formatVolume = (
 
   return `${volume}kg`
 }
+
+const defaultFilters: HistoryFilters =
+  {
+    period: '30d',
+    categories: [],
+    duration: 'any',
+    orderBy: 'recent',
+    onlyPR: false,
+  }
 
 const History = () => {
   const { user } = useAuth()
@@ -111,6 +139,11 @@ const History = () => {
   const [visibleGroups, setVisibleGroups] =
     useState(10)
 
+  const [filters, setFilters] =
+    useState<HistoryFilters>(
+      defaultFilters
+    )
+
   useEffect(() => {
     const load = async () => {
       if (!user) return
@@ -157,7 +190,7 @@ const History = () => {
         )
       })
 
-      return Array.from(
+      let groups = Array.from(
         grouped.entries()
       ).map(([workoutId, sessions]) => {
         const sortedSessions =
@@ -275,6 +308,7 @@ const History = () => {
           category:
             workoutData
               ?.category ||
+
             'Workout',
 
           sessions:
@@ -300,7 +334,129 @@ const History = () => {
             `${bestSessionVolume}kg`,
         }
       })
-    }, [history, workouts])
+
+      if (
+        filters.period !== 'all'
+      ) {
+        const now = new Date()
+
+        const days =
+          filters.period === '7d'
+            ? 7
+            : filters.period === '30d'
+            ? 30
+            : 90
+
+        groups = groups.filter(
+          (group) => {
+            const diff =
+              now.getTime() -
+              group.latestCompletedAt.getTime()
+
+            return (
+              diff <=
+              days *
+                24 *
+                60 *
+                60 *
+                1000
+            )
+          }
+        )
+      }
+
+      if (
+        filters.categories.length > 0
+      ) {
+        groups = groups.filter(
+          (group) => {
+            const category = (
+              group.category || ''
+            )
+              .toLowerCase()
+              .trim()
+
+            return filters.categories.some(
+              (selected) =>
+                category ===
+                selected.toLowerCase()
+            )
+          }
+        )
+      }
+
+      if (filters.onlyPR) {
+        groups = groups.filter(
+          (group) =>
+            group.bestVolume > 0
+        )
+      }
+
+      if (
+        filters.duration !== 'any'
+      ) {
+        groups = groups.filter(
+          (group) => {
+            const duration =
+              group.lastDuration / 60
+
+            if (
+              filters.duration ===
+              'short'
+            ) {
+              return duration <= 30
+            }
+
+            if (
+              filters.duration ===
+              'medium'
+            ) {
+              return (
+                duration > 30 &&
+                duration <= 60
+              )
+            }
+
+            return duration > 60
+          }
+        )
+      }
+
+      if (
+        filters.orderBy ===
+        'volume'
+      ) {
+        groups.sort(
+          (a, b) =>
+            b.totalVolume -
+            a.totalVolume
+        )
+      }
+
+      if (
+        filters.orderBy ===
+        'duration'
+      ) {
+        groups.sort(
+          (a, b) =>
+            b.lastDuration -
+            a.lastDuration
+        )
+      }
+
+      if (
+        filters.orderBy ===
+        'recent'
+      ) {
+        groups.sort(
+          (a, b) =>
+            b.latestCompletedAt.getTime() -
+            a.latestCompletedAt.getTime()
+        )
+      }
+
+      return groups
+    }, [history, workouts, filters])
 
   const stats = useMemo(() => {
     const totalSessions =
@@ -507,7 +663,10 @@ const History = () => {
 
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                   {groupedHistory
-                    .slice(0, visibleGroups)
+                    .slice(
+                      0,
+                      visibleGroups
+                    )
                     .map((workout) => (
                       <HistoryWorkoutCard
                         key={
@@ -527,23 +686,25 @@ const History = () => {
                     ))}
                 </div>
 
-                {visibleGroups <
-                  groupedHistory.length && (
-                  <div className="flex justify-center pt-2">
-                    <Button
-                      variant="outline"
-                      className="rounded-full px-6"
-                      onClick={() =>
-                        setVisibleGroups(
-                          (prev) =>
-                            prev + 10
-                        )
-                      }
-                    >
-                      Load more
-                    </Button>
-                  </div>
-                )}
+                {groupedHistory.length >
+                  10 &&
+                  visibleGroups <
+                    groupedHistory.length && (
+                    <div className="flex justify-center pt-2">
+                      <Button
+                        variant="outline"
+                        className="rounded-full px-6"
+                        onClick={() =>
+                          setVisibleGroups(
+                            (prev) =>
+                              prev + 10
+                          )
+                        }
+                      >
+                        Load more
+                      </Button>
+                    </div>
+                  )}
               </>
             )}
         </div>
@@ -584,6 +745,13 @@ const History = () => {
         onOpenChange={
           setFilterOpen
         }
+        filters={filters}
+        onApplyFilters={(
+          newFilters
+        ) => {
+          setFilters(newFilters)
+          setVisibleGroups(10)
+        }}
       />
     </Header>
   )

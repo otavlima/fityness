@@ -10,10 +10,9 @@ import {
   Timestamp,
   writeBatch,
 } from "firebase/firestore"
-
 import { db } from "../firebase"
-
 import { type Workout } from "@/schemas/workoutSchema"
+import { updateWorkoutNameInHistory } from "./workoutHistory"
 
 const COLLECTION = "workouts"
 
@@ -63,14 +62,12 @@ export const getWorkouts = async (
   }))
 }
 
-export const updateWorkout = async (
-  id: string,
-  data: Partial<Workout>
-) => {
-  await updateDoc(
-    doc(db, COLLECTION, id),
-    { ...data }
-  )
+export const updateWorkout = async (id: string, data: Partial<Workout>) => {
+  await updateDoc(doc(db, COLLECTION, id), { ...data })
+
+  if (data.name) {
+    await updateWorkoutNameInHistory(id, data.name)
+  }
 }
 
 export const deleteWorkout = async (
