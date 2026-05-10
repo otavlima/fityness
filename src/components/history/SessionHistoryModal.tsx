@@ -41,13 +41,18 @@ const formatVolume = (
 const formatDuration = (
   seconds: number
 ) => {
+  const totalMinutes =
+    Math.max(
+      1,
+      Math.floor(seconds / 60)
+    )
+
   const hours = Math.floor(
-    seconds / 3600
+    totalMinutes / 60
   )
 
-  const minutes = Math.floor(
-    (seconds % 3600) / 60
-  )
+  const minutes =
+    totalMinutes % 60
 
   if (hours > 0) {
     return `${hours}h ${minutes
@@ -55,7 +60,7 @@ const formatDuration = (
       .padStart(2, '0')}m`
   }
 
-  return `${minutes}m`
+  return `${totalMinutes}m`
 }
 
 const getTotalSets = (
@@ -270,7 +275,12 @@ const SessionHistoryModal = ({
                             key={
                               setIndex
                             }
-                            className="flex items-center justify-between gap-3 rounded-2xl bg-muted/40 px-3 py-2"
+                            className={cn(
+                              'flex items-center justify-between gap-3 rounded-2xl px-3 py-2 transition-colors',
+                              set.done
+                                ? 'bg-muted/40'
+                                : 'bg-muted/15 opacity-55'
+                            )}
                           >
 
                             <span className="text-[13px] text-muted-foreground">
@@ -366,7 +376,12 @@ const SessionHistoryModal = ({
                               key={
                                 setIndex
                               }
-                              className="flex items-center justify-between rounded-2xl bg-muted/40 px-3 py-2"
+                              className={cn(
+                                'flex items-center justify-between rounded-2xl px-3 py-2 transition-colors',
+                                set.done
+                                  ? 'bg-muted/40'
+                                  : 'bg-muted/15 opacity-55'
+                              )}
                             >
 
                               <span className="text-[13px] text-muted-foreground">

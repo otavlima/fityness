@@ -1,5 +1,6 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
 } from '@/components/ui/dialog'
 import {
@@ -8,6 +9,7 @@ import {
   Clock3,
   TrendingUp,
   Trophy,
+  X,
 } from 'lucide-react'
 import type {
   WorkoutGroup,
@@ -105,6 +107,13 @@ const WorkoutHistoryModal = ({
       >
         <div className="overflow-hidden rounded-[28px] bg-background">
           <div className="relative overflow-hidden bg-foreground">
+            <DialogClose asChild>
+                <button
+                  className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-background/10 bg-background/10 text-background/70 backdrop-blur-sm transition hover:text-background"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+            </DialogClose>
             <div
               className="absolute inset-0 opacity-[0.035] dark:opacity-[0.05]"
               style={{

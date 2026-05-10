@@ -48,6 +48,18 @@ export type WorkoutGroup = {
   category?: string
 }
 
+const formatVolume = (
+  volume: number
+) => {
+  if (volume >= 1000) {
+    return `${(
+      volume / 1000
+    ).toFixed(1)}t`
+  }
+
+  return `${volume}kg`
+}
+
 const History = () => {
   const { user } = useAuth()
 
@@ -96,6 +108,9 @@ const History = () => {
     null
   )
 
+  const [visibleGroups, setVisibleGroups] =
+    useState(10)
+
   useEffect(() => {
     const load = async () => {
       if (!user) return
@@ -111,7 +126,7 @@ const History = () => {
           getWorkouts(user.uid),
         ])
 
-        setHistory(historyData)
+        setHistory(historyData.history)
 
         setWorkouts(workoutsData)
       } finally {
@@ -160,45 +175,95 @@ const History = () => {
 
         let totalVolume = 0
 
-        let bestVolume = 0
+        let bestSessionVolume = 0
 
-        let bestExercise = ''
+        const calculatedSessions =
+          sortedSessions.map(
+            (session) => {
+              let sessionVolume = 0
 
-        let bestValue = ''
+              let totalSets = 0
 
-        sortedSessions.forEach(
-          (session) => {
-            session.exercises.forEach(
-              (exercise) => {
-                exercise.sets.forEach(
-                  (set) => {
-                    if (!set.done)
-                      return
+              session.exercises.forEach(
+                (exercise) => {
+                  exercise.sets.forEach(
+                    (set) => {
+                      if (!set.done)
+                        return
 
-                    const volume =
-                      set.kg * set.reps
+                      totalSets += 1
 
-                    totalVolume +=
-                      volume
+                      const setVolume =
+                        set.kg * set.reps
 
-                    if (
-                      volume >
-                      bestVolume
-                    ) {
-                      bestVolume =
-                        volume
+                      sessionVolume +=
+                        setVolume
 
-                      bestExercise =
-                        exercise.exerciseName
-
-                      bestValue = `${set.kg} kg × ${set.reps}`
+                      totalVolume +=
+                        setVolume
                     }
-                  }
-                )
+                  )
+                }
+              )
+
+              if (
+                sessionVolume >
+                bestSessionVolume
+              ) {
+                bestSessionVolume =
+                  sessionVolume
               }
+
+              return {
+                id: session.id,
+
+                completedAt:
+                  session.completedAt,
+
+                duration:
+                  session.duration,
+
+                volume:
+                  sessionVolume,
+
+                sets: totalSets,
+
+                exercises:
+                  session.exercises,
+
+                isPR: false,
+              }
+            }
+          )
+
+        const highestVolume =
+          Math.max(
+            ...calculatedSessions.map(
+              (session) =>
+                session.volume
             )
-          }
-        )
+          )
+
+        let prAssigned = false
+
+        const sessionsWithPR =
+          calculatedSessions.map(
+            (session) => {
+              const isPR =
+                !prAssigned &&
+                session.volume ===
+                  highestVolume
+
+              if (isPR) {
+                prAssigned = true
+              }
+
+              return {
+                ...session,
+                isPR,
+              }
+            }
+          )
 
         return {
           workoutId,
@@ -213,61 +278,15 @@ const History = () => {
             'Workout',
 
           sessions:
-            sortedSessions.map(
-              (session) => {
-                let sessionVolume = 0
-
-                let totalSets = 0
-
-                session.exercises.forEach(
-                  (exercise) => {
-                    exercise.sets.forEach(
-                      (set) => {
-                        if (
-                          !set.done
-                        )
-                          return
-
-                        totalSets += 1
-
-                        sessionVolume +=
-                          set.kg *
-                          set.reps
-                      }
-                    )
-                  }
-                )
-
-                return {
-                  id: session.id,
-
-                  completedAt:
-                    session.completedAt,
-
-                  duration:
-                    session.duration,
-
-                  volume:
-                    sessionVolume,
-
-                  sets: totalSets,
-
-                  exercises:
-                    session.exercises,
-
-                  isPR:
-                    sessionVolume ===
-                    bestVolume,
-                }
-              }
-            ),
+            sessionsWithPR,
 
           totalSessions:
             sortedSessions.length,
 
           totalVolume,
 
-          bestVolume,
+          bestVolume:
+            bestSessionVolume,
 
           lastDuration:
             sortedSessions[0]
@@ -278,10 +297,7 @@ const History = () => {
               .completedAt,
 
           currentPRExercise:
-            bestExercise &&
-            bestValue
-              ? `${bestExercise} · ${bestValue}`
-              : '—',
+            `${bestSessionVolume}kg`,
         }
       })
     }, [history, workouts])
@@ -294,11 +310,20 @@ const History = () => {
         0
       )
 
+    const totalVolume =
+      groupedHistory.reduce(
+        (acc, item) =>
+          acc + item.totalVolume,
+        0
+      )
+
     return {
       totalSessions,
 
       workouts:
         groupedHistory.length,
+
+      totalVolume,
 
       prs:
         groupedHistory.filter(
@@ -344,7 +369,6 @@ const History = () => {
             </Button>
           </div>
 
-          {/* LOADING */}
           {loading && (
             <div className="flex items-center justify-center py-24">
 
@@ -359,7 +383,6 @@ const History = () => {
             </div>
           )}
 
-          {/* EMPTY */}
           {!loading &&
             groupedHistory.length ===
               0 && (
@@ -382,12 +405,10 @@ const History = () => {
               </div>
             )}
 
-          {/* CONTENT */}
           {!loading &&
             groupedHistory.length >
               0 && (
               <>
-                {/* MOBILE */}
                 <div className="flex flex-col gap-3 md:hidden">
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
@@ -406,15 +427,17 @@ const History = () => {
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Workouts
+                      Volume
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
-                      {stats.workouts}
+                      {formatVolume(
+                        stats.totalVolume
+                      )}
                     </h2>
 
                     <p className="text-sm text-muted-foreground">
-                      tracked splits
+                      total lifted
                     </p>
                   </Card>
 
@@ -434,7 +457,6 @@ const History = () => {
                   </Card>
                 </div>
 
-                {/* DESKTOP */}
                 <div className="hidden grid-cols-3 gap-4 font-bold md:grid">
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
@@ -453,15 +475,17 @@ const History = () => {
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Workouts
+                      Volume
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
-                      {stats.workouts}
+                      {formatVolume(
+                        stats.totalVolume
+                      )}
                     </h2>
 
                     <p className="text-sm text-muted-foreground">
-                      tracked splits
+                      total lifted
                     </p>
                   </Card>
 
@@ -481,10 +505,10 @@ const History = () => {
                   </Card>
                 </div>
 
-                {/* GRID */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  {groupedHistory.map(
-                    (workout) => (
+                  {groupedHistory
+                    .slice(0, visibleGroups)
+                    .map((workout) => (
                       <HistoryWorkoutCard
                         key={
                           workout.workoutId
@@ -500,9 +524,26 @@ const History = () => {
                           )
                         }}
                       />
-                    )
-                  )}
+                    ))}
                 </div>
+
+                {visibleGroups <
+                  groupedHistory.length && (
+                  <div className="flex justify-center pt-2">
+                    <Button
+                      variant="outline"
+                      className="rounded-full px-6"
+                      onClick={() =>
+                        setVisibleGroups(
+                          (prev) =>
+                            prev + 10
+                        )
+                      }
+                    >
+                      Load more
+                    </Button>
+                  </div>
+                )}
               </>
             )}
         </div>

@@ -1,4 +1,17 @@
-import { collection, addDoc, getDocs, query, where, orderBy, Timestamp } from "firebase/firestore"
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  Timestamp,
+  limit,
+  startAfter,
+  type QueryDocumentSnapshot,
+  type DocumentData,
+} from "firebase/firestore"
+
 import { db } from "../firebase"
 
 export interface SetResult {
@@ -24,57 +37,129 @@ export interface WorkoutHistoryDocument {
   completedAt: Date
 }
 
-export const saveWorkoutHistory = async (
-  uid: string,
-  data: Omit<WorkoutHistoryDocument, 'id' | 'completedAt'>
-): Promise<string> => {
-  const ref = await addDoc(collection(db, "workout_history"), {
-    ...data,
-    uid,
-    completedAt: Timestamp.now(),
-  })
-  return ref.id
-}
-
-export const getWorkoutHistory = async (uid: string): Promise<WorkoutHistoryDocument[]> => {
-  const q    = query(collection(db, "workout_history"), where("uid", "==", uid), orderBy("completedAt", "desc"))
-  const snap = await getDocs(q)
-  return snap.docs.map(d => ({
-    ...(d.data() as Omit<WorkoutHistoryDocument, 'id' | 'completedAt'>),
-    id:          d.id,
-    completedAt: d.data().completedAt?.toDate(),
-  }))
-}
-
-export const getLastWorkoutHistory = async (
-  uid: string,
-  workoutId: string
-): Promise<WorkoutHistoryDocument | null> => {
-  const q = query(
-    collection(db, "workout_history"),
-    where("uid", "==", uid),
-    where("workoutId", "==", workoutId)
-  )
-
-  const snap = await getDocs(q)
-
-  if (snap.empty) return null
-
-  const docs = snap.docs.map(doc => ({
-    ...(doc.data() as Omit<
+export const saveWorkoutHistory =
+  async (
+    uid: string,
+    data: Omit<
       WorkoutHistoryDocument,
       "id" | "completedAt"
-    >),
-    id: doc.id,
-    completedAt:
-      doc.data().completedAt?.toDate(),
-  }))
+    >
+  ): Promise<string> => {
+    const ref = await addDoc(
+      collection(
+        db,
+        "workout_history"
+      ),
+      {
+        ...data,
+        uid,
+        completedAt:
+          Timestamp.now(),
+      }
+    )
 
-  docs.sort(
-    (a, b) =>
-      b.completedAt.getTime() -
-      a.completedAt.getTime()
-  )
+    return ref.id
+  }
 
-  return docs[0]
-}
+export const getWorkoutHistory =
+  async (
+    uid: string,
+    lastDoc?: QueryDocumentSnapshot<DocumentData>
+  ) => {
+    const constraints: any[] = [
+      where("uid", "==", uid),
+      orderBy(
+        "completedAt",
+        "desc"
+      ),
+      limit(10),
+    ]
+
+    if (lastDoc) {
+      constraints.push(
+        startAfter(lastDoc)
+      )
+    }
+
+    const q = query(
+      collection(
+        db,
+        "workout_history"
+      ),
+      ...constraints
+    )
+
+    const snap = await getDocs(q)
+
+    return {
+      history: snap.docs.map(
+        (d) => ({
+          ...(d.data() as Omit<
+            WorkoutHistoryDocument,
+            "id" | "completedAt"
+          >),
+
+          id: d.id,
+
+          completedAt:
+            d.data().completedAt?.toDate(),
+        })
+      ),
+
+      lastDoc:
+        snap.docs[
+          snap.docs.length - 1
+        ] || null,
+
+      hasMore:
+        snap.docs.length === 10,
+    }
+  }
+
+export const getLastWorkoutHistory =
+  async (
+    uid: string,
+    workoutId: string
+  ): Promise<WorkoutHistoryDocument | null> => {
+    const q = query(
+      collection(
+        db,
+        "workout_history"
+      ),
+
+      where("uid", "==", uid),
+
+      where(
+        "workoutId",
+        "==",
+        workoutId
+      )
+    )
+
+    const snap = await getDocs(q)
+
+    if (snap.empty)
+      return null
+
+    const docs = snap.docs.map(
+      (doc) => ({
+        ...(doc.data() as Omit<
+          WorkoutHistoryDocument,
+          "id" | "completedAt"
+        >),
+
+        id: doc.id,
+
+        completedAt:
+          doc.data().completedAt?.toDate(),
+      })
+    )
+
+    docs.sort(
+      (a, b) =>
+        b.completedAt.getTime() -
+        a.completedAt.getTime()
+    )
+
+    return docs[0]
+  }

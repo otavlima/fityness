@@ -81,7 +81,7 @@ const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
             </div>
             <p className="text-lg font-bold leading-none truncate">
               {formatVolume(
-                workout.bestVolume
+                workout.totalVolume
               )}
             </p>
           </div>
