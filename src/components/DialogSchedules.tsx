@@ -25,7 +25,6 @@ const DialogSchedules = ({ isOpen, onClose, events, date, onOpenDetail }: Dialog
               key={event.id}
               onClick={() => {
                 onOpenDetail(event)
-                onClose()
               }}
               className={cn(
                 "flex items-center justify-between px-3 py-2 rounded-lg border text-xs font-bold uppercase transition-colors text-left",

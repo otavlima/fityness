@@ -225,8 +225,8 @@ const ScheduleDialog = ({
             <>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Time",      val: event.time,                             icon: Clock    },
-                  { label: "Rest",      val: formatRest(totalRestSecs),              icon: Timer    },
+                  { label: "Time", val: event.time, icon: Clock },
+                  { label: "Rest", val: formatRest(totalRestSecs), icon: Timer },
                   { label: "Exercises", val: String(workout?.exercises.length ?? 0), icon: Dumbbell },
                 ].map((item, i) => (
                   <div key={i} className="min-w-0 overflow-hidden bg-muted/40 dark:bg-secondary/20 border border-border/50 rounded-2xl p-4 flex flex-col gap-1">
