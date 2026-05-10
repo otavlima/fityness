@@ -20,6 +20,19 @@
   }
 }
 
+.horizontal-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.horizontal-scroll:hover {
+  cursor: grab;
+}
+
+.horizontal-scroll:active {
+  cursor: grabbing;
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', sans-serif;

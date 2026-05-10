@@ -1,82 +1,100 @@
 import { useEffect, useMemo, useState } from 'react'
-
 import Header from '@/components/Header'
-
 import {
   Field,
   FieldDescription,
-  FieldTitle
+  FieldTitle,
 } from '@/components/ui/field'
-
 import { Button } from '@/components/ui/button'
-
 import {
   Filter as FilterIcon,
-  ChevronRight,
-  Clock,
-  Dumbbell,
   Loader2,
-  Trophy
 } from 'lucide-react'
-
 import { Card } from '@/components/ui/card'
-
 import { useAuth } from '@/contexts/AuthContext'
-
 import {
   getWorkoutHistory,
-  type WorkoutHistoryDocument
+  type WorkoutHistoryDocument,
 } from '@/services/firebase/workoutHistory'
-
+import {
+  getWorkouts,
+  type WorkoutDocument,
+} from '@/services/firebase/workout'
 import FilterModal from '@/components/modals/FilterModal'
+import HistoryWorkoutCard from '@/components/history/HistoryWorkoutCard'
+import WorkoutHistoryModal from '@/components/history/WorkoutHistoryModal'
+import SessionHistoryModal from '@/components/history/SessionHistoryModal'
 
-type HistoryWorkout = {
+export type WorkoutSession = {
   id: string
-  workoutId: string
   completedAt: Date
-  day: string
-  month: string
-  title: string
-  relativeDate: string
-  time: string
-  sets: number
+  duration: number
   volume: number
+  sets: number
+  exercises: WorkoutHistoryDocument['exercises']
   isPR: boolean
-  isCompleted: boolean
 }
 
-const formatVolume = (volume: number) => {
-  if (volume >= 1000) {
-    return `${(volume / 1000).toFixed(1)}t`
-  }
-
-  return `${volume}kg`
-}
-
-const formatDuration = (seconds: number) => {
-  const mins = Math.max(
-    1,
-    Math.floor(seconds / 60)
-  )
-
-  return `~${mins}m`
+export type WorkoutGroup = {
+  workoutId: string
+  workoutName: string
+  totalSessions: number
+  totalVolume: number
+  bestVolume: number
+  lastDuration: number
+  currentPRExercise: string
+  latestCompletedAt: Date
+  sessions: WorkoutSession[]
+  category?: string
 }
 
 const History = () => {
   const { user } = useAuth()
 
-  const [history, setHistory] = useState<
-    WorkoutHistoryDocument[]
-  >([])
+  const [history, setHistory] =
+    useState<
+      WorkoutHistoryDocument[]
+    >([])
 
-  const [visibleCount, setVisibleCount] =
-    useState(6)
+  const [workouts, setWorkouts] =
+    useState<WorkoutDocument[]>([])
+
+  const [
+    selectedWorkout,
+    setSelectedWorkout,
+  ] = useState<WorkoutGroup | null>(
+    null
+  )
+
+  const [
+    workoutModalOpen,
+    setWorkoutModalOpen,
+  ] = useState(false)
+
+  const [
+    selectedSession,
+    setSelectedSession,
+  ] = useState<WorkoutSession | null>(
+    null
+  )
+
+  const [
+    sessionModalOpen,
+    setSessionModalOpen,
+  ] = useState(false)
 
   const [filterOpen, setFilterOpen] =
     useState(false)
 
   const [loading, setLoading] =
     useState(true)
+
+  const [
+    selectedGroup,
+    setSelectedGroup,
+  ] = useState<WorkoutGroup | null>(
+    null
+  )
 
   useEffect(() => {
     const load = async () => {
@@ -85,10 +103,17 @@ const History = () => {
       setLoading(true)
 
       try {
-        const historyData =
-          await getWorkoutHistory(user.uid)
+        const [
+          historyData,
+          workoutsData,
+        ] = await Promise.all([
+          getWorkoutHistory(user.uid),
+          getWorkouts(user.uid),
+        ])
 
         setHistory(historyData)
+
+        setWorkouts(workoutsData)
       } finally {
         setLoading(false)
       }
@@ -97,183 +122,202 @@ const History = () => {
     load()
   }, [user])
 
-  const historyData: HistoryWorkout[] =
-    useMemo(() => {
-      const sorted = [...history].sort(
-        (a, b) =>
-          b.completedAt.getTime() -
-          a.completedAt.getTime()
-      )
-
-      const bestVolumeMap: Record<
+  const groupedHistory =
+    useMemo<WorkoutGroup[]>(() => {
+      const grouped = new Map<
         string,
-        {
-          id: string
-          volume: number
-        }
-      > = {}
+        WorkoutHistoryDocument[]
+      >()
 
-      const parsed = sorted.map(
-        (workout, index) => {
-          const date = new Date(
-            workout.completedAt
-          )
+      history.forEach((session) => {
+        const current =
+          grouped.get(session.workoutId) ||
+          []
 
-          const day = String(
-            date.getDate()
-          ).padStart(2, '0')
+        current.push(session)
 
-          const month = date
-            .toLocaleString('en-US', {
-              month: 'short',
-            })
-            .toUpperCase()
-            .replace('.', '')
-
-          let totalSets = 0
-          let completedSets = 0
-          let totalVolume = 0
-
-          workout.exercises.forEach(
-            (exercise) => {
-              exercise.sets.forEach(
-                (set) => {
-                  totalSets += 1
-
-                  if (!set.done) return
-
-                  completedSets += 1
-
-                  totalVolume +=
-                    set.kg * set.reps
-                }
-              )
-            }
-          )
-
-          const isCompleted =
-            totalSets > 0 &&
-            completedSets === totalSets
-
-          return {
-            id: workout.id,
-
-            workoutId:
-              workout.workoutId,
-
-            completedAt:
-              workout.completedAt,
-
-            day,
-
-            month,
-
-            title:
-              workout.workoutName,
-
-            relativeDate:
-              index === 0
-                ? 'Today'
-                : 'Recently',
-
-            time: formatDuration(
-              workout.duration
-            ),
-
-            sets: completedSets,
-
-            volume: totalVolume,
-
-            isPR: false,
-
-            isCompleted,
-          }
-        }
-      )
-
-      const chronological = [...parsed].sort(
-        (a, b) =>
-          a.completedAt.getTime() -
-          b.completedAt.getTime()
-      )
-
-      chronological.forEach((workout) => {
-        const currentBest =
-          bestVolumeMap[
-            workout.workoutId
-          ]
-
-        const hasPrevious =
-          currentBest !== undefined
-
-        if (
-          hasPrevious &&
-          workout.volume >
-            currentBest.volume
-        ) {
-          parsed.forEach((item) => {
-            if (
-              item.workoutId ===
-              workout.workoutId
-            ) {
-              item.isPR = false
-            }
-          })
-
-          workout.isPR = true
-        }
-
-        if (
-          !currentBest ||
-          workout.volume >
-            currentBest.volume
-        ) {
-          bestVolumeMap[
-            workout.workoutId
-          ] = {
-            id: workout.id,
-            volume: workout.volume,
-          }
-        }
+        grouped.set(
+          session.workoutId,
+          current
+        )
       })
 
-      return parsed.sort(
-        (a, b) =>
-          b.completedAt.getTime() -
-          a.completedAt.getTime()
-      )
-    }, [history])
+      return Array.from(
+        grouped.entries()
+      ).map(([workoutId, sessions]) => {
+        const sortedSessions =
+          [...sessions].sort(
+            (a, b) =>
+              b.completedAt.getTime() -
+              a.completedAt.getTime()
+          )
 
-  const hasMore =
-    visibleCount < historyData.length
+        const workoutData =
+          workouts.find(
+            (w) =>
+              w.id === workoutId
+          )
+
+        let totalVolume = 0
+
+        let bestVolume = 0
+
+        let bestExercise = ''
+
+        let bestValue = ''
+
+        sortedSessions.forEach(
+          (session) => {
+            session.exercises.forEach(
+              (exercise) => {
+                exercise.sets.forEach(
+                  (set) => {
+                    if (!set.done)
+                      return
+
+                    const volume =
+                      set.kg * set.reps
+
+                    totalVolume +=
+                      volume
+
+                    if (
+                      volume >
+                      bestVolume
+                    ) {
+                      bestVolume =
+                        volume
+
+                      bestExercise =
+                        exercise.exerciseName
+
+                      bestValue = `${set.kg} kg × ${set.reps}`
+                    }
+                  }
+                )
+              }
+            )
+          }
+        )
+
+        return {
+          workoutId,
+
+          workoutName:
+            sortedSessions[0]
+              .workoutName,
+
+          category:
+            workoutData
+              ?.category ||
+            'Workout',
+
+          sessions:
+            sortedSessions.map(
+              (session) => {
+                let sessionVolume = 0
+
+                let totalSets = 0
+
+                session.exercises.forEach(
+                  (exercise) => {
+                    exercise.sets.forEach(
+                      (set) => {
+                        if (
+                          !set.done
+                        )
+                          return
+
+                        totalSets += 1
+
+                        sessionVolume +=
+                          set.kg *
+                          set.reps
+                      }
+                    )
+                  }
+                )
+
+                return {
+                  id: session.id,
+
+                  completedAt:
+                    session.completedAt,
+
+                  duration:
+                    session.duration,
+
+                  volume:
+                    sessionVolume,
+
+                  sets: totalSets,
+
+                  exercises:
+                    session.exercises,
+
+                  isPR:
+                    sessionVolume ===
+                    bestVolume,
+                }
+              }
+            ),
+
+          totalSessions:
+            sortedSessions.length,
+
+          totalVolume,
+
+          bestVolume,
+
+          lastDuration:
+            sortedSessions[0]
+              .duration,
+
+          latestCompletedAt:
+            sortedSessions[0]
+              .completedAt,
+
+          currentPRExercise:
+            bestExercise &&
+            bestValue
+              ? `${bestExercise} · ${bestValue}`
+              : '—',
+        }
+      })
+    }, [history, workouts])
 
   const stats = useMemo(() => {
-    const totalPRs = historyData.filter(
-      (workout) => workout.isPR
-    ).length
-
-    const completedWorkouts =
-      historyData.filter(
-        (workout) =>
-          workout.isCompleted
-      ).length
+    const totalSessions =
+      groupedHistory.reduce(
+        (acc, item) =>
+          acc + item.totalSessions,
+        0
+      )
 
     return {
-      total: history.length,
-      completed: completedWorkouts,
-      prs: totalPRs,
+      totalSessions,
+
+      workouts:
+        groupedHistory.length,
+
+      prs:
+        groupedHistory.filter(
+          (item) =>
+            item.bestVolume > 0
+        ).length,
     }
-  }, [history, historyData])
+  }, [groupedHistory])
 
   return (
     <Header>
-      <div className="flex flex-1 w-full justify-center px-4">
-        <div className="flex flex-col gap-4 w-full max-w-5xl">
+      <div className="flex w-full flex-1 justify-center px-4">
+        <div className="flex w-full max-w-5xl flex-col gap-4">
 
-          {/* HEADER */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-            <Field>
-              <FieldDescription className="text-xs font-semibold tracking-widest uppercase">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+
+            <Field className="flex flex-col gap-1">
+
+              <FieldDescription className="text-xs font-semibold uppercase tracking-widest">
                 Timeline
               </FieldDescription>
 
@@ -289,12 +333,12 @@ const History = () => {
 
             <Button
               variant="outline"
-              className="rounded-full gap-2 px-6 border-border/60 font-semibold"
+              className="h-10 rounded-full border-border/60 px-5 font-medium"
               onClick={() =>
                 setFilterOpen(true)
               }
             >
-              <FilterIcon size={16} />
+              <FilterIcon size={15} />
 
               Filter
             </Button>
@@ -302,11 +346,13 @@ const History = () => {
 
           {/* LOADING */}
           {loading && (
-            <div className="flex flex-1 w-full justify-center items-center py-24">
-              <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                <Loader2 className="w-8 h-8 animate-spin" />
+            <div className="flex items-center justify-center py-24">
 
-                <span className="text-sm font-medium">
+              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+
+                <Loader2 className="h-7 w-7 animate-spin" />
+
+                <span className="text-sm">
                   Loading history...
                 </span>
               </div>
@@ -315,18 +361,22 @@ const History = () => {
 
           {/* EMPTY */}
           {!loading &&
-            history.length === 0 && (
-              <div className="flex flex-1 w-full justify-center px-4">
-                <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                  <h2 className="text-xl font-bold">
-                    No workouts registered
-                    yet
+            groupedHistory.length ===
+              0 && (
+              <div className="flex justify-center py-24">
+
+                <div className="flex flex-col items-center gap-2 text-center">
+
+                  <h2 className="text-lg font-medium">
+                    No workouts
+                    registered yet
                   </h2>
 
-                  <p className="text-muted-foreground text-sm">
-                    Start tracking your
-                    progress by training for
-                    your first time.
+                  <p className="text-sm text-muted-foreground">
+                    Start tracking
+                    your progress by
+                    creating your
+                    first workout.
                   </p>
                 </div>
               </div>
@@ -334,178 +384,144 @@ const History = () => {
 
           {/* CONTENT */}
           {!loading &&
-            history.length > 0 && (
+            groupedHistory.length >
+              0 && (
               <>
-                {/* STATS */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="p-6 rounded-2xl border-border/40 bg-card/50">
-                    <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">
+                <div className="md:hidden -mx-4 pl-4">
+                  <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden pr-4 pb-1">
+                    <Card className="min-w-[82%] snap-start rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
+                      <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                        Total
+                      </p>
+                      <h2 className="text-4xl tracking-tight">
+                        {stats.totalSessions}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        sessions registered
+                      </p>
+                    </Card>
+                    <Card className="min-w-[82%] snap-start rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
+                      <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                        Workouts
+                      </p>
+                      <h2 className="text-4xl tracking-tight">
+                        {stats.workouts}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        tracked splits
+                      </p>
+                    </Card>
+                    <Card className="min-w-[82%] snap-start rounded-3xl border-none bg-brand-gradient p-5 font-bold text-background">
+                      <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
+                        Records
+                      </p>
+                      <h2 className="text-4xl tracking-tight">
+                        {stats.prs} PRs
+                      </h2>
+                      <p className="text-sm opacity-60">
+                        active workout
+                        PRs
+                      </p>
+                    </Card>
+                  </div>
+                </div>
+                <div className="hidden grid-cols-3 gap-4 font-bold md:grid">
+                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                       Total
                     </p>
-
-                    <h2 className="text-5xl font-bold tracking-tighter">
-                      {stats.total}
+                    <h2 className="text-4xl tracking-tight">
+                      {stats.totalSessions}
                     </h2>
-
                     <p className="text-sm text-muted-foreground">
-                      workouts logged
+                      sessions registered
                     </p>
                   </Card>
-
-                  <Card className="p-6 rounded-2xl border-border/40 bg-card/50">
-                    <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">
-                      Completed workouts
+                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                      Workouts
                     </p>
-
-                    <h2 className="text-5xl font-bold tracking-tighter">
-                      {
-                        stats.completed
-                      }
+                    <h2 className="text-4xl tracking-tight">
+                      {stats.workouts}
                     </h2>
-
                     <p className="text-sm text-muted-foreground">
-                      fully completed
-                      sessions
+                      tracked splits
                     </p>
                   </Card>
-
-                  <Card className="p-6 rounded-2xl bg-brand-gradient text-background border-none">
-                    <p className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-2">
-                      Personal records
+                  <Card className="rounded-3xl border-none bg-brand-gradient p-5 text-background">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
+                      Records
                     </p>
-
-                    <h2 className="text-5xl font-bold tracking-tighter">
+                    <h2 className="text-4xl tracking-tight">
                       {stats.prs} PRs
                     </h2>
-
                     <p className="text-sm opacity-60">
-                      highest workout
-                      volumes
+                      active workout
+                      PRs
                     </p>
                   </Card>
                 </div>
-
-                {/* LIST */}
-                <div className="flex flex-col gap-3">
-                  {historyData
-                    .slice(
-                      0,
-                      visibleCount
-                    )
-                    .map((workout) => (
-                      <div
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  {groupedHistory.map(
+                    (workout) => (
+                      <HistoryWorkoutCard
                         key={
-                          workout.id
+                          workout.workoutId
                         }
-                        className="group flex items-center justify-between p-3 bg-white dark:bg-zinc-900/30 border border-border/40 rounded-3xl hover:border-border transition-all cursor-pointer"
-                      >
-                        <div className="flex items-center gap-5">
-                          <div className="flex flex-col items-center justify-center min-w-[64px] h-[64px] bg-secondary/50 rounded-2xl">
-                            <span className="text-xl font-bold leading-none">
-                              {
-                                workout.day
-                              }
-                            </span>
+                        workout={workout}
+                        onClick={() => {
+                          setSelectedWorkout(
+                            workout
+                          )
 
-                            <span className="text-[10px] font-bold opacity-50 uppercase">
-                              {
-                                workout.month
-                              }
-                            </span>
-                          </div>
-
-                          <div className="flex flex-col gap-1.5">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-xl font-bold tracking-tight">
-                                {
-                                  workout.title
-                                }
-                              </h3>
-
-                              {workout.isPR && (
-                                <span className="flex items-center gap-1 bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-full text-[10px] font-black italic">
-                                  <Trophy
-                                    size={
-                                      10
-                                    }
-                                    fill="currentColor"
-                                  />
-
-                                  PR
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="flex items-center gap-3 text-[13px] text-muted-foreground font-medium">
-                              <span>
-                                {
-                                  workout.relativeDate
-                                }
-                              </span>
-
-                              <div className="flex items-center gap-1">
-                                <Clock
-                                  size={
-                                    14
-                                  }
-                                />
-
-                                {
-                                  workout.time
-                                }
-                              </div>
-
-                              <div className="flex items-center gap-1">
-                                <Dumbbell
-                                  size={
-                                    14
-                                  }
-                                />
-
-                                {
-                                  workout.sets
-                                }{' '}
-                                sets
-                              </div>
-
-                              <span className="text-foreground font-bold">
-                                {formatVolume(
-                                  workout.volume
-                                )}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <ChevronRight className="text-muted-foreground group-hover:text-foreground transition-colors" />
-                      </div>
-                    ))}
+                          setWorkoutModalOpen(
+                            true
+                          )
+                        }}
+                      />
+                    )
+                  )}
                 </div>
-
-                {/* LOAD MORE */}
-                {hasMore && (
-                  <div className="flex justify-center">
-                    <Button
-                      onClick={() =>
-                        setVisibleCount(
-                          history.length
-                        )
-                      }
-                      variant="secondary"
-                      className="rounded-2xl px-10 py-6 h-auto text-sm font-bold"
-                    >
-                      Load more
-                    </Button>
-                  </div>
-                )}
               </>
             )}
         </div>
       </div>
 
+      <WorkoutHistoryModal
+        workout={selectedWorkout}
+        open={workoutModalOpen}
+        onOpenChange={
+          setWorkoutModalOpen
+        }
+        onSelectSession={(
+          session
+        ) => {
+          setSelectedGroup(
+            selectedWorkout
+          )
+
+          setSelectedSession(session)
+
+          setSessionModalOpen(true)
+        }}
+      />
+
+      {selectedGroup && (
+        <SessionHistoryModal
+          group={selectedGroup}
+          session={selectedSession}
+          open={sessionModalOpen}
+          onOpenChange={
+            setSessionModalOpen
+          }
+        />
+      )}
+
       <FilterModal
         open={filterOpen}
-        onOpenChange={setFilterOpen}
+        onOpenChange={
+          setFilterOpen
+        }
       />
     </Header>
   )
