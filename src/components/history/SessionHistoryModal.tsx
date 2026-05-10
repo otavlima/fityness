@@ -89,14 +89,14 @@ const SessionHistoryModal = ({
       onOpenChange={onOpenChange}
     >
       <DialogContent
-  className={cn(
-    'w-[calc(100vw-24px)] max-w-[540px]',
-    'overflow-hidden rounded-[28px]',
-    'border border-border/60 bg-background',
-    'p-0 shadow-2xl',
-    '[&>button]:hidden'
-  )}
->
+        className={cn(
+          'w-[calc(100vw-24px)] max-w-[540px]',
+          'overflow-hidden rounded-[28px]',
+          'border border-border/60 bg-background',
+          'p-0 shadow-2xl',
+          '[&>button]:hidden'
+        )}
+      >
         <div className="flex h-full flex-col overflow-hidden">
 
           {/* HEADER */}
@@ -252,7 +252,14 @@ const SessionHistoryModal = ({
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div
+                      className={cn(
+                        'space-y-2',
+                        exercise.sets.length >=
+                          5 &&
+                          'max-h-[320px] overflow-y-auto pr-1 scrollbar-hide'
+                      )}
+                    >
 
                       {exercise.sets.map(
                         (
@@ -275,9 +282,11 @@ const SessionHistoryModal = ({
                             <span className="shrink-0 text-[14px] font-medium tracking-[-0.02em] text-foreground">
                               {set.kg}{' '}
                               kg
+
                               <span className="mx-1 text-muted-foreground">
                                 ×
                               </span>
+
                               {
                                 set.reps
                               }
@@ -338,7 +347,15 @@ const SessionHistoryModal = ({
                         </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div
+                        className={cn(
+                          'space-y-2',
+                          exercise.sets
+                            .length >=
+                            5 &&
+                            'max-h-[320px] overflow-y-auto pr-1 scrollbar-hide'
+                        )}
+                      >
 
                         {exercise.sets.map(
                           (
@@ -363,9 +380,11 @@ const SessionHistoryModal = ({
                                   set.kg
                                 }{' '}
                                 kg
+
                                 <span className="mx-1 text-muted-foreground">
                                   ×
                                 </span>
+
                                 {
                                   set.reps
                                 }

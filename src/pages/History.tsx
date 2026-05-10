@@ -387,80 +387,101 @@ const History = () => {
             groupedHistory.length >
               0 && (
               <>
-                <div className="md:hidden -mx-4 pl-4">
-                  <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden pr-4 pb-1">
-                    <Card className="min-w-[82%] snap-start rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
-                      <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                        Total
-                      </p>
-                      <h2 className="text-4xl tracking-tight">
-                        {stats.totalSessions}
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        sessions registered
-                      </p>
-                    </Card>
-                    <Card className="min-w-[82%] snap-start rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
-                      <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                        Workouts
-                      </p>
-                      <h2 className="text-4xl tracking-tight">
-                        {stats.workouts}
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        tracked splits
-                      </p>
-                    </Card>
-                    <Card className="min-w-[82%] snap-start rounded-3xl border-none bg-brand-gradient p-5 font-bold text-background">
-                      <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
-                        Records
-                      </p>
-                      <h2 className="text-4xl tracking-tight">
-                        {stats.prs} PRs
-                      </h2>
-                      <p className="text-sm opacity-60">
-                        active workout
-                        PRs
-                      </p>
-                    </Card>
-                  </div>
-                </div>
-                <div className="hidden grid-cols-3 gap-4 font-bold md:grid">
-                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
+                {/* MOBILE */}
+                <div className="flex flex-col gap-3 md:hidden">
+
+                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                       Total
                     </p>
+
                     <h2 className="text-4xl tracking-tight">
                       {stats.totalSessions}
                     </h2>
+
                     <p className="text-sm text-muted-foreground">
                       sessions registered
                     </p>
                   </Card>
-                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
+
+                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                       Workouts
                     </p>
+
                     <h2 className="text-4xl tracking-tight">
                       {stats.workouts}
                     </h2>
+
                     <p className="text-sm text-muted-foreground">
                       tracked splits
                     </p>
                   </Card>
-                  <Card className="rounded-3xl border-none bg-brand-gradient p-5 text-background">
+
+                  <Card className="rounded-3xl border-none bg-brand-gradient p-5 font-bold text-background">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
                       Records
                     </p>
+
                     <h2 className="text-4xl tracking-tight">
                       {stats.prs} PRs
                     </h2>
+
                     <p className="text-sm opacity-60">
                       active workout
                       PRs
                     </p>
                   </Card>
                 </div>
+
+                {/* DESKTOP */}
+                <div className="hidden grid-cols-3 gap-4 font-bold md:grid">
+
+                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                      Total
+                    </p>
+
+                    <h2 className="text-4xl tracking-tight">
+                      {stats.totalSessions}
+                    </h2>
+
+                    <p className="text-sm text-muted-foreground">
+                      sessions registered
+                    </p>
+                  </Card>
+
+                  <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                      Workouts
+                    </p>
+
+                    <h2 className="text-4xl tracking-tight">
+                      {stats.workouts}
+                    </h2>
+
+                    <p className="text-sm text-muted-foreground">
+                      tracked splits
+                    </p>
+                  </Card>
+
+                  <Card className="rounded-3xl border-none bg-brand-gradient p-5 text-background">
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
+                      Records
+                    </p>
+
+                    <h2 className="text-4xl tracking-tight">
+                      {stats.prs} PRs
+                    </h2>
+
+                    <p className="text-sm opacity-60">
+                      active workout
+                      PRs
+                    </p>
+                  </Card>
+                </div>
+
+                {/* GRID */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                   {groupedHistory.map(
                     (workout) => (
