@@ -161,7 +161,7 @@ function Sidebar() {
               <DropdownMenuContent side="top" className="w-56">
                 <div className="px-2 py-2 border-b border-border mb-1">
                   <p className="text-sm font-medium">{profile?.name ?? user?.displayName ?? 'User'}</p>
-                  <p className="text-xs text-muted-foreground">Plan Free · 28 workouts</p>
+                  <p className="text-xs text-muted-foreground">Plan Free</p>
                 </div>
                 <DropdownMenuItem onClick={() => handleNavigate('/configurations')}>
                   <Settings size={16} className="mr-2" />

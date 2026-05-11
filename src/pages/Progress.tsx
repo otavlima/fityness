@@ -1,9 +1,6 @@
-"use client"
-
-import React, { useId } from 'react'
-import { Trophy, Activity, TrendingUp } from 'lucide-react'
+import { useId } from 'react'
+import { Trophy, } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer } from 'recharts'
-
 import Header from '@/components/Header'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -13,20 +10,17 @@ import {
   FieldTitle
 } from '@/components/ui/field'
 
-// Mocks - Big 4
 const chartDataMock = [
   { value: 65 }, { value: 72 }, { value: 70 }, { value: 78 },
   { value: 80 }, { value: 85 }, { value: 84 }, { value: 90 },
 ]
 
-// Mocks - Recent Records
 const recentRecordsMock = [
   { exercise: 'Bench press', performance: '82.5kg × 5', date: 'Today' },
   { exercise: 'Squat', performance: '120kg × 3', date: 'Yesterday' },
   { exercise: 'Bent-over row', performance: '75kg × 8', date: 'Apr 16' },
 ]
 
-// Mocks - Muscle Distribution
 const muscleDistributionMock = [
   { group: 'Chest', percentage: 22 },
   { group: 'Back', percentage: 26 },
@@ -87,7 +81,6 @@ const Big4Card = ({ title, currentValue, baseValue, percentage, data }: Big4Card
   )
 }
 
-// COMPONENTIZED ROW (SEM MUDAR LAYOUT)
 const RecentRecordItem = ({
   exercise,
   performance,
