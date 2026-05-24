@@ -1,91 +1,160 @@
 # Fityness
 
-## Getting started
+Fityness is a modern fitness platform focused on helping users organize workouts, stay consistent, and track real progress through a clean and intelligent experience.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+The application combines workout management, scheduling, analytics, and AI-powered features into a single platform designed for people who take training seriously.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Add your files
+## Overview
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+Fityness was built to solve a common problem with fitness apps: most are either too simple or unnecessarily complicated.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/otavio.lima.co/fityness.git
-git branch -M main
-git push -uf origin main
-```
+The goal of the project is to provide a modern experience where users can:
 
-## Integrate with your tools
+- Create and organize workouts
+- Schedule training sessions
+- Track workout performance in real time
+- Visualize long-term progress
+- Stay consistent with streaks and analytics
+- Use AI-powered features to improve productivity
 
-* [Set up project integrations](https://gitlab.com/otavio.lima.co/fityness/-/settings/integrations)
+The application focuses heavily on performance, responsiveness, and smooth UX across desktop and mobile devices.
 
-## Collaborate with your team
+---
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+## Main Features
 
-## Test and Deploy
+### Workout Management
 
-Use the built-in continuous integration in GitLab.
+Users can create fully personalized workout routines with:
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+- Exercises
+- Sets
+- Repetitions
+- Rest time
+- Categories
 
-***
+Workouts are grouped by categories like Push, Pull, Upper Body, Lower Body, and Full Body, making organization easier.
 
-# Editing this README
+The interface was designed to feel fast and responsive through optimistic UI updates, where changes appear instantly before syncing with the backend.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+---
 
-## Suggestions for a good README
+### Calendar & Scheduling
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Fityness includes a complete workout scheduling system.
 
-## Name
-Choose a self-explaining name for your project.
+Users can:
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- Schedule one-time workouts
+- Create recurring workout routines
+- Manage weekly training plans
+- Visualize workouts inside a calendar
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Instead of storing every recurring workout occurrence in the database, the application stores recurrence rules and generates occurrences dynamically on the frontend using the `rrule` library.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+This approach keeps the database lightweight, scalable, and efficient.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+---
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Workout Session Tracking
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+During a workout session, users can:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- Track weight and reps per set
+- Mark completed sets
+- Monitor workout duration
+- View previous performance history
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+After finishing a workout, all session data is saved into workout history for future analysis.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+This allows users to compare performance over time and progressively overload exercises more naturally.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+---
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Progress Analytics
 
-## License
-For open source projects, say how it is licensed.
+The analytics system transforms workout history into meaningful metrics, including:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Total training volume
+- Strength progression
+- Consistency tracking
+- Personal records
+- Monthly statistics
+- Muscle distribution
+
+Charts and visual indicators are built using Recharts to provide a modern dashboard experience.
+
+---
+
+### Streak System
+
+Fityness includes a consistency-based streak system that calculates consecutive training days from workout history.
+
+The streak logic is based on real completed sessions rather than manually stored counters, which makes the system more reliable and resistant to inconsistencies.
+
+---
+
+### Authentication & Security
+
+Authentication is handled through Firebase Authentication.
+
+Firestore Security Rules ensure users can only access and modify their own data.
+
+The application also uses batch operations for safer database updates and deletions.
+
+---
+
+## Technical Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React + TypeScript |
+| Build Tool | Vite |
+| Styling | Tailwind CSS |
+| UI Components | shadcn/ui |
+| Backend | Firebase |
+| Database | Firestore |
+| Forms & Validation | React Hook Form + Zod |
+| Routing | React Router |
+| Charts | Recharts |
+| Scheduling | rrule |
+
+---
+
+### Optimistic UI
+
+Most user actions update the UI immediately before backend synchronization.
+
+This creates a faster and smoother experience, especially on slower connections.
+
+---
+
+### History as Source of Truth
+
+Metrics like streaks and progress are calculated directly from workout history instead of relying on stored counters.
+
+This helps maintain consistency and prevents data drift.
+
+---
+
+### Context Separation
+
+Authentication, profile data, and UI state are separated into different React contexts to improve maintainability and reduce unnecessary re-renders.
+
+---
+
+## Live Demo
+
+Fityness is currently available online:
+
+https://fityness.vercel.app
+
+Explore the platform, manage workouts, schedule training sessions, and track your progress in real time.
+
+---
+
+## Author
+
+Created and designed by Otavio Lima.
