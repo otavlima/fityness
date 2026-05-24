@@ -41,7 +41,7 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
           </div>
           <div className="flex items-center gap-2 max-[768px]:hidden rounded-2xl border border-muted py-1.5 px-4 bg-background/50">
             <div className="bg-orange-500 h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.6)]"></div>
-            <span className='text-xs font-bold uppercase tracking-wider'>Streak: {streak} dias</span>
+            <span className='text-xs font-bold uppercase tracking-wider'>Streak {streak} {streak === 1 ? 'Day' : 'Days'}</span>
           </div>
         </div>
       </header>

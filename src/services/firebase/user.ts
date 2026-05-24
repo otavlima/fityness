@@ -198,46 +198,51 @@ export const updatePassword =
   }
 
 export const updateUserStreakFromHistory = async (uid: string) => {
-  const { history } = await getWorkoutHistory(uid)
+  const q    = query(collection(db, "workout_history"), where("uid", "==", uid))
+  const snap = await getDocs(q)
 
-  if (!history || history.length === 0) {
-    await updateDoc(doc(db, 'users', uid), {
-      streak: 0,
-    })
-    return
-  }
-
-  const normalize = (date: Date) => {
-    const d = new Date(date)
-    d.setHours(0, 0, 0, 0)
-    return d.getTime()
+  const toLocalDay = (date: Date): string => {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
   }
 
   const days = new Set(
-    history.map(h => {
-      const date =
-        h.completedAt instanceof Date
-          ? h.completedAt
-          : new Date(h.completedAt)
-
-      return normalize(date)
+    snap.docs.map(d => {
+      const raw  = d.data().completedAt
+      const date = raw?.toDate?.() ?? new Date(raw)
+      return toLocalDay(date)
     })
   )
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const sortedDays = [...days].sort((a, b) => b.localeCompare(a))
 
-  let streak = 0
-  let current = new Date(today)
+  if (sortedDays.length === 0) {
+    await updateDoc(doc(db, 'users', uid), { streak: 0 })
+    return
+  }
 
-  while (days.has(current.getTime())) {
+  const today     = toLocalDay(new Date())
+  const yesterday = toLocalDay(new Date(Date.now() - 86400000))
+
+  const mostRecent = sortedDays[0]
+  if (mostRecent !== today && mostRecent !== yesterday) {
+    await updateDoc(doc(db, 'users', uid), { streak: 0 })
+    return
+  }
+
+  let streak  = 0
+  let current = new Date(mostRecent + 'T12:00:00')
+
+  while (true) {
+    const day = toLocalDay(current)
+    if (!days.has(day)) break
     streak++
     current.setDate(current.getDate() - 1)
   }
 
-  await updateDoc(doc(db, 'users', uid), {
-    streak,
-  })
+  await updateDoc(doc(db, 'users', uid), { streak })
 }
 
 export const getStreak = async (uid: string): Promise<number> => {

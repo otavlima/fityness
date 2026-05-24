@@ -417,6 +417,15 @@ const Home = () => {
       )
     }, [completedMonthEvents])
 
+  const hour = new Date().getHours()
+
+  const greeting =
+    hour < 12
+      ? 'Morning'
+      : hour < 18
+        ? 'Afternoon'
+        : 'Evening'
+
   if (loading) {
     return (
       <Header>
@@ -446,7 +455,7 @@ const Home = () => {
 
             <div className="space-y-4 lg:pr-[300px]">
               <h1 className="text-foreground text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-                Morning,{' '}
+                {greeting},{' '}
                 {
                   user?.displayName
                 }
