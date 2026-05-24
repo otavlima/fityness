@@ -89,12 +89,6 @@ export const getWorkoutHistory = async (
 
   const snap = await getDocs(q)
 
-  const normalizeDate = (date: Date) => {
-    const d = new Date(date)
-    d.setHours(0, 0, 0, 0)
-    return d
-  }
-
   return {
     history: snap.docs.map(d => {
       const raw = d.data().completedAt

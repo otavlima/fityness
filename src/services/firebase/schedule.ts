@@ -45,7 +45,6 @@ const JS_TO_RRULE: Record<number, Weekday> = {
   6: RRule.SA,
 }
 
-// Cria data em UTC para evitar o bug de timezone do RRule
 const toUTC = (year: number, month: number, day: number, hh = 12, mm = 0): Date => {
   return new Date(Date.UTC(year, month, day, hh, mm, 0))
 }
@@ -56,34 +55,10 @@ const parseLocalDateUTC = (dateString: string, hh = 12, mm = 0): Date => {
 }
 
 const toLocalDateString = (date: Date): string => {
-  // RRule retorna datas em UTC — usa getUTC* para não ter offset
   const y = date.getUTCFullYear()
   const m = String(date.getUTCMonth() + 1).padStart(2, "0")
   const d = String(date.getUTCDate()).padStart(2, "0")
   return `${y}-${m}-${d}`
-}
-
-const findFirstOccurrenceForDaysOfWeek = (weekdays: number[], time: string): Date => {
-  const [hh, mm] = time.split(":").map(Number)
-  const now = new Date()
-  const todayWeekday = now.getDay()
-  const currentMinutes = now.getHours() * 60 + now.getMinutes()
-  const targetMinutes = hh * 60 + mm
-
-  const daysFromToday = (day: number) => {
-    const diff = (day - todayWeekday + 7) % 7
-    if (diff === 0 && targetMinutes <= currentMinutes) return 7
-    return diff
-  }
-
-  const sortedDays = [...weekdays].sort((a, b) => daysFromToday(a) - daysFromToday(b))
-  const targetDay = sortedDays[0]
-  const daysUntil = daysFromToday(targetDay)
-
-  const start = new Date()
-  start.setDate(start.getDate() + daysUntil)
-
-  return toUTC(start.getFullYear(), start.getMonth(), start.getDate(), hh, mm)
 }
 
 export const generateOccurrencesForMonth = (
@@ -155,14 +130,14 @@ export const generateOccurrencesForMonth = (
   }
 
   if (type === "weekly") {
-    rruleOptions.freq     = RRule.WEEKLY
+    rruleOptions.freq = RRule.WEEKLY
     rruleOptions.interval = 1
   } else if (type === "biweekly") {
-    rruleOptions.freq     = RRule.WEEKLY
+    rruleOptions.freq = RRule.WEEKLY
     rruleOptions.interval = 2
   } else if (type === "specific_days" && weekdays && weekdays.length > 0) {
-    rruleOptions.freq      = RRule.WEEKLY
-    rruleOptions.interval  = 1
+    rruleOptions.freq = RRule.WEEKLY
+    rruleOptions.interval = 1
     rruleOptions.byweekday = weekdays.map(d => JS_TO_RRULE[d])
   }
 
@@ -172,11 +147,11 @@ export const generateOccurrencesForMonth = (
   return dates.map((date) => ({
     id: `${rule.id}-${toLocalDateString(date)}`,
     scheduleId: rule.id,
-    workoutId:  rule.workoutId,
-    date:       toLocalDateString(date),
-    title:      rule.workoutName,
-    time:       rule.time,
-    status:     "scheduled",
+    workoutId: rule.workoutId,
+    date: toLocalDateString(date),
+    title: rule.workoutName,
+    time: rule.time,
+    status: "scheduled",
   }))
 }
 
