@@ -1,12 +1,8 @@
-// src/components/modals/ScheduleModal.tsx
-
 import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import { enUS } from "date-fns/locale"
 import { useNavigate } from "react-router-dom"
-
 import { Button } from '@/components/ui/button'
-
 import {
   Select,
   SelectContent,
@@ -14,53 +10,37 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-
 import {
   Calendar as CalendarComponent
 } from "@/components/ui/calendar"
-
 import { Switch } from "@/components/ui/switch"
-
 import { Input } from "@/components/ui/input"
-
 import { Textarea } from "@/components/ui/textarea"
-
 import { Label } from "@/components/ui/label"
-
 import { Modal } from '@/components/Modal'
-
 import { cn } from "@/lib/utils"
-
 import {
   CalendarIcon,
   Clock,
   CalendarDays
 } from 'lucide-react'
-
 import { useForm } from "react-hook-form"
-
 import { zodResolver } from "@hookform/resolvers/zod"
-
 import {
   scheduleSchema,
   type ScheduleFormData
 } from "@/schemas/scheduleSchema"
-
 import { useAuth } from "@/contexts/AuthContext"
-
 import {
   getWorkouts,
   type WorkoutDocument
 } from "@/services/firebase/workout"
-
 import { createSchedule } from "@/services/firebase/schedule"
-
 import { toast } from "sonner"
 
 const getCurrentTimeDigits = () => {

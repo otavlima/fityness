@@ -3,15 +3,13 @@ import {
   useEffect,
   useRef,
 } from 'react'
-
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog'
-
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-
+import { updateUserStreakFromHistory } from '@/services/firebase/user'
 import {
   Check,
   X,
@@ -20,18 +18,13 @@ import {
   Play,
   SkipForward,
 } from 'lucide-react'
-
 import { cn } from '@/lib/utils'
-
 import { type WorkoutDocument } from '@/services/firebase/workout'
-
 import {
   saveWorkoutHistory,
   getLastWorkoutHistory,
 } from '@/services/firebase/workoutHistory'
-
 import { useAuth } from '@/contexts/AuthContext'
-
 import { toast } from 'sonner'
 
 interface SetRow {
@@ -77,35 +70,13 @@ const StartExercises = ({
   onDone,
 }: StartExercisesProps) => {
   const { user } = useAuth()
-
-  const exercises =
-    workout?.exercises ?? []
-
-  const [exIdx, setExIdx] =
-    useState(0)
-
-  const [setsMap, setSetsMap] =
-    useState<
-      Record<string, SetRow[]>
-    >({})
-
-  const [elapsed, setElapsed] =
-    useState(0)
-
-  const [saving, setSaving] =
-    useState(false)
-
-  const [
-    loadingSets,
-    setLoadingSets,
-  ] = useState(true)
-
-  const timerRef =
-    useRef<
-      ReturnType<
-        typeof setInterval
-      > | null
-    >(null)
+  const exercises = workout?.exercises ?? []
+  const [exIdx, setExIdx] = useState(0)
+  const [setsMap, setSetsMap] = useState<Record<string, SetRow[]>>({})
+  const [elapsed, setElapsed] = useState(0)
+  const [saving, setSaving] = useState(false)
+  const [loadingSets, setLoadingSets] = useState(true)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     if (
@@ -397,20 +368,15 @@ const StartExercises = ({
             })
           )
 
-        await saveWorkoutHistory(
-          user.uid,
-          {
-            uid: user.uid,
-            workoutId:
-              workout.id!,
-            workoutName:
-              workout.name,
-            exercises:
-              exerciseResults,
-            duration:
-              elapsed,
-          }
-        )
+        await saveWorkoutHistory(user.uid, {
+          uid: user.uid,
+          workoutId: workout.id!,
+          workoutName: workout.name,
+          exercises: exerciseResults,
+          duration: elapsed,
+        })
+
+        await updateUserStreakFromHistory(user.uid)
 
         toast.success(
           'Workout saved!'

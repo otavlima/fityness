@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
 import {
   Clock,
   Timer,
@@ -22,22 +21,18 @@ import {
   X,
   Loader2,
 } from "lucide-react"
-
 import { cn } from "@/lib/utils"
-
 import { type WorkoutEvent } from "@/pages/Calendar"
-
 import {
   type ScheduleRule,
   deleteSchedule,
 } from "@/services/firebase/schedule"
-
 import {
   getWorkout,
   type WorkoutDocument,
 } from "@/services/firebase/workout"
-
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface ScheduleDialogProps {
   isOpen: boolean
@@ -96,11 +91,10 @@ const ScheduleDialog = ({
   onDeleted,
   onCompleted,
 }: ScheduleDialogProps) => {
-  const [workout, setWorkout] =
-    useState<WorkoutDocument | null>(null)
-
+  const [workout, setWorkout] = useState<WorkoutDocument | null>(null)
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const { user } = useAuth()
 
   const schedule = event
     ? schedules.find(s => s.id === event.scheduleId)
@@ -148,12 +142,12 @@ const ScheduleDialog = ({
   }
 
   const handleDelete = async () => {
-    if (!schedule) return
+    if (!schedule || !user) return
 
     setDeleting(true)
 
     try {
-      await deleteSchedule(schedule.id)
+      await deleteSchedule(user.uid, schedule.id)
 
       toast.success("Schedule deleted.")
 

@@ -199,22 +199,32 @@ export const getSchedules = async (uid: string): Promise<ScheduleRule[]> => {
   }))
 }
 
-export const deleteSchedule = async (id: string): Promise<void> => {
+export const deleteSchedule = async (uid: string, id: string): Promise<void> => {
   const batch = writeBatch(db)
 
-  const scheduleRef = doc(db, "schedules", id)
-  batch.delete(scheduleRef)
+  batch.delete(doc(db, "schedules", id))
 
-  const statusQuery = query(
-    collection(db, "schedule_status"),
-    where("scheduleId", "==", id)
+  const statusSnap = await getDocs(
+    query(
+      collection(db, "schedule_status"),
+      where("uid", "==", uid),
+      where("scheduleId", "==", id)
+    )
   )
 
-  const statusSnap = await getDocs(statusQuery)
+  statusSnap.docs.forEach(d => batch.delete(d.ref))
 
-  statusSnap.docs.forEach(d => {
-    batch.delete(doc(db, "schedule_status", d.id))
-  })
+  await batch.commit()
+}
 
+export const updateScheduleWorkoutName = async (
+  uid: string,
+  workoutId: string,
+  newName: string
+): Promise<void> => {
+  const q    = query(collection(db, "schedules"), where("uid", "==", uid), where("workoutId", "==", workoutId))
+  const snap = await getDocs(q)
+  const batch = writeBatch(db)
+  snap.docs.forEach(d => batch.update(d.ref, { workoutName: newName }))
   await batch.commit()
 }

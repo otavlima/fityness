@@ -13,6 +13,7 @@ import {
 import { db } from "../firebase"
 import { type Workout } from "@/schemas/workoutSchema"
 import { updateWorkoutNameInHistory } from "./workoutHistory"
+import { updateScheduleWorkoutName } from "./schedule"
 
 const COLLECTION = "workouts"
 
@@ -62,55 +63,39 @@ export const getWorkouts = async (
   }))
 }
 
-export const updateWorkout = async (id: string, data: Partial<Workout>) => {
+export const updateWorkout = async (uid: string, id: string, data: Partial<Workout>) => {
   await updateDoc(doc(db, COLLECTION, id), { ...data })
 
   if (data.name) {
-    await updateWorkoutNameInHistory(id, data.name)
+    await Promise.all([
+      updateWorkoutNameInHistory(uid, id, data.name),
+      updateScheduleWorkoutName(uid, id, data.name),
+    ])
   }
 }
 
-export const deleteWorkout = async (
-  id: string
-) => {
+export const deleteWorkout = async (uid: string, id: string) => {
   const batch = writeBatch(db)
 
-  const workoutRef = doc(
-    db,
-    COLLECTION,
-    id
+  batch.delete(doc(db, COLLECTION, id))
+
+  const schedulesSnap = await getDocs(
+    query(collection(db, "schedules"), where("uid", "==", uid), where("workoutId", "==", id))
   )
-
-  const schedulesQuery = query(
-    collection(db, "schedules"),
-    where("workoutId", "==", id)
-  )
-
-  const schedulesSnap =
-    await getDocs(schedulesQuery)
-
-  const scheduleIds =
-    schedulesSnap.docs.map(doc => doc.id)
-
-  schedulesSnap.docs.forEach(scheduleDoc => {
-    batch.delete(scheduleDoc.ref)
-  })
+  const scheduleIds = schedulesSnap.docs.map(d => d.id)
+  schedulesSnap.docs.forEach(d => batch.delete(d.ref))
 
   if (scheduleIds.length > 0) {
-    const completedQuery = query(
-      collection(db, "schedule_status"),
-      where("scheduleId", "in", scheduleIds)
+    const statusSnap = await getDocs(
+      query(collection(db, "schedule_status"), where("uid", "==", uid), where("scheduleId", "in", scheduleIds))
     )
-
-    const completedSnap =
-      await getDocs(completedQuery)
-
-    completedSnap.docs.forEach(statusDoc => {
-      batch.delete(statusDoc.ref)
-    })
+    statusSnap.docs.forEach(d => batch.delete(d.ref))
   }
 
-  batch.delete(workoutRef)
+  const historySnap = await getDocs(
+    query(collection(db, "workout_history"), where("uid", "==", uid), where("workoutId", "==", id))
+  )
+  historySnap.docs.forEach(d => batch.delete(d.ref))
 
   await batch.commit()
 }

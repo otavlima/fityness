@@ -2,10 +2,21 @@ import { SidebarTrigger, useSidebar } from "./ui/sidebar"
 import { Search, Bot } from "lucide-react"
 import { Input } from "./ui/input"
 import type React from "react"
+import { useAuth } from "@/contexts/AuthContext"
+import { useEffect, useState } from "react"
+import { getStreak } from "@/services/firebase/user"
 
 const Header = ({ children }: { children?: React.ReactNode }) => {
   const { state } = useSidebar()
   const isCollapsed = state === 'collapsed'
+  const { user } = useAuth()
+  const [streak, setStreak] = useState(0)
+
+  useEffect(() => {
+    if (!user) return
+
+    getStreak(user.uid).then(setStreak)
+  }, [user])
 
   return (
     <div className="flex flex-col gap-4 pt-20">
@@ -30,7 +41,7 @@ const Header = ({ children }: { children?: React.ReactNode }) => {
           </div>
           <div className="flex items-center gap-2 max-[768px]:hidden rounded-2xl border border-muted py-1.5 px-4 bg-background/50">
             <div className="bg-orange-500 h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.6)]"></div>
-            <span className='text-xs font-bold uppercase tracking-wider'>Streak: 12 dias</span>
+            <span className='text-xs font-bold uppercase tracking-wider'>Streak: {streak} dias</span>
           </div>
         </div>
       </header>

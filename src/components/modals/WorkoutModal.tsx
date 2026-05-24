@@ -135,7 +135,7 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
 
     try {
       if (isEditing && editingWorkout) {
-        await updateWorkout(editingWorkout.id, result.data)
+        await updateWorkout(user.uid, editingWorkout.id, result.data)
 
         onSuccess(
           { ...editingWorkout, ...result.data },

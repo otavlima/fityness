@@ -14,35 +14,51 @@ import {
   ArrowUpRight,
   Loader2,
 } from 'lucide-react'
-
-import { Link } from 'react-router-dom'
-
+import {
+  Link,
+  useNavigate,
+} from 'react-router-dom'
 import {
   getSchedules,
   generateOccurrencesForMonth,
   type ScheduleRule,
 } from '@/services/firebase/schedule'
-
 import {
   getCompletedEventIds,
 } from '@/services/firebase/scheduleStatus'
-
 import {
   getWorkout,
   type WorkoutDocument,
 } from '@/services/firebase/workout'
+import {
+  getWorkoutHistory,
+  type WorkoutHistoryDocument,
+} from '@/services/firebase/workoutHistory'
+import { getStreak } from '@/services/firebase/user'
 
 const Home = () => {
   const { user } = useAuth()
+  const [streak, setStreak] = useState(0)
+
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(true)
 
-  const [schedules, setSchedules] = useState<ScheduleRule[]>([])
+  const [schedules, setSchedules] =
+    useState<ScheduleRule[]>([])
 
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set())
+  const [completedIds, setCompletedIds] =
+    useState<Set<string>>(new Set())
 
   const [todayWorkout, setTodayWorkout] =
-    useState<WorkoutDocument | null>(null)
+    useState<WorkoutDocument | null>(
+      null
+    )
+
+  const [history, setHistory] =
+    useState<
+      WorkoutHistoryDocument[]
+    >([])
 
   useEffect(() => {
     const load = async () => {
@@ -51,13 +67,43 @@ const Home = () => {
       setLoading(true)
 
       try {
-        const [scheduleData, completedData] = await Promise.all([
+        const [
+          scheduleData,
+          completedData,
+        ] = await Promise.all([
           getSchedules(user.uid),
           getCompletedEventIds(user.uid),
         ])
 
+        const allHistory: WorkoutHistoryDocument[] =
+          []
+
+        let lastDoc: any = undefined
+
+        while (true) {
+          const {
+            history,
+            lastDoc: last,
+            hasMore,
+          } = await getWorkoutHistory(
+            user.uid,
+            lastDoc
+          )
+
+          allHistory.push(...history)
+
+          if (!hasMore) break
+
+          lastDoc = last
+        }
+
+        setHistory(allHistory)
+
         setSchedules(scheduleData)
-        setCompletedIds(new Set(completedData))
+
+        setCompletedIds(
+          new Set(completedData)
+        )
       } finally {
         setLoading(false)
       }
@@ -73,7 +119,11 @@ const Home = () => {
       typeof generateOccurrencesForMonth
     > = []
 
-    for (let offset = -2; offset <= 2; offset++) {
+    for (
+      let offset = -2;
+      offset <= 2;
+      offset++
+    ) {
       const date = new Date(
         today.getFullYear(),
         today.getMonth() + offset,
@@ -94,34 +144,148 @@ const Home = () => {
     return events
   }, [schedules])
 
-  const currentMonthEvents = useMemo(() => {
-    return allEvents.filter(event => {
-      const eventDate = new Date(
-        event.date + 'T00:00:00'
+  const currentMonthEvents =
+    useMemo(() => {
+      return allEvents.filter(
+        event => {
+          const eventDate = new Date(
+            event.date +
+              'T00:00:00'
+          )
+
+          return (
+            eventDate.getMonth() ===
+              today.getMonth() &&
+            eventDate.getFullYear() ===
+              today.getFullYear()
+          )
+        }
+      )
+    }, [allEvents, today])
+
+  const completedMonthEvents =
+    useMemo(() => {
+      return currentMonthEvents.filter(
+        event =>
+          completedIds.has(event.id)
+      )
+    }, [
+      currentMonthEvents,
+      completedIds,
+    ])
+
+  const currentMonthHistory =
+    useMemo(() => {
+      return history.filter(item => {
+        const date =
+          item.completedAt
+
+        return (
+          date.getMonth() ===
+            today.getMonth() &&
+          date.getFullYear() ===
+            today.getFullYear()
+        )
+      })
+    }, [history, today])
+
+  const totalVolume = useMemo(() => {
+    const kg =
+      currentMonthHistory.reduce(
+        (acc, workout) =>
+          acc +
+          workout.exercises.reduce(
+            (
+              exerciseAcc,
+              exercise
+            ) =>
+              exerciseAcc +
+              exercise.sets
+                .filter(
+                  set => set.done
+                )
+                .reduce(
+                  (
+                    setAcc,
+                    set
+                  ) =>
+                    setAcc +
+                    (set.kg || 0) *
+                      (set.reps ||
+                        0),
+                  0
+                ),
+            0
+          ),
+        0
       )
 
-      return (
-        eventDate.getMonth() === today.getMonth() &&
-        eventDate.getFullYear() === today.getFullYear()
-      )
-    })
-  }, [allEvents, today])
+    if (kg >= 1000) {
+      return `${(
+        kg / 1000
+      ).toFixed(1)}t`
+    }
 
-  const completedMonthEvents = useMemo(() => {
-    return currentMonthEvents.filter(event =>
-      completedIds.has(event.id)
+    return `${Math.round(kg)}kg`
+  }, [currentMonthHistory])
+
+  const averageTime = useMemo(() => {
+    if (
+      currentMonthHistory.length ===
+      0
+    ) {
+      return '0m'
+    }
+
+    const totalDuration =
+      currentMonthHistory.reduce(
+        (acc, workout) =>
+          acc +
+          workout.duration,
+        0
+      )
+
+    const avgSeconds =
+      totalDuration /
+      currentMonthHistory.length
+
+    const hours = Math.floor(
+      avgSeconds / 3600
     )
-  }, [currentMonthEvents, completedIds])
+
+    const minutes = Math.floor(
+      (avgSeconds % 3600) / 60
+    )
+
+    const seconds = Math.round(
+      avgSeconds % 60
+    )
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`
+    }
+
+    if (minutes > 0) {
+      return `${minutes}m`
+    }
+
+    return `${seconds}s`
+  }, [currentMonthHistory])
 
   const todayString = [
     today.getFullYear(),
-    String(today.getMonth() + 1).padStart(2, '0'),
-    String(today.getDate()).padStart(2, '0'),
+    String(
+      today.getMonth() + 1
+    ).padStart(2, '0'),
+    String(
+      today.getDate()
+    ).padStart(2, '0'),
   ].join('-')
 
   const todayEvent = useMemo(() => {
     return allEvents.find(
-      event => event.date === todayString
+      event =>
+        event.date === todayString
     )
   }, [allEvents, todayString])
 
@@ -131,77 +295,127 @@ const Home = () => {
       return
     }
 
-    getWorkout(todayEvent.workoutId)
-      .then(setTodayWorkout)
+    getWorkout(
+      todayEvent.workoutId
+    ).then(setTodayWorkout)
   }, [todayEvent])
+
+  useEffect(() => {
+    if (!user) return
+
+    getStreak(user.uid).then(setStreak)
+  }, [user])
 
   const metrics = useMemo(() => {
     return [
       {
         icon: Dumbbell,
         badge: `${completedMonthEvents.length} done`,
-        value: String(currentMonthEvents.length),
-        label: 'Workouts this month',
+        value: String(
+          currentMonthEvents.length
+        ),
+        label:
+          'Workouts this month',
       },
+
       {
         icon: TrendingUp,
-        badge: '+8%',
-        value: '12.4t',
+        badge: 'Real data',
+        value: totalVolume,
         label: 'Total volume',
       },
+
       {
         icon: Flame,
         badge: 'Record!',
-        value: '12d',
+        value: `${streak}d`,
         label: 'Active streak',
       },
+
       {
         icon: Timer,
-        badge: '-3m',
-        value: '54m',
+        badge: 'This month',
+        value: averageTime,
         label: 'Average time',
       },
     ]
-  }, [currentMonthEvents, completedMonthEvents])
+  }, [
+    currentMonthEvents,
+    completedMonthEvents,
+    totalVolume,
+    averageTime,
+  ])
 
   const monthStats = useMemo(() => {
     return {
-      total: currentMonthEvents.length,
-      completed: completedMonthEvents.length,
+      total:
+        currentMonthEvents.length,
+
+      completed:
+        completedMonthEvents.length,
     }
-  }, [currentMonthEvents, completedMonthEvents])
+  }, [
+    currentMonthEvents,
+    completedMonthEvents,
+  ])
 
-  const todayExercises = useMemo(() => {
-    if (!todayWorkout) return []
+  const todayExercises =
+    useMemo(() => {
+      if (!todayWorkout)
+        return []
 
-    return todayWorkout.exercises.map((ex, index) => ({
-      id: index + 1,
-      name: ex.name,
-      detail: `${ex.sets} × ${ex.reps}`,
-      increment: '+0kg',
-    }))
-  }, [todayWorkout])
+      return todayWorkout.exercises.map(
+        (ex, index) => ({
+          id: index + 1,
 
-  const recentActivity = useMemo(() => {
-    const completedEvents = completedMonthEvents
-      .sort((a, b) => {
-        return (
-          new Date(b.date).getTime() -
-          new Date(a.date).getTime()
-        )
-      })
-      .slice(0, 3)
+          name: ex.name,
 
-    return completedEvents.map(event => ({
-      title: event.title,
-      time: '~55m',
-      vol: 'Completed',
-      date: new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-      }).format(new Date(`${event.date}T00:00:00`)),
-    }))
-  }, [completedMonthEvents])
+          detail: `${ex.sets} × ${ex.reps}`,
+
+          increment: '+0kg',
+        })
+      )
+    }, [todayWorkout])
+
+  const recentActivity =
+    useMemo(() => {
+      const completedEvents =
+        completedMonthEvents
+          .sort((a, b) => {
+            return (
+              new Date(
+                b.date
+              ).getTime() -
+              new Date(
+                a.date
+              ).getTime()
+            )
+          })
+          .slice(0, 3)
+
+      return completedEvents.map(
+        event => ({
+          title: event.title,
+
+          time: '~55m',
+
+          vol: 'Completed',
+
+          date:
+            new Intl.DateTimeFormat(
+              'en-US',
+              {
+                month: 'short',
+                day: 'numeric',
+              }
+            ).format(
+              new Date(
+                `${event.date}T00:00:00`
+              )
+            ),
+        })
+      )
+    }, [completedMonthEvents])
 
   if (loading) {
     return (
@@ -226,13 +440,17 @@ const Home = () => {
             <div className="flex items-center bg-primary/10 border border-primary/20 p-2 px-4 w-fit rounded-full">
               <span className="flex items-center gap-2 text-[11px] text-primary font-bold tracking-widest uppercase">
                 <Flame className="w-4 h-4 fill-current text-orange-400" />
-                Streak 12 Days
+                Streak {streak} {streak === 1 ? 'Day' : 'Days'}
               </span>
             </div>
 
             <div className="space-y-4 lg:pr-[300px]">
               <h1 className="text-foreground text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-                Morning, {user?.displayName}.
+                Morning,{' '}
+                {
+                  user?.displayName
+                }
+                .
                 <br />
 
                 <span className="text-muted-foreground">
@@ -250,14 +468,35 @@ const Home = () => {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" variant="default">
+              <Button
+                size="lg"
+                variant="default"
+                disabled={!todayWorkout}
+                onClick={() => {
+                  if (!todayWorkout) return
+
+                  navigate('/workouts', {
+                    state: {
+                      autoStartWorkoutId:
+                        todayWorkout.id,
+                    },
+                  })
+                }}
+              >
                 <Play className="fill-current w-4 h-4 mr-2" />
                 Start Workout
               </Button>
 
-              <Button size="lg" variant="outline">
-                View monthly plan
-                <ArrowRight className="ml-2 w-4 h-4" />
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+              >
+                <Link to="/calendar">
+                  View monthly plan
+
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
               </Button>
             </div>
 
@@ -273,22 +512,34 @@ const Home = () => {
 
                 <div className="flex items-baseline gap-2">
                   <span className="text-5xl font-bold text-foreground tracking-tighter">
-                    {monthStats.completed}
+                    {
+                      monthStats.completed
+                    }
                   </span>
 
                   <span className="text-base font-medium text-muted-foreground">
-                    / {monthStats.total} completed
+                    /{' '}
+                    {
+                      monthStats.total
+                    }{' '}
+                    completed
                   </span>
                 </div>
 
                 <div className="flex gap-1.5 mt-6">
                   {[
-                    ...Array(Math.max(monthStats.total, 1)),
+                    ...Array(
+                      Math.max(
+                        monthStats.total,
+                        1
+                      )
+                    ),
                   ].map((_, i) => (
                     <div
                       key={i}
                       className={`h-1.5 flex-1 rounded-full ${
-                        i < monthStats.completed
+                        i <
+                        monthStats.completed
                           ? 'bg-primary'
                           : 'bg-muted/30'
                       }`}
@@ -301,34 +552,45 @@ const Home = () => {
         </Card>
 
         <div className="flex flex-col w-full gap-4 md:grid md:grid-cols-4">
-          {metrics.map((metric, index) => (
-            <Card
-              key={index}
-              className="w-full rounded-[1.8rem] bg-card border border-border shadow-sm"
-            >
-              <CardContent className="p-6 flex flex-col justify-between h-full min-h-[160px]">
-                <div className="flex justify-between items-start">
-                  <div className="w-10 h-10 flex items-center justify-center bg-secondary/50 rounded-2xl">
-                    <metric.icon className="w-5 h-5 text-foreground" />
+          {metrics.map(
+            (
+              metric,
+              index
+            ) => (
+              <Card
+                key={index}
+                className="w-full rounded-[1.8rem] bg-card border border-border shadow-sm"
+              >
+                <CardContent className="p-6 flex flex-col justify-between h-full min-h-[160px]">
+                  <div className="flex justify-between items-start">
+                    <div className="w-10 h-10 flex items-center justify-center bg-secondary/50 rounded-2xl">
+                      <metric.icon className="w-5 h-5 text-foreground" />
+                    </div>
+
+                    <span className="bg-secondary/80 text-foreground text-[10px] font-bold px-2.5 py-1 rounded-lg">
+                      {
+                        metric.badge
+                      }
+                    </span>
                   </div>
 
-                  <span className="bg-secondary/80 text-foreground text-[10px] font-bold px-2.5 py-1 rounded-lg">
-                    {metric.badge}
-                  </span>
-                </div>
+                  <div className="mt-4">
+                    <h3 className="text-4xl font-bold tracking-tighter text-foreground">
+                      {
+                        metric.value
+                      }
+                    </h3>
 
-                <div className="mt-4">
-                  <h3 className="text-4xl font-bold tracking-tighter text-foreground">
-                    {metric.value}
-                  </h3>
-
-                  <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
-                    {metric.label}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wide">
+                      {
+                        metric.label
+                      }
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -341,7 +603,8 @@ const Home = () => {
                   </span>
 
                   <h2 className="text-3xl font-bold mt-2">
-                    {todayEvent?.title || 'Rest Day'}
+                    {todayEvent?.title ||
+                      'Rest Day'}
                   </h2>
                 </div>
 
@@ -353,41 +616,53 @@ const Home = () => {
               </div>
 
               <div className="space-y-3">
-                {todayExercises.length === 0 ? (
+                {todayExercises.length ===
+                0 ? (
                   <div className="flex items-center justify-center h-[240px] rounded-2xl border border-dashed border-border text-muted-foreground text-sm font-medium">
-                    No workout scheduled for today.
+                    No workout scheduled
+                    for today.
                   </div>
                 ) : (
-                  todayExercises.map((ex) => (
-                    <div
-                      key={ex.id}
-                      className="group flex items-center justify-between p-4 rounded-2xl bg-secondary/20 border border-transparent hover:border-primary/20 transition-all cursor-pointer"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center font-bold text-sm border border-border">
-                          {ex.id}
+                  todayExercises.map(
+                    ex => (
+                      <div
+                        key={ex.id}
+                        className="group flex items-center justify-between p-4 rounded-2xl bg-secondary/20 border border-transparent hover:border-primary/20 transition-all cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center font-bold text-sm border border-border">
+                            {
+                              ex.id
+                            }
+                          </div>
+
+                          <div>
+                            <p className="font-bold text-sm">
+                              {
+                                ex.name
+                              }
+                            </p>
+
+                            <p className="text-xs text-muted-foreground">
+                              {
+                                ex.detail
+                              }
+                            </p>
+                          </div>
                         </div>
 
-                        <div>
-                          <p className="font-bold text-sm">
-                            {ex.name}
-                          </p>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-1 rounded-md">
+                            {
+                              ex.increment
+                            }
+                          </span>
 
-                          <p className="text-xs text-muted-foreground">
-                            {ex.detail}
-                          </p>
+                          <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-1 rounded-md">
-                          {ex.increment}
-                        </span>
-
-                        <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                    </div>
-                  ))
+                    )
+                  )
                 )}
               </div>
             </CardContent>
@@ -402,37 +677,57 @@ const Home = () => {
               </div>
 
               <div className="space-y-8 flex-1">
-                {recentActivity.length === 0 ? (
+                {recentActivity.length ===
+                0 ? (
                   <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
                     No recent activity.
                   </div>
                 ) : (
-                  recentActivity.map((item, i) => (
-                    <div
-                      key={i}
-                      className="relative pl-6 border-l-2 border-muted/20 last:border-0 pb-2"
-                    >
-                      <div className="absolute -left-[7px] top-0 w-3 h-3 rounded-full bg-foreground" />
+                  recentActivity.map(
+                    (
+                      item,
+                      i
+                    ) => (
+                      <div
+                        key={i}
+                        className="relative pl-6 border-l-2 border-muted/20 last:border-0 pb-2"
+                      >
+                        <div className="absolute -left-[7px] top-0 w-3 h-3 rounded-full bg-foreground" />
 
-                      <div className="flex justify-between items-start mb-1">
-                        <p className="font-bold text-sm leading-none">
-                          {item.title}
-                        </p>
+                        <div className="flex justify-between items-start mb-1">
+                          <p className="font-bold text-sm leading-none">
+                            {
+                              item.title
+                            }
+                          </p>
 
-                        <span className="text-[10px] text-muted-foreground">
-                          {item.date}
-                        </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {
+                              item.date
+                            }
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium">
+                          <span>
+                            {
+                              item.time
+                            }
+                          </span>
+
+                          <span>
+                            •
+                          </span>
+
+                          <span>
+                            {
+                              item.vol
+                            }
+                          </span>
+                        </div>
                       </div>
-
-                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium">
-                        <span>{item.time}</span>
-
-                        <span>•</span>
-
-                        <span>{item.vol}</span>
-                      </div>
-                    </div>
-                  ))
+                    )
+                  )
                 )}
               </div>
 
@@ -440,7 +735,9 @@ const Home = () => {
                 to="/workouts"
                 className="flex items-center justify-center gap-2 w-full mt-8 border-dashed rounded-2xl h-14 border-2 hover:bg-secondary/50 transition-colors"
               >
-                <Dumbbell size={16} />
+                <Dumbbell
+                  size={16}
+                />
                 Manage workouts
               </Link>
             </CardContent>

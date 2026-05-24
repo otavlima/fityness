@@ -3,7 +3,6 @@ import { Loader2, Trophy } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer } from 'recharts'
 
 import Header from '@/components/Header'
-import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import {
   Field,
@@ -27,8 +26,6 @@ interface Big4Data {
   title: string
   subtitle: string
   currentValue: number
-  baseValue: number
-  percentage: string
   data: { value: number }[]
 }
 
@@ -70,7 +67,8 @@ const CATEGORY_BIG4: Record<
 
 const formatDate = (date: Date): string => {
   const diff = Math.floor(
-    (new Date().getTime() - date.getTime()) / 86400000
+    (new Date().getTime() - date.getTime()) /
+      86400000
   )
 
   if (diff === 0) return 'Today'
@@ -127,8 +125,6 @@ const Big4Card = ({
   title,
   subtitle,
   currentValue,
-  baseValue,
-  percentage,
   data,
 }: Big4Data) => {
   const uniqueId = useId().replace(/:/g, '')
@@ -151,7 +147,7 @@ const Big4Card = ({
             {subtitle}
           </p>
 
-          <div className="flex items-baseline gap-1 pt-1">
+          <div className="flex items-baseline gap-2 pt-1">
             {currentValue > 0 ? (
               <>
                 <span className="text-2xl font-bold tracking-tight">
@@ -159,7 +155,7 @@ const Big4Card = ({
                 </span>
 
                 <span className="text-xs text-muted-foreground">
-                  from {baseValue}kg
+                  average training load
                 </span>
               </>
             ) : (
@@ -169,19 +165,6 @@ const Big4Card = ({
             )}
           </div>
         </div>
-
-        {currentValue > 0 ? (
-          <Badge className="rounded-full border-none bg-foreground px-2.5 py-0.5 text-[10px] font-medium text-background hover:bg-foreground">
-            {percentage}
-          </Badge>
-        ) : (
-          <Badge
-            variant="outline"
-            className="rounded-full px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground"
-          >
-            —
-          </Badge>
-        )}
       </div>
 
       <div className="pointer-events-none h-14 w-full">
@@ -406,7 +389,8 @@ const Progress = () => {
                 .filter((s) => s.done)
                 .reduce(
                   (sAcc, set) =>
-                    sAcc + set.kg,
+                    sAcc +
+                    (set.kg * set.reps),
                   0
                 ),
             0
@@ -439,8 +423,6 @@ const Progress = () => {
               title,
               subtitle,
               currentValue: 0,
-              baseValue: 0,
-              percentage: '0%',
               data: [],
             }
           }
@@ -455,49 +437,11 @@ const Progress = () => {
               0
             ) / recentValues.length
 
-          const previousChunk =
-            values.length > 5
-              ? values.slice(
-                  Math.max(
-                    0,
-                    values.length - 10
-                  ),
-                  values.length - 5
-                )
-              : recentValues
-
-          const previousAverage =
-            previousChunk.reduce(
-              (acc, value) =>
-                acc + value,
-              0
-            ) /
-            previousChunk.length
-
-          const pctValue =
-            previousAverage > 0
-              ? (
-                  ((average -
-                    previousAverage) /
-                    previousAverage) *
-                  100
-                )
-              : 0
-
-          const pct =
-            pctValue >= 0
-              ? `+${pctValue.toFixed(1)}%`
-              : `${pctValue.toFixed(1)}%`
-
           return {
             title,
             subtitle,
             currentValue:
               Math.round(average),
-            baseValue: Math.round(
-              previousAverage
-            ),
-            percentage: pct,
             data: values.map((v) => ({
               value: v,
             })),
@@ -520,19 +464,11 @@ const Progress = () => {
     const avg =
       withData.reduce(
         (acc, b) =>
-          acc +
-          parseFloat(
-            b.percentage.replace(
-              '%',
-              ''
-            )
-          ),
+          acc + b.currentValue,
         0
       ) / withData.length
 
-    return avg >= 0
-      ? `+${avg.toFixed(1)}%`
-      : `${avg.toFixed(1)}%`
+    return `${Math.round(avg)}kg`
   }, [big4Data])
 
   const recentRecords = useMemo(
@@ -664,11 +600,14 @@ const Progress = () => {
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2
-                className="animate-spin text-muted-foreground"
-                size={32}
-              />
+            <div className="flex flex-1 w-full items-center justify-center py-24">
+              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                <Loader2 className="h-8 w-8 animate-spin" />
+
+                <span className="text-sm font-medium">
+                  Loading progress...
+                </span>
+              </div>
             </div>
           ) : (
             <>
@@ -683,7 +622,7 @@ const Progress = () => {
                   </h2>
 
                   <p className="mt-1 text-sm font-medium opacity-60">
-                    average global progression
+                    average training load
                   </p>
                 </Card>
 
@@ -699,7 +638,7 @@ const Progress = () => {
                   </h2>
 
                   <p className="mt-1 text-sm font-medium text-muted-foreground">
-                    total lifted
+                    training volume
                   </p>
                 </Card>
 
@@ -725,13 +664,6 @@ const Progress = () => {
                   <h3 className="text-lg font-semibold tracking-tight">
                     Big 4 — Loads
                   </h3>
-
-                  <Badge
-                    variant="outline"
-                    className="rounded-full border-border/60 bg-background px-3 py-1 text-[10px] font-medium text-muted-foreground"
-                  >
-                    All time
-                  </Badge>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
