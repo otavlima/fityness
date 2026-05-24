@@ -158,3 +158,12 @@ Explore the platform, manage workouts, schedule training sessions, and track you
 ## Author
 
 Created and designed by Otavio Lima.
+
+---
+
+## License
+
+Copyright © 2026 Otávio Lima. All rights reserved.
+
+This project is public for portfolio and educational purposes only.
+Unauthorized use, copying, modification, or distribution is prohibited.
