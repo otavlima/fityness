@@ -1,12 +1,15 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+
 import {
   CalendarDays,
   X,
 } from 'lucide-react'
+
 import type {
   WorkoutGroup,
   WorkoutSession,
 } from '@/pages/History'
+
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -143,7 +146,7 @@ const SessionHistoryModal = ({
 
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide md:hidden">
               {session.exercises.map((exercise, index) => {
-                const shouldScrollSets = exercise.sets.length > 7
+                const shouldScrollSets = exercise.sets.length > 5
 
                 return (
                   <div
@@ -168,12 +171,12 @@ const SessionHistoryModal = ({
 
                     <div
                       className={cn(
-                        'scrollbar-hide overflow-hidden',
+                        'scrollbar-hide',
                         shouldScrollSets &&
-                          'max-h-[292px] overflow-y-auto pr-1'
+                          'max-h-[252px] overflow-y-auto pr-1'
                       )}
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-2 pb-4">
                         {exercise.sets.map((set, i) => (
                           <div
                             key={i}
@@ -197,7 +200,7 @@ const SessionHistoryModal = ({
 
             <div className="hidden space-y-3 md:block">
               {session.exercises.map((exercise) => {
-                const shouldScrollSets = exercise.sets.length > 7
+                const shouldScrollSets = exercise.sets.length > 5
 
                 return (
                   <div
@@ -210,12 +213,12 @@ const SessionHistoryModal = ({
 
                     <div
                       className={cn(
-                        'scrollbar-hide overflow-hidden',
+                        'scrollbar-hide',
                         shouldScrollSets &&
-                          'max-h-[292px] overflow-y-auto pr-1'
+                          'max-h-[252px] overflow-y-auto pr-1'
                       )}
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-2 pb-4">
                         {exercise.sets.map((set, i) => (
                           <div
                             key={i}
