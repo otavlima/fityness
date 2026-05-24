@@ -73,6 +73,8 @@ const WorkoutHistoryModal = ({
         className={cn(
           'overflow-hidden rounded-[28px] border-none bg-transparent p-0 outline-none shadow-xl',
           'w-[calc(100vw-24px)] max-w-[680px]',
+          'max-h-[95vh]',
+          '[@media(max-height:700px)]:max-h-[calc(100vh-1rem)]',
           '[&>button]:hidden'
         )}
       >

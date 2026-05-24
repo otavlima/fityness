@@ -15,7 +15,7 @@ interface ModalProps {
 export const Modal = ({ open, onOpenChange, icon, title, description, children, footer }: ModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 overflow-hidden border-border bg-card text-card-foreground sm:rounded-2xl shadow-none">
+      <DialogContent className="p-0 overflow-hidden border-border bg-card text-card-foreground sm:rounded-2xl shadow-none max-h-[95vh] [@media(max-height:900px)]:max-h-[calc(100vh-1rem)]">
         <div className="px-6 pt-6 flex justify-between items-start">
           <div className="flex gap-4 items-center">
             {icon && (

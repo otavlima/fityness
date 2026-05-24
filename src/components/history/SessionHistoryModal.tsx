@@ -99,6 +99,8 @@ const SessionHistoryModal = ({
           'overflow-hidden rounded-[28px]',
           'border border-border/60 bg-background',
           'p-0 shadow-2xl',
+          'max-h-[95vh]',
+          '[@media(max-height:700px)]:max-h-[calc(100vh-1rem)]',
           '[&>button]:hidden'
         )}
       >
