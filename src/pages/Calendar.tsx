@@ -41,7 +41,7 @@ const MONTHS   = ['January', 'February', 'March', 'April', 'May', 'June', 'July'
 const Calendar = () => {
   const { user } = useAuth()
   const today    = new Date()
-
+  const [isMobile, setIsMobile] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [schedules, setSchedules] = useState<ScheduleRule[]>([])
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set())
@@ -52,6 +52,13 @@ const Calendar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [selectedDetailEvent, setSelectedDetailEvent] = useState<WorkoutEvent | null>(null)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 526)
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const loadSchedules = useCallback(async () => {
     if (!user) return
@@ -108,7 +115,7 @@ const Calendar = () => {
         await markEventCompleted(
           user.uid,
           event.id,
-          event.scheduleId // ✅ agora existe
+          event.scheduleId
         )
       }
     } catch {
@@ -143,9 +150,6 @@ const Calendar = () => {
       }))
     )
   }, [schedules, currentDate, completedIds])
-
-console.log(events)
-console.log(completedIds)
 
   const calendarDays = useMemo<CalendarDay[]>(() => {
     const year  = currentDate.getFullYear()
@@ -220,12 +224,11 @@ console.log(completedIds)
       .slice(0, 3)
   }, [events])
 
-  // Atualiza o selectedDetailEvent quando o status muda
   useEffect(() => {
     if (!selectedDetailEvent) return
     const updated = events.find(e => e.id === selectedDetailEvent.id)
     if (updated) setSelectedDetailEvent(updated)
-  }, [completedIds])
+  }, [completedIds, events, selectedDetailEvent])
 
   return (
     <Header>
@@ -285,7 +288,7 @@ console.log(completedIds)
                   </div>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mt-4 sm:mt-0">
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-primary" /> Completed</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground bg-muted" /> Scheduled</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground bg-transparent" /> Scheduled</div>
                   </div>
                 </div>
 
@@ -302,16 +305,30 @@ console.log(completedIds)
                       dayObj.day === today.getDate() &&
                       currentDate.getMonth() === today.getMonth() &&
                       currentDate.getFullYear() === today.getFullYear()
+                    
+                    const hasEvents = dayObj.events && dayObj.events.length > 0
 
                     return (
                       <div
                         key={index}
+                        onClick={() => {
+                          if (!isMobile || dayObj.isOtherMonth || !hasEvents) return
+
+                          if (dayObj.events!.length === 1) {
+                            handleOpenDetail(dayObj.events![0])
+                          } else {
+                            setSelectedEvents(dayObj.events!)
+                            setSelectedDate(dayObj.dateString)
+                            setIsDialogOpen(true)
+                          }
+                        }}
                         className={cn(
-                          "bg-card min-h-[110px] p-2 flex flex-col gap-1 transition-colors",
-                          dayObj.isOtherMonth ? 'bg-muted/20 opacity-40' : 'hover:bg-muted/5'
+                          "bg-card min-h-[70px] min-[464px]:min-h-[110px] p-1.5 min-[464px]:p-2 flex flex-col gap-1 transition-colors",
+                          dayObj.isOtherMonth ? 'bg-muted/20 opacity-40' : 'hover:bg-muted/5',
+                          isMobile && hasEvents && !dayObj.isOtherMonth ? "cursor-pointer active:bg-muted/10" : ""
                         )}
                       >
-                        <div className="flex justify-start">
+                        <div className="flex justify-center min-[464px]:justify-start">
                           <span className={cn(
                             "text-sm w-7 h-7 flex items-center justify-center rounded-full font-medium",
                             isToday ? 'bg-primary text-primary-foreground' : 'text-foreground'
@@ -320,43 +337,61 @@ console.log(completedIds)
                           </span>
                         </div>
 
-                        {!dayObj.isOtherMonth && (
-                          <div className="flex flex-col gap-1">
-                            {dayObj.events?.slice(0, 1).map(event => (
-                              <div
-                                key={event.id}
-                                onClick={() => handleOpenDetail(event)}
-                                className={cn(
-                                  "cursor-pointer flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold",
-                                  event.status === 'completed'
-                                    ? 'bg-primary text-primary-foreground border-transparent'
-                                    : 'bg-muted border-border text-foreground'
-                                )}
-                              >
-                                {event.status === 'completed' && <Check size={12} strokeWidth={3} />}
-                                <span className="truncate">{event.title}</span>
-                              </div>
-                            ))}
-                            {dayObj.events && dayObj.events.length > 1 && (
-                              <button
-                                onClick={() => {
-                                  setSelectedEvents(dayObj.events!)
-                                  setSelectedDate(dayObj.dateString)
-                                  setIsDialogOpen(true)
-                                }}
-                                className="w-full text-[10px] px-3 py-1.5 rounded-full border border-dashed border-border text-muted-foreground font-bold hover:bg-muted/40 transition"
-                              >
-                                +{dayObj.events.length - 1} more
-                              </button>
-                            )}
-                          </div>
+                        {!dayObj.isOtherMonth && hasEvents && (
+                          <>
+                            <div className="hidden min-[464px]:flex flex-col gap-1 w-full">
+                              {dayObj.events!.slice(0, 1).map(event => (
+                                <div
+                                  key={event.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleOpenDetail(event)
+                                  }}
+                                  className={cn(
+                                    "cursor-pointer flex items-center gap-1.5 w-full text-[10px] px-3 py-1.5 rounded-full border uppercase tracking-tight font-bold",
+                                    event.status === 'completed'
+                                      ? 'bg-primary text-primary-foreground border-transparent'
+                                      : 'bg-muted border-border text-foreground'
+                                  )}
+                                >
+                                  {event.status === 'completed' && <Check size={12} strokeWidth={3} />}
+                                  <span className="truncate">{event.title}</span>
+                                </div>
+                              ))}
+                              {dayObj.events!.length > 1 && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setSelectedEvents(dayObj.events!)
+                                    setSelectedDate(dayObj.dateString)
+                                    setIsDialogOpen(true)
+                                  }}
+                                  className="w-full text-[10px] px-3 py-1.5 rounded-full border border-dashed border-border text-muted-foreground font-bold hover:bg-muted/40 transition"
+                                >
+                                  +{dayObj.events!.length - 1} more
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex min-[464px]:hidden flex-wrap justify-center items-center gap-1 mt-1 w-full px-1">
+                              {dayObj.events!.map(event => (
+                                <div
+                                  key={event.id}
+                                  className={cn(
+                                    "w-2 h-2 rounded-full shrink-0",
+                                    event.status === 'completed'
+                                      ? "bg-primary"
+                                      : "border border-muted-foreground bg-transparent"
+                                  )}
+                                />
+                              ))}
+                            </div>
+                          </>
                         )}
                       </div>
                     )
                   })}
                 </div>
               </Card>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="shadow-sm">
                   <CardHeader><CardTitle className="text-lg font-bold">Upcoming Workouts</CardTitle></CardHeader>
@@ -386,7 +421,6 @@ console.log(completedIds)
                     )}
                   </CardContent>
                 </Card>
-
                 <Card className="shadow-sm flex flex-col">
                   <CardHeader><CardTitle className="text-lg font-bold">Monthly Frequency</CardTitle></CardHeader>
                   <CardContent className="flex-1 flex flex-col justify-between">

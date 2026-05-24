@@ -47,24 +47,36 @@ const formatRecurrence = (rule: ScheduleRule): string => {
   if (!rule.isRecurring) return "Once"
 
   const r = rule.recurrence
-
   if (!r) return "Once"
-
   if (r.type === "weekly") return "Weekly"
-
   if (r.type === "biweekly") return "Every 2 weeks"
 
-  if (
-    r.type === "specific_days" &&
-    r.weekdays &&
-    r.weekdays.length > 0
-  ) {
+  if (r.type === "specific_days" && r.weekdays && r.weekdays.length > 0) {
     const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const sortedDays = [...r.weekdays].sort((a, b) => a - b)
+    
+    if (sortedDays.length === 7) return "Every day"
 
-    return r.weekdays
-      .sort((a, b) => a - b)
-      .map(d => names[d])
-      .join(', ')
+    const parts: string[] = []
+    let i = 0
+
+    while (i < sortedDays.length) {
+      let j = i
+      
+      while (j + 1 < sortedDays.length && sortedDays[j + 1] === sortedDays[j] + 1) {
+        j++
+      }
+
+      if (j - i >= 2) {
+        parts.push(`${names[sortedDays[i]]} - ${names[sortedDays[j]]}`)
+        i = j + 1
+      } else {
+        parts.push(names[sortedDays[i]])
+        i++
+      }
+    }
+
+    return parts.join(', ')
   }
 
   return "Once"

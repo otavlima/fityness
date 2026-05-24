@@ -251,72 +251,83 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
             </div>
           ) : (
             <>
-              <div className="flex flex-col gap-2 max-h-[295px] overflow-y-auto scrollbar-hide pb-1">
-                {workout.exercises.map((ex, idx) => {
-                  const exErr = errors.exercises?.[ex.id]
-                  return (
-                    <div key={ex.id} className="flex flex-col gap-1">
-                      <div className="flex items-center gap-3 p-3 bg-muted/20 border rounded-xl shrink-0">
-                        <GripVertical size={16} className="text-muted-foreground/30" />
-                        <span className="text-xs font-bold text-muted-foreground/50 w-4">{idx + 1}</span>
-
+            <div className="flex flex-col gap-2 max-h-[295px] overflow-y-auto scrollbar-hide pb-1">
+              {workout.exercises.map((ex, idx) => {
+                const exErr = errors.exercises?.[ex.id]
+                return (
+                  <div key={ex.id} className="flex flex-col gap-1">
+                    <div className="flex flex-wrap min-[464px]:flex-nowrap items-center gap-3 p-3 bg-muted/20 border rounded-xl shrink-0">
+                      <div className="flex flex-1 items-center gap-3 min-w-[0px]">
+                        <GripVertical size={16} className="text-muted-foreground/30 shrink-0" />
+                        <span className="text-xs font-bold text-muted-foreground/50 w-4 shrink-0">{idx + 1}</span>
                         <Input
                           placeholder={isMobile ? 'Name' : 'Exercise name'}
                           value={ex.name}
                           onChange={e => updateExercise(ex.id, 'name', e.target.value)}
-                          className={`border-none bg-transparent shadow-none focus-visible:ring-0 p-0 font-medium ${exErr?.name ? 'placeholder:text-destructive' : ''}`}
+                          className={`border-none bg-transparent shadow-none focus-visible:ring-0 p-0 font-medium flex-1 min-w-[0px] ${exErr?.name ? 'placeholder:text-destructive' : ''}`}
                         />
+                      </div>
+                      <div className="order-3 min-[464px]:order-2 flex items-center justify-between min-[464px]:justify-start gap-4 w-full min-[464px]:w-auto border-t min-[464px]:border-t-0 pt-2 min-[464px]:pt-0 border-border/40">
                         <div className="flex items-center gap-2">
                           <Input
                             value={ex.sets}
-                            onChange={e => updateExercise(ex.id, 'sets', e.target.value)}
-                            className={`w-12 h-8 text-center bg-muted ${exErr?.sets ? 'border-destructive' : ''}`}
+                            onChange={e => {
+                              const onlyNumbers = e.target.value.replace(/\D/g, '')
+                              updateExercise(ex.id, 'sets', onlyNumbers)
+                            }}
+                            placeholder={isMobile ? "Sets" : ""}
+                            className={`w-16 min-[464px]:w-12 h-8 text-center bg-muted text-sm ${exErr?.sets ? 'border-destructive' : ''}`}
                           />
                           <span className="text-muted-foreground/40 text-xs">×</span>
                           <Input
                             value={ex.reps}
-                            onChange={e => updateExercise(ex.id, 'reps', e.target.value)}
-                            className={`w-12 h-8 text-center bg-muted ${exErr?.reps ? 'border-destructive' : ''}`}
+                            onChange={e => {
+                              const onlyNumbers = e.target.value.replace(/\D/g, '')
+                              updateExercise(ex.id, 'reps', onlyNumbers)
+                            }}
+                            placeholder={isMobile ? "Reps" : ""}
+                            className={`w-16 min-[464px]:w-12 h-8 text-center bg-muted text-sm ${exErr?.reps ? 'border-destructive' : ''}`}
                           />
-                          <div className="flex items-center h-8 bg-card border rounded-md px-2">
-                            <input
-                                value={ex.rest}
-                                onChange={e => {
-                                const onlyNumbers = e.target.value.replace(/\D/g, '')
-                                updateExercise(ex.id, 'rest', onlyNumbers)
-                                }}
-                                className="w-8 text-center bg-transparent outline-none text-sm font-medium"
-                                placeholder="90"
-                            />
-                            <span className="text-sm font-medium text-muted-foreground">s</span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => removeExercise(ex.id)}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
+                        </div>
+                        <div className="flex items-center h-8 bg-card border rounded-md px-2">
+                          <input
+                            value={ex.rest}
+                            onChange={e => {
+                              const onlyNumbers = e.target.value.replace(/\D/g, '')
+                              updateExercise(ex.id, 'rest', onlyNumbers)
+                            }}
+                            className="w-8 text-center bg-transparent outline-none text-sm font-medium"
+                            placeholder="90"
+                          />
+                          <span className="text-sm font-medium text-muted-foreground">s</span>
                         </div>
                       </div>
-                      {(exErr?.name || exErr?.sets || exErr?.reps || exErr?.rest) && (
-                        <p className="text-destructive text-xs px-2">
-                          {exErr.name || exErr.sets || exErr.reps || exErr.rest}
-                        </p>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="order-2 min-[464px]:order-3 h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
+                        onClick={() => removeExercise(ex.id)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
                     </div>
-                  )
-                })}
+                    {(exErr?.name || exErr?.sets || exErr?.reps || exErr?.rest) && (
+                      <p className="text-destructive text-xs px-2">
+                        {exErr.name || exErr.sets || exErr.reps || exErr.rest}
+                      </p>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            <div className="hidden min-[464px]:grid grid-cols-12 px-10 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              <span className="col-span-6">Exercise</span>
+              <div className="col-span-6 flex justify-between text-right">
+                <span>Series</span>
+                <span>Reps</span>
+                <span>Rest</span>
               </div>
-              <div className="grid grid-cols-12 px-10 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                <span className="col-span-6">Exercise</span>
-                <div className="col-span-6 flex justify-between text-right">
-                  <span>Series</span>
-                  <span>Reps</span>
-                  <span>Rest</span>
-                </div>
-              </div>
+            </div>
             </>
           )}
         </div>
