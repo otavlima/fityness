@@ -230,36 +230,22 @@ const Home = () => {
   }, [currentMonthHistory])
 
   const averageTime = useMemo(() => {
-    if (
-      currentMonthHistory.length ===
-      0
-    ) {
-      return '0m'
+    if (currentMonthHistory.length === 0) {
+      return 0
     }
 
-    const totalDuration =
-      currentMonthHistory.reduce(
-        (acc, workout) =>
-          acc +
-          workout.duration,
-        0
-      )
-
-    const avgSeconds =
-      totalDuration /
-      currentMonthHistory.length
-
-    const hours = Math.floor(
-      avgSeconds / 3600
+    const totalDuration = currentMonthHistory.reduce(
+      (acc, workout) => acc + workout.duration,
+      0
     )
 
-    const minutes = Math.floor(
-      (avgSeconds % 3600) / 60
-    )
+    return totalDuration / currentMonthHistory.length
+  }, [currentMonthHistory])
 
-    const seconds = Math.round(
-      avgSeconds % 60
-    )
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600)
+
+    const minutes = Math.floor((seconds % 3600) / 60)
 
     if (hours > 0) {
       return `${hours}h ${minutes}m`
@@ -269,8 +255,8 @@ const Home = () => {
       return `${minutes}m`
     }
 
-    return `${seconds}s`
-  }, [currentMonthHistory])
+    return `${Math.round(seconds)}s`
+  }
 
   const todayString = [
     today.getFullYear(),
@@ -320,7 +306,7 @@ const Home = () => {
 
       {
         icon: TrendingUp,
-        badge: 'Real data',
+        badge: 'Lifted',
         value: totalVolume,
         label: 'Total volume',
       },
@@ -335,7 +321,7 @@ const Home = () => {
       {
         icon: Timer,
         badge: 'This month',
-        value: averageTime,
+        value: formatDuration(averageTime),
         label: 'Average time',
       },
     ]
@@ -426,6 +412,17 @@ const Home = () => {
         ? 'Afternoon'
         : 'Evening'
 
+  const formatName = (name: string) => {
+    return name
+      .split(' ')
+      .map(
+        (part) =>
+          part.charAt(0).toUpperCase() +
+          part.slice(1).toLowerCase()
+      )
+      .join(' ')
+  }
+
   if (loading) {
     return (
       <Header>
@@ -456,9 +453,7 @@ const Home = () => {
             <div className="space-y-4 lg:pr-[300px]">
               <h1 className="text-foreground text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">
                 {greeting},{' '}
-                {
-                  user?.displayName
-                }
+                {formatName(user?.displayName || '')}
                 .
                 <br />
 
@@ -470,9 +465,12 @@ const Home = () => {
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-lg font-medium max-w-[500px]">
-                {todayWorkout
-                  ? `${todayWorkout.exercises.length} exercises · ~55 minutes estimated.`
-                  : 'Recover, hydrate and get ready for the next workout.'}
+               {todayWorkout
+                ? `${todayWorkout.exercises.length} exercises · ~${formatDuration(
+                    averageTime *
+                    todayWorkout.exercises.length
+                  )} estimated.`
+                : 'Recover, hydrate and get ready for the next workout.'}
               </p>
             </div>
 

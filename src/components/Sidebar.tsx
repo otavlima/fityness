@@ -50,21 +50,43 @@ const generalItems = [
 ]
 
 function Sidebar() {
-  const { logout, user }                    = useAuth()
-  const { profile, avatarUrl }              = useUserProfile()
+  const { logout, user } = useAuth()
+  const { profile, avatarUrl } = useUserProfile()
   const { state, openMobile, setOpenMobile } = useSidebar()
-  const navigate  = useNavigate()
-  const location  = useLocation()
-  const isOpen    = state === "expanded" || openMobile
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isOpen = state === "expanded" || openMobile
 
   const initials = profile?.name
-    ? profile.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
-    : user?.email?.[0].toUpperCase() ?? '?'
+    ? profile.name
+        .trim()
+        .split(' ')
+        .filter(Boolean)
+        .map((n: string) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : user?.email?.[0]?.toUpperCase() ?? '?'
 
   const handleNavigate = (path: string) => {
     navigate(path)
     setOpenMobile(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const formatName = (name?: string | null) => {
+    if (!name) return 'User'
+
+    return name
+      .trim()
+      .split(' ')
+      .filter(Boolean)
+      .map(
+        (part) =>
+          part.charAt(0).toUpperCase() +
+          part.slice(1).toLowerCase()
+      )
+      .join(' ')
   }
 
   return (
@@ -152,7 +174,7 @@ function Sidebar() {
                     <AvatarFallback className="text-xs">{initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-medium truncate">{profile?.name ?? user?.displayName ?? 'User'}</span>
+                    <span className="text-sm font-medium truncate">{formatName(profile?.name ?? user?.displayName)}</span>
                     <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
                   </div>
                   <ChevronUp className="ml-auto shrink-0" size={16} />
@@ -160,7 +182,7 @@ function Sidebar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" className="w-56">
                 <div className="px-2 py-2 border-b border-border mb-1">
-                  <p className="text-sm font-medium">{profile?.name ?? user?.displayName ?? 'User'}</p>
+                  <p className="text-sm font-medium">{formatName(profile?.name ?? user?.displayName)}</p>
                   <p className="text-xs text-muted-foreground">Plan Free</p>
                 </div>
                 <DropdownMenuItem onClick={() => handleNavigate('/configurations')}>
