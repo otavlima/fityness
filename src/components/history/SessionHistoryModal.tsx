@@ -140,15 +140,25 @@ const SessionHistoryModal = ({
                 {session.exercises.length} total
               </span>
             </div>
-
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide md:hidden">
+            <div
+              className="
+                flex gap-3 overflow-x-auto 
+                scrollbar-hide md:hidden
+                snap-x snap-mandatory
+                scroll-smooth
+              "
+            >
               {session.exercises.map((exercise, index) => {
                 const shouldScrollSets = exercise.sets.length > 5
 
                 return (
                   <div
                     key={exercise.exerciseId}
-                    className="min-w-[85%] rounded-3xl border border-border/60 bg-card p-4"
+                    className="
+                      min-w-[85%]
+                      snap-center
+                      rounded-3xl border border-border/60 bg-card p-4
+                    "
                   >
                     <div className="mb-4 flex gap-3">
                       <div className="flex size-8 items-center justify-center rounded-full bg-muted text-sm">
