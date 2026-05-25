@@ -14,7 +14,6 @@ import { useAuth } from "@/contexts/AuthContext"
 import { Field, FieldDescription, FieldTitle } from "./ui/field"
 import LogoIcon from "./LogoIcon"
 import { useSidebar } from "@/components/ui/sidebar"
-import { Button } from "./ui/button"
 import {
   LayoutDashboard,
   Dumbbell,
@@ -25,7 +24,6 @@ import {
   LogOut,
   Sparkles,
   ChevronUp,
-  CornerUpRight,
 } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import {

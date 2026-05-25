@@ -16,7 +16,7 @@ import {
 import { Field, FieldDescription, FieldTitle } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/contexts/AuthContext'
-import { Sun, Moon, Sparkles, CornerUpRight, Eye, EyeOff, Loader2, Camera } from 'lucide-react'
+import { Sun, Moon, Eye, EyeOff, Loader2, Camera } from 'lucide-react'
 import { useState, useRef } from 'react'
 import { useTheme } from '@/hooks/useTheme'
 import { useLanguage } from '@/hooks/useLanguage'
