@@ -1,15 +1,12 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-
 import {
   CalendarDays,
   X,
 } from 'lucide-react'
-
 import type {
   WorkoutGroup,
   WorkoutSession,
 } from '@/pages/History'
-
 import { cn } from '@/lib/utils'
 
 type Props = {
