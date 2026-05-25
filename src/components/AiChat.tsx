@@ -210,7 +210,7 @@ const AiChat = ({
                       Fity.ness AI
                     </SheetTitle>
 
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-gradient" />
                   </div>
 
                   <p className="text-xs text-muted-foreground">

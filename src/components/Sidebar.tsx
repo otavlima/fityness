@@ -147,21 +147,6 @@ function Sidebar() {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-
-        <SidebarGroup>
-          <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="rounded-xl bg-brand-gradient p-4 flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-background" />
-                <span className="text-xs font-bold tracking-widest text-background">AI</span>
-              </div>
-              <p className="text-sm text-background/80">Unlock an intelligent assistant and get answers...</p>
-              <Button variant="secondary">
-                Get Started <CornerUpRight />
-              </Button>
-            </div>
-          </div>
-        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border pt-2">
         <SidebarMenu>

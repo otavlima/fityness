@@ -192,19 +192,6 @@ const Configurations = () => {
               </Field>
             </CardContent>
           </Card>
-          <div className="rounded-xl bg-primary p-4 flex flex-col gap-3">
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles size={16} className="text-background" />
-                <span className="text-xs font-bold tracking-widest text-background">FITY.NESS WITH AI</span>
-              </div>
-              <Button variant="secondary" className="max-w-32">Get Started <CornerUpRight /></Button>
-            </div>
-            <Field className="flex flex-col gap-1">
-              <FieldTitle className="text-background text-2xl">Elevate your evolution</FieldTitle>
-              <FieldDescription className="text-sm text-background/80">Unlock an intelligent assistant and get answers...</FieldDescription>
-            </Field>
-          </div>
           <Card>
             <CardHeader className="flex justify-between items-center">
               <CardTitle className="font-semibold tracking-tight">Security</CardTitle>
