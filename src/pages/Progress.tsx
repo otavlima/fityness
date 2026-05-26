@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react'
 import { Loader2, Trophy } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer } from 'recharts'
+import { useTranslation } from 'react-i18next'
 
 import Header from '@/components/Header'
 import { Card } from '@/components/ui/card'
@@ -40,220 +41,8 @@ interface MuscleItem {
   percentage: number
 }
 
-const CATEGORY_BIG4: Record<
-  string,
-  {
-    title: string
-    subtitle: string
-  }
-> = {
-  push: {
-    title: 'Push',
-    subtitle: 'Chest & Triceps',
-  },
-  pull: {
-    title: 'Pull',
-    subtitle: 'Back & Biceps',
-  },
-  'lower-body': {
-    title: 'Lower Body',
-    subtitle: 'Legs & Glutes',
-  },
-  'upper-body': {
-    title: 'Upper Body',
-    subtitle: 'Shoulders & Arms',
-  },
-}
-
-const formatDate = (date: Date): string => {
-  const diff = Math.floor(
-    (new Date().getTime() - date.getTime()) /
-      86400000
-  )
-
-  if (diff === 0) return 'Today'
-  if (diff === 1) return 'Yesterday'
-
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-}
-
-const getWeekNumber = (date: Date): string => {
-  const d = new Date(date)
-
-  d.setHours(0, 0, 0, 0)
-
-  d.setDate(
-    d.getDate() + 3 - ((d.getDay() + 6) % 7)
-  )
-
-  const week1 = new Date(
-    d.getFullYear(),
-    0,
-    4
-  )
-
-  return `${d.getFullYear()}-W${Math.round(
-    (
-      (
-        d.getTime() - week1.getTime()
-      ) /
-        86400000 -
-      3 +
-      ((week1.getDay() + 6) % 7)
-    ) /
-      7
-  )}`
-}
-
-const formatCategoryName = (
-  category: string
-) => {
-  return category
-    .split('-')
-    .map(
-      (word) =>
-        word.charAt(0).toUpperCase() +
-        word.slice(1)
-    )
-    .join(' ')
-}
-
-const Big4Card = ({
-  title,
-  subtitle,
-  currentValue,
-  data,
-}: Big4Data) => {
-  const uniqueId = useId().replace(/:/g, '')
-
-  const hasData = data.length > 1
-
-  const displayData = hasData
-    ? data
-    : [{ value: 0 }, { value: 0 }]
-
-  return (
-    <Card className="overflow-hidden rounded-2xl border border-border/40 bg-background shadow-none">
-      <div className="flex flex-row items-start justify-between p-4 pb-2">
-        <div className="space-y-0.5">
-          <p className="text-sm font-bold text-foreground">
-            {title}
-          </p>
-
-          <p className="text-[11px] text-muted-foreground">
-            {subtitle}
-          </p>
-
-          <div className="flex items-baseline gap-2 pt-1">
-            {currentValue > 0 ? (
-              <>
-                <span className="text-2xl font-bold tracking-tight">
-                  {currentValue}kg
-                </span>
-
-                <span className="text-xs text-muted-foreground">
-                  average training load
-                </span>
-              </>
-            ) : (
-              <span className="text-sm italic text-muted-foreground">
-                No data yet
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="pointer-events-none h-14 w-full">
-        {hasData ? (
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-          >
-            <AreaChart
-              data={displayData}
-              margin={{
-                top: 0,
-                right: 0,
-                left: 0,
-                bottom: 0,
-              }}
-            >
-              <defs>
-                <linearGradient
-                  id={`gradient-${uniqueId}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor="currentColor"
-                    stopOpacity={0.15}
-                  />
-
-                  <stop
-                    offset="95%"
-                    stopColor="currentColor"
-                    stopOpacity={0.01}
-                  />
-                </linearGradient>
-              </defs>
-
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                fill={`url(#gradient-${uniqueId})`}
-                className="text-foreground/40"
-                isAnimationActive={false}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="flex h-full items-end px-4 pb-2">
-            <div className="h-[2px] w-full rounded-full bg-border/60" />
-          </div>
-        )}
-      </div>
-    </Card>
-  )
-}
-
-const RecentRecordItem = ({
-  exercise,
-  performance,
-  date,
-}: RecordItem) => (
-  <div className="flex items-center justify-between border-b border-border/40 py-3.5 first:pt-0 last:border-0 last:pb-0">
-    <div className="flex items-center gap-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
-        <Trophy className="h-4 w-4" />
-      </div>
-
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm font-semibold">
-          {exercise}
-        </span>
-
-        <span className="text-xs font-medium text-muted-foreground">
-          {performance}
-        </span>
-      </div>
-    </div>
-
-    <span className="text-xs font-medium text-muted-foreground">
-      {date}
-    </span>
-  </div>
-)
-
 const Progress = () => {
+  const { t } = useTranslation()
   const { user } = useAuth()
 
   const [loading, setLoading] = useState(true)
@@ -267,6 +56,219 @@ const Progress = () => {
     useState<
       WorkoutDocument[]
     >([])
+
+  const CATEGORY_BIG4: Record<
+    string,
+    {
+      title: string
+      subtitle: string
+    }
+  > = useMemo(() => ({
+    push: {
+      title: t('progress.big4.categories.push.title'),
+      subtitle: t('progress.big4.categories.push.subtitle'),
+    },
+    pull: {
+      title: t('progress.big4.categories.pull.title'),
+      subtitle: t('progress.big4.categories.pull.subtitle'),
+    },
+    'lower-body': {
+      title: t('progress.big4.categories.lowerBody.title'),
+      subtitle: t('progress.big4.categories.lowerBody.subtitle'),
+    },
+    'upper-body': {
+      title: t('progress.big4.categories.upperBody.title'),
+      subtitle: t('progress.big4.categories.upperBody.subtitle'),
+    },
+  }), [t])
+
+  const formatDate = (date: Date): string => {
+    const diff = Math.floor(
+      (new Date().getTime() - date.getTime()) /
+        86400000
+    )
+
+    if (diff === 0) return t('progress.date.today')
+    if (diff === 1) return t('progress.date.yesterday')
+
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+
+  const getWeekNumber = (date: Date): string => {
+    const d = new Date(date)
+
+    d.setHours(0, 0, 0, 0)
+
+    d.setDate(
+      d.getDate() + 3 - ((d.getDay() + 6) % 7)
+    )
+
+    const week1 = new Date(
+      d.getFullYear(),
+      0,
+      4
+    )
+
+    return `${d.getFullYear()}-W${Math.round(
+      (
+        (
+          d.getTime() - week1.getTime()
+        ) /
+          86400000 -
+        3 +
+        ((week1.getDay() + 6) % 7)
+      ) /
+        7
+    )}`
+  }
+
+  const formatCategoryName = (
+    category: string
+  ) => {
+    return category
+      .split('-')
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() +
+          word.slice(1)
+      )
+      .join(' ')
+  }
+
+  const Big4Card = ({
+    title,
+    subtitle,
+    currentValue,
+    data,
+  }: Big4Data) => {
+    const uniqueId = useId().replace(/:/g, '')
+
+    const hasData = data.length > 1
+
+    const displayData = hasData
+      ? data
+      : [{ value: 0 }, { value: 0 }]
+
+    return (
+      <Card className="overflow-hidden rounded-2xl border border-border/40 bg-background shadow-none">
+        <div className="flex flex-row items-start justify-between p-4 pb-2">
+          <div className="space-y-0.5">
+            <p className="text-sm font-bold text-foreground">
+              {title}
+            </p>
+
+            <p className="text-[11px] text-muted-foreground">
+              {subtitle}
+            </p>
+
+            <div className="flex items-baseline gap-2 pt-1">
+              {currentValue > 0 ? (
+                <>
+                  <span className="text-2xl font-bold tracking-tight">
+                    {currentValue}kg
+                  </span>
+
+                  <span className="text-xs text-muted-foreground">
+                    {t('progress.big4.averageLabel')}
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm italic text-muted-foreground">
+                  {t('progress.big4.noData')}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="pointer-events-none h-14 w-full">
+          {hasData ? (
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+            >
+              <AreaChart
+                data={displayData}
+                margin={{
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                }}
+              >
+                <defs>
+                  <linearGradient
+                    id={`gradient-${uniqueId}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="currentColor"
+                      stopOpacity={0.15}
+                    />
+
+                    <stop
+                      offset="95%"
+                      stopColor="currentColor"
+                      stopOpacity={0.01}
+                    />
+                  </linearGradient>
+                </defs>
+
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  fill={`url(#gradient-${uniqueId})`}
+                  className="text-foreground/40"
+                  isAnimationActive={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-full items-end px-4 pb-2">
+              <div className="h-[2px] w-full rounded-full bg-border/60" />
+            </div>
+          )}
+        </div>
+      </Card>
+    )
+  }
+
+  const RecentRecordItem = ({
+    exercise,
+    performance,
+    date,
+  }: RecordItem) => (
+    <div className="flex items-center justify-between border-b border-border/40 py-3.5 first:pt-0 last:border-0 last:pb-0">
+      <div className="flex items-center gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+          <Trophy className="h-4 w-4" />
+        </div>
+
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-semibold">
+            {exercise}
+          </span>
+
+          <span className="text-xs font-medium text-muted-foreground">
+            {performance}
+          </span>
+        </div>
+      </div>
+
+      <span className="text-xs font-medium text-muted-foreground">
+        {date}
+      </span>
+    </div>
+  )
 
   useEffect(() => {
     if (!user) return
@@ -449,7 +451,7 @@ const Progress = () => {
         }
       )
     },
-    [filtered, workoutMap]
+    [filtered, workoutMap, CATEGORY_BIG4]
   )
 
   const strengthAvg = useMemo(() => {
@@ -486,7 +488,7 @@ const Progress = () => {
         h.exercises.forEach((exercise) => {
           const exerciseName =
             exercise.exerciseName ||
-            'Exercise'
+            t('progress.records.fallbackExercise')
 
           exercise.sets
             .filter(
@@ -536,7 +538,7 @@ const Progress = () => {
           })
         )
     },
-    [filtered]
+    [filtered, t]
   )
 
   const muscleDistribution = useMemo(
@@ -553,7 +555,7 @@ const Progress = () => {
         if (!wk) return
 
         const category =
-          wk.category || 'Other'
+          wk.category || t('progress.distribution.fallbackCategory')
 
         counts[category] =
           (counts[category] ?? 0) + 1
@@ -576,7 +578,7 @@ const Progress = () => {
           ),
         }))
     },
-    [filtered, workoutMap]
+    [filtered, workoutMap, t]
   )
 
   return (
@@ -586,15 +588,15 @@ const Progress = () => {
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <Field className="flex flex-col gap-1">
               <FieldDescription className="text-xs font-semibold uppercase tracking-widest">
-                Analytics
+                {t('progress.analytics')}
               </FieldDescription>
 
               <FieldTitle className="text-3xl font-bold tracking-tight">
-                Progress
+                {t('progress.title')}
               </FieldTitle>
 
               <FieldDescription>
-                Track your load progression and consistency.
+                {t('progress.description')}
               </FieldDescription>
             </Field>
           </div>
@@ -605,7 +607,7 @@ const Progress = () => {
                 <Loader2 className="h-8 w-8 animate-spin" />
 
                 <span className="text-sm font-medium">
-                  Loading progress...
+                  {t('progress.loading')}
                 </span>
               </div>
             </div>
@@ -614,7 +616,7 @@ const Progress = () => {
               <div className="grid grid-cols-1 gap-4 font-bold md:grid-cols-3">
                 <Card className="rounded-3xl border-none bg-foreground p-5 text-background">
                   <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
-                    Strength (Big 4)
+                    {t('progress.strength.title')}
                   </p>
 
                   <h2 className="text-4xl tracking-tight">
@@ -622,13 +624,13 @@ const Progress = () => {
                   </h2>
 
                   <p className="mt-1 text-sm font-medium opacity-60">
-                    average training load
+                    {t('progress.strength.label')}
                   </p>
                 </Card>
 
                 <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
                   <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Volume
+                    {t('progress.volume.title')}
                   </p>
 
                   <h2 className="text-4xl tracking-tight">
@@ -638,13 +640,13 @@ const Progress = () => {
                   </h2>
 
                   <p className="mt-1 text-sm font-medium text-muted-foreground">
-                    training volume
+                    {t('progress.volume.label')}
                   </p>
                 </Card>
 
                 <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
                   <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Consistency
+                    {t('progress.consistency.title')}
                   </p>
 
                   <h2 className="text-4xl tracking-tight">
@@ -654,7 +656,7 @@ const Progress = () => {
                   </h2>
 
                   <p className="mt-1 text-sm font-medium text-muted-foreground">
-                    weeks trained
+                    {t('progress.consistency.label')}
                   </p>
                 </Card>
               </div>
@@ -662,7 +664,7 @@ const Progress = () => {
               <Card className="space-y-6 rounded-3xl border-border/40 bg-card/40 p-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold tracking-tight">
-                    Big 4 — Loads
+                    {t('progress.big4.title')}
                   </h3>
                 </div>
 
@@ -679,12 +681,12 @@ const Progress = () => {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Card className="flex flex-col gap-6 rounded-3xl border-border/40 bg-card/40 p-6">
                   <h3 className="text-lg font-semibold tracking-tight">
-                    Recent Records
+                    {t('progress.records.title')}
                   </h3>
 
                   {recentRecords.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
-                      No records yet. Complete a workout to see your PRs.
+                      {t('progress.records.empty')}
                     </p>
                   ) : (
                     <div className="flex flex-col">
@@ -702,12 +704,12 @@ const Progress = () => {
 
                 <Card className="flex flex-col gap-6 rounded-3xl border-border/40 bg-card/40 p-6">
                   <h3 className="text-lg font-semibold tracking-tight">
-                    Muscle Distribution
+                    {t('progress.distribution.title')}
                   </h3>
 
                   {muscleDistribution.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
-                      No data yet.
+                      {t('progress.distribution.empty')}
                     </p>
                   ) : (
                     <div className="flex flex-col gap-4">

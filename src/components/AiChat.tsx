@@ -20,6 +20,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { FITYNESS_SYSTEM_PROMPT } from '@/services/firebase/prompt'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   open: boolean
@@ -43,6 +44,8 @@ const AiChat = ({
   open,
   onOpenChange,
 }: Props) => {
+  const { t } = useTranslation()
+
   const [message, setMessage] =
     useState('')
 
@@ -116,7 +119,7 @@ const AiChat = ({
 
       const response =
         completion.choices[0]?.message
-          ?.content || 'No response.'
+          ?.content || t('aiChat.errors.noResponse')
 
       const aiMessage: Message = {
         id: crypto.randomUUID(),
@@ -132,34 +135,34 @@ const AiChat = ({
         console.error(error)
 
         let errorMessage =
-          'The AI is temporarily unavailable.'
+          t('aiChat.errors.unavailable')
 
         if (
           error?.status === 429
         ) {
           errorMessage =
-            'Too many requests. Please wait a few seconds.'
+            t('aiChat.errors.rateLimit')
         }
 
         else if (
           error?.status === 401
         ) {
           errorMessage =
-            'Invalid AI API key.'
+            t('aiChat.errors.unauthorized')
         }
 
         else if (
           error?.message?.includes('Failed to fetch')
         ) {
           errorMessage =
-            'Connection error. Check your internet.'
+            t('aiChat.errors.network')
         }
 
         else if (
           error?.message?.includes('timeout')
         ) {
           errorMessage =
-            'The AI took too long to respond.'
+            t('aiChat.errors.timeout')
         }
 
         setMessages((prev) => [
@@ -175,6 +178,12 @@ const AiChat = ({
     }
   }
 
+  const suggestionKeys = [
+    'hypertrophy',
+    'chest',
+    'protein',
+  ]
+
   return (
     <Sheet
       open={open}
@@ -183,8 +192,9 @@ const AiChat = ({
       <SheetContent
         side="right"
         showCloseButton={false}
+        fullScreenOnMobile
         className="
-          h-screen
+          h-[100dvh]
           w-full
           max-w-none
           border-0
@@ -207,14 +217,14 @@ const AiChat = ({
                 <div>
                   <div className="flex items-center gap-1.5">
                     <SheetTitle className="text-sm font-bold">
-                      Fity.ness AI
+                      {t('aiChat.title')}
                     </SheetTitle>
 
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-gradient" />
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Your fitness assistant
+                    {t('aiChat.subtitle')}
                   </p>
                 </div>
               </div>
@@ -239,42 +249,40 @@ const AiChat = ({
               <div className="flex h-full flex-col items-center justify-center text-center">
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold">
-                    Hi 👋
+                    {t('aiChat.welcome')}
                   </h3>
 
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Ask me about workouts,
-                    nutrition or exercises.
+                    {t('aiChat.welcomeDesc')}
                   </p>
                 </div>
 
                 <div className="w-full max-w-[320px] space-y-2">
-                  {[
-                    'Create a hypertrophy workout',
-                    'Best exercises for chest',
-                    'High protein meal ideas',
-                  ].map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      onClick={() =>
-                        handleSendMessage(
-                          suggestion
-                        )
-                      }
-                      className="
-                        flex w-full items-center justify-between
-                        rounded-xl border border-border
-                        bg-card px-4 py-3 text-left text-sm
-                        transition hover:bg-muted
-                      "
-                    >
-                      <span>
-                        {suggestion}
-                      </span>
+                  {suggestionKeys.map((key) => {
+                    const translatedSuggestion = t(`aiChat.suggestions.${key}`)
+                    return (
+                      <button
+                        key={key}
+                        onClick={() =>
+                          handleSendMessage(
+                            translatedSuggestion
+                          )
+                        }
+                        className="
+                          flex w-full items-center justify-between
+                          rounded-xl border border-border
+                          bg-card px-4 py-3 text-left text-sm
+                          transition hover:bg-muted
+                        "
+                      >
+                        <span>
+                          {translatedSuggestion}
+                        </span>
 
-                      <Sparkles className="size-4 opacity-60" />
-                    </button>
-                  ))}
+                        <Sparkles className="size-4 opacity-60" />
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             ) : (
@@ -391,7 +399,7 @@ const AiChat = ({
                       e.target.value
                     )
                   }
-                  placeholder="Ask something..."
+                  placeholder={t('aiChat.placeholder')}
                   className="
                     h-11 border-0 bg-transparent
                     p-0 shadow-none

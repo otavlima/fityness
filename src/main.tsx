@@ -8,6 +8,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { initTheme } from './hooks/useTheme.ts'
 import { UserProfileProvider } from './contexts/UserProfileContext'
 import AppToaster from './components/AppToaster.tsx'
+import "./i18n"
 
 initTheme()
 

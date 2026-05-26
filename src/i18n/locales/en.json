@@ -1,0 +1,588 @@
+{
+  "login": {
+    "title": "Fity.ness - Sign in",
+    "cardTitle": "Login",
+    "description": "Login to Fity.ness and work out with us!",
+    "signUpLink": "Sign up",
+    "emailLabel": "Email",
+    "emailDescription": "Enter your email.",
+    "passwordLabel": "Password",
+    "passwordDescription": "Enter your password.",
+    "button": "Login",
+    "connecting": "Connecting",
+    "footer": "All rights reserved 2026. © Fity.ness",
+    "messages": {
+      "success": "Login successfully!",
+      "error": "Invalid credentials."
+    }
+  },
+  "register": {
+    "title": "Fity.ness - Sign up",
+    "cardTitle": "Create your account",
+    "description": "Register to Fity.ness and work out with us!",
+    "signInLink": "Sign in",
+    "steps": {
+      "info": "1. Info",
+      "account": "2. Account"
+    },
+    "fields": {
+      "nameLabel": "Name",
+      "nameDescription": "Enter your full name.",
+      "usernameLabel": "Username",
+      "usernameDescription": "Enter your username.",
+      "emailLabel": "Email",
+      "emailDescription": "We might send notifications.",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordDescription": "Use a strong password to avoid risks."
+    },
+    "buttons": {
+      "back": "Back",
+      "continue": "Continue",
+      "register": "Register",
+      "registering": "Registering"
+    },
+    "messages": {
+      "success": "Account created successfully!",
+      "emailInUse": "This email is already in use.",
+      "error": "Error creating account."
+    }
+  },
+  "configurations": {
+    "title": "Configurations",
+    "description": "Manage your profile, preferences and plan",
+
+    "sections": {
+      "account": "Account",
+      "profile": "Profile",
+      "preferences": "Preferences",
+      "security": "Security",
+      "dangerZone": "Danger zone"
+    },
+
+    "profile": {
+      "title": "Profile",
+      "save": "Save changes",
+      "saved": "Profile updated!",
+      "error": "Error updating profile",
+      "avatarHint": "JPG or PNG",
+      "name": "Name",
+      "username": "Username",
+      "email": "Email"
+    },
+
+    "preferences": {
+      "theme": "Theme",
+      "themeDescription": "Switch between light and dark mode",
+      "language": "Language",
+      "languageDescription": "Select your language",
+      "light": "Light",
+      "dark": "Dark"
+    },
+
+    "security": {
+      "save": "Save changes",
+      "saved": "Password updated!",
+      "error": "Current password is incorrect",
+      "password": "Password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "mismatch": "Passwords do not match",
+      "minLength": "Password must be at least 6 characters"
+    },
+
+    "danger": {
+      "title": "Delete account",
+      "description": "This action is permanent and cannot be undone",
+      "button": "Delete account",
+      "confirmTitle": "Are you sure?",
+      "confirmDescription": "All data will be permanently deleted",
+      "cancel": "Cancel"
+    }
+  },
+  "sidebar": {
+    "tagline": "TRAIN. TRACK. TRANSFORM.",
+
+    "groups": {
+      "menu": "Menu",
+      "general": "General"
+    },
+
+    "menu": {
+      "dashboard": "Dashboard",
+      "workouts": "Workouts",
+      "calendar": "Calendar",
+      "history": "History",
+      "progress": "Progress",
+      "configurations": "Configurations"
+    },
+
+    "dropdown": {
+      "planFree": "Free Plan",
+      "configurations": "Configurations",
+      "activeAi": "Activate AI",
+      "logout": "Logout"
+    },
+
+    "userFallback": "User"
+  },
+  "progress": {
+    "analytics": "Analytics",
+    "title": "Progress",
+    "description": "Track your load progression and consistency.",
+    "loading": "Loading progress...",
+    "strength": {
+      "title": "Strength (Big 4)",
+      "label": "average training load"
+    },
+    "volume": {
+      "title": "Volume",
+      "label": "training volume"
+    },
+    "consistency": {
+      "title": "Consistency",
+      "label": "weeks trained"
+    },
+    "big4": {
+      "title": "Big 4 — Loads",
+      "noData": "No data yet",
+      "averageLabel": "average training load",
+      "categories": {
+        "push": { "title": "Push", "subtitle": "Chest & Triceps" },
+        "pull": { "title": "Pull", "subtitle": "Back & Biceps" },
+        "lowerBody": { "title": "Lower Body", "subtitle": "Legs & Glutes" },
+        "upperBody": { "title": "Upper Body", "subtitle": "Shoulders & Arms" }
+      }
+    },
+    "records": {
+      "title": "Recent Records",
+      "empty": "No records yet. Complete a workout to see your PRs.",
+      "fallbackExercise": "Exercise"
+    },
+    "distribution": {
+      "title": "Muscle Distribution",
+      "empty": "No data yet.",
+      "fallbackCategory": "Other"
+    },
+    "date": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    }
+  },
+  "home": {
+    "streak": {
+      "oneDay": "Streak {{count}} Day",
+      "otherDays": "Streak {{count}} Days"
+    },
+    "greetings": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "status": {
+      "todayWorkout": "Today's workout is {{title}}.",
+      "restDay": "Today is a rest day.",
+      "estimated": "{{count}} exercises · ~{{duration}} estimated.",
+      "recover": "Recover, hydrate and get ready for the next workout."
+    },
+    "buttons": {
+      "startWorkout": "Start Workout",
+      "viewMonthly": "View monthly plan"
+    },
+    "monthSummary": {
+      "title": "This Month",
+      "completed": "/ {{total}} completed"
+    },
+    "metrics": {
+      "workouts": {
+        "badge": "{{count}} done",
+        "label": "Workouts this month"
+      },
+      "volume": {
+        "badge": "Lifted",
+        "label": "Total volume"
+      },
+      "streak": {
+        "badge": "Record!",
+        "label": "Active streak"
+      },
+      "averageTime": {
+        "badge": "This month",
+        "label": "Average time"
+      }
+    },
+    "sections": {
+      "todaysWorkout": "Today's Workout",
+      "restDayTitle": "Rest Day",
+      "recoveryBadge": "Recovery",
+      "exercisesCount": "{{count}} Exercises",
+      "noWorkoutScheduled": "No workout scheduled for today.",
+      "recentActivity": "Recent Activity",
+      "noRecentActivity": "No recent activity.",
+      "activityCompletedStatus": "Completed",
+      "manageWorkouts": "Manage workouts"
+    }
+  },
+  "workouts": {
+    "library": "Library",
+    "title": "Workouts",
+    "description": "Organize, edit, and start any routine in seconds.",
+    "newWorkout": "New workout",
+    "searchPlaceholder": "Search for workouts...",
+    "loading": "Loading workouts...",
+    "tabs": {
+      "all": "All",
+      "upper": "Upper",
+      "lower": "Lower",
+      "push": "Push",
+      "pull": "Pull",
+      "full": "Full"
+    },
+    "card": {
+      "never": "Never",
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "createCard": {
+      "title": "Create new workout",
+      "description": "Build your workout from scratch"
+    },
+    "messages": {
+      "deletedSuccess": "Workout deleted.",
+      "deletedError": "Error deleting workout.",
+      "completedSuccess": "Workout completed!"
+    },
+    "deleteModal": {
+      "title": "Delete workout",
+      "description": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  },
+  "calendar": {
+    "planning": "Planning",
+    "title": "Calendar",
+    "description": "Schedule your workouts and track your frequency.",
+    "newSchedule": "New schedule",
+    "loading": "Loading calendar...",
+    "legend": {
+      "completed": "Completed",
+      "scheduled": "Scheduled"
+    },
+    "more": "+{{count}} more",
+    "weekdays": ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+    "months": [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ],
+    "upcoming": {
+      "title": "Upcoming Workouts",
+      "empty": "No upcoming workouts."
+    },
+    "frequency": {
+      "title": "Monthly Frequency",
+      "average": "Average: <span class=\"font-bold text-foreground\">{{count}} workouts/week</span>"
+    }
+  },
+  "history": {
+    "timeline": "Timeline",
+    "title": "History",
+    "description": "Every workout saved. Every PR recorded.",
+    "filter": "Filter",
+    "loading": "Loading history...",
+    "empty": {
+      "title": "No workouts registered yet",
+      "description": "Start tracking your progress by creating your first workout."
+    },
+    "stats": {
+      "total": "Total",
+      "sessionsCount": "sessions registered",
+      "volume": "Volume",
+      "totalLifted": "total lifted",
+      "records": "Records",
+      "activePrs": "active workout PRs"
+    },
+    "buttons": {
+      "loadMore": "Load more"
+    },
+    "categories": {
+      "upper-body": "Upper Body",
+      "lower-body": "Lower Body",
+      "push": "Push",
+      "pull": "Pull",
+      "full-body": "Full Body"
+    }
+  },
+  "historyCard": {
+    "defaultCategory": "Workout",
+    "sessionsCount": "{{count}} sessions registered",
+    "labels": {
+      "sessions": "Sessions",
+      "volume": "Volume",
+      "last": "Last",
+      "currentPr": "Current PR"
+    },
+    "noPr": "No PR yet"
+  },
+  "historyModal": {
+    "sessionsCount": "{{count}} sessions recorded",
+    "recentCount": "{{count}} recent",
+    "labels": {
+      "sessions": "Sessions",
+      "best": "Best",
+      "last": "Last",
+      "pr": "PR",
+      "currentRecord": "Current record",
+      "performanceHint": "Best recorded performance",
+      "sessionHistory": "Session history"
+    },
+    "buttons": {
+      "close": "Close"
+    }
+  },
+  "sessionHistoryModal": {
+    "subtitle": "Workout Session",
+    "total": "total",
+    "labels": {
+      "duration": "Duration",
+      "volume": "Volume",
+      "sets": "Sets",
+      "exercises": "Exercises",
+      "setCounter": "Set {{index}}",
+      "setsCount": "{{count}} sets"
+    }
+  },
+  "filterModal": {
+    "title": "Filter history",
+    "description": "Refine your workout timeline",
+    "labels": {
+      "period": "Period",
+      "category": "Category",
+      "duration": "Duration",
+      "orderBy": "Order by",
+      "onlyPrTitle": "Only PR workouts",
+      "onlyPrDesc": "Show only personal records"
+    },
+    "periods": {
+      "select": "Select period",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "all": "All time"
+    },
+    "durations": {
+      "any": "Any",
+      "short": "Up to 30 minutes",
+      "medium": "30-60min",
+      "long": "More than 60min"
+    },
+    "orders": {
+      "recent": "Most recent",
+      "volume": "Most volume",
+      "duration": "Most duration"
+    },
+    "buttons": {
+      "clear": "Clear",
+      "apply": "Apply filters"
+    }
+  },
+  "scheduleModal": {
+    "title": "Schedule workout",
+    "description": "Select a workout and define your training schedule.",
+    "saving": "Scheduling...",
+    "submit": "Schedule",
+    "cancel": "Cancel",
+    "workoutLabel": "Workout",
+    "workoutPlaceholder": "Select an existing workout",
+    "startsOn": "Starts on",
+    "date": "Date",
+    "datePlaceholder": "Date",
+    "timeLabel": "Time",
+    "repeatTitle": "Repeat workout",
+    "repeatDesc": "Automatically schedule on a fixed frequency.",
+    "frequencyLabel": "Frequency",
+    "frequencies": {
+      "weekly": "Weekly (same day)",
+      "biweekly": "Every 2 weeks",
+      "specific_days": "Specific days of the week"
+    },
+    "weekdaysLabel": "Days of the week",
+    "weekdays": {
+      "0": "S",
+      "1": "M",
+      "2": "T",
+      "3": "W",
+      "4": "T",
+      "5": "F",
+      "6": "S"
+    },
+    "endsLabel": "Ends",
+    "endConditions": {
+      "never": "Never",
+      "after_x": "After X occurrences",
+      "on_date": "On a specific date"
+    },
+    "occurrencesPlaceholder": "Ex: 10",
+    "endDatePlaceholder": "End date",
+    "notesLabel": "Notes (optional)",
+    "notesPlaceholder": "Focus on form, hydration...",
+    "messages": {
+      "success": "Workout scheduled!",
+      "error": "Error scheduling workout."
+    }
+  },
+  "startExercises": {
+    "dialogTitle": "Start Workout",
+    "noExercises": "No exercises found.",
+    "loading": "Loading sets...",
+    "noSets": "No sets configured.",
+    "completed": "completed",
+    "skip": "Skip",
+    "buttons": {
+      "close": "Close",
+      "back": "Back",
+      "next": "Next",
+      "done": "Done",
+      "saving": "Saving..."
+    },
+    "table": {
+      "set": "SET",
+      "prev": "PREV",
+      "kg": "KG",
+      "reps": "REPS"
+    },
+    "messages": {
+      "weightRequired": "Enter the weight before marking as done.",
+      "success": "Workout saved!",
+      "errorLoad": "Error loading workout data.",
+      "errorSave": "Error saving workout."
+    }
+  },
+  "workoutModal": {
+    "titleCreate": "Create new workout",
+    "titleEdit": "Edit workout",
+    "descCreate": "Set up your session and organize your exercises.",
+    "descEdit": "Update your workout details.",
+    "cancel": "Cancel",
+    "saveChanges": "Save changes",
+    "createWorkout": "Create workout",
+    "saving": "Saving",
+    "creating": "Creating",
+    "nameLabel": "Workout name",
+    "namePlaceholder": "Ex: Chest & Triceps",
+    "categoryLabel": "Category",
+    "categories": {
+      "upper-body": "Upper body",
+      "lower-body": "Lower body",
+      "push": "Push",
+      "pull": "Pull",
+      "full-body": "Full body"
+    },
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Focus on technique, rest 90 seconds between heavy sets.",
+    "exercisesTitle": "Exercises",
+    "btnNew": "New",
+    "noExercises": "No exercises added yet.",
+    "inputExNameMobile": "Name",
+    "inputExName": "Exercise name",
+    "inputSets": "Sets",
+    "inputReps": "Reps",
+    "tableHeaderExercise": "Exercise",
+    "tableHeaderSeries": "Series",
+    "tableHeaderReps": "Reps",
+    "tableHeaderRest": "Rest",
+    "messages": {
+      "successCreate": "Workout created!",
+      "successUpdate": "Workout updated!",
+      "errorCreate": "Error creating workout.",
+      "errorUpdate": "Error updating workout."
+    }
+  },
+  "cardWorkout": {
+    "categories": {
+      "upper-body": "Upper Body",
+      "lower-body": "Lower Body",
+      "push": "Push",
+      "pull": "Pull",
+      "full-body": "Full Body"
+    },
+    "menu": {
+      "edit": "Edit",
+      "schedule": "Schedule",
+      "delete": "Delete"
+    },
+    "exercises": "exercises",
+    "lastDone": "Last done:",
+    "btnStart": "Start"
+  },
+  "header": {
+    "searchPlaceholder": "Search for workouts, exercises...",
+    "streak": "Streak",
+    "day": "Day",
+    "days": "Days"
+  },
+  "scheduleDialog": {
+    "recurrence": {
+      "once": "Once",
+      "weekly": "Weekly",
+      "biweekly": "Every 2 weeks",
+      "everyDay": "Every day"
+    },
+    "status": {
+      "completed": "Completed",
+      "scheduled": "Scheduled"
+    },
+    "labels": {
+      "time": "Time",
+      "rest": "Rest",
+      "exercises": "Exercises",
+      "recurrenceTitle": "Recurrence",
+      "notesTitle": "Notes"
+    },
+    "buttons": {
+      "revert": "REVERT",
+      "complete": "COMPLETE WORKOUT"
+    },
+    "alert": {
+      "title": "Delete schedule?",
+      "descOnce": "This will permanently delete \"{{title}}\".",
+      "descRecurring": "This will permanently delete \"{{title}}\" and all its occurrences — past and future.",
+      "cancel": "Cancel",
+      "confirm": "Yes, delete"
+    },
+    "messages": {
+      "successDelete": "Schedule deleted.",
+      "errorDelete": "Error deleting schedule.",
+      "statusScheduled": "Workout marked as scheduled.",
+      "statusCompleted": "Workout completed!"
+    }
+  },
+  "dialogSchedules": {
+    "scheduledWorkouts_one": "{{count}} scheduled workout",
+    "scheduledWorkouts_other": "{{count}} scheduled workouts",
+    "status": {
+      "completed": "Completed",
+      "scheduled": "Scheduled"
+    }
+  },
+  "aiChat": {
+    "title": "Fity.ness AI",
+    "subtitle": "Your fitness assistant",
+    "placeholder": "Ask something...",
+    "welcome": "Hi 👋",
+    "welcomeDesc": "Ask me about workouts, nutrition or exercises.",
+    "suggestions": {
+      "hypertrophy": "Create a hypertrophy workout",
+      "chest": "Best exercises for chest",
+      "protein": "High protein meal ideas"
+    },
+    "errors": {
+      "noResponse": "No response.",
+      "unavailable": "The AI is temporarily unavailable.",
+      "rateLimit": "Too many requests. Please wait a few seconds.",
+      "unauthorized": "Invalid AI API key.",
+      "network": "Connection error. Check your internet.",
+      "timeout": "The AI took too long to respond."
+    }
+  }
+}

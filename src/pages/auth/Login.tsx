@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 
 import { loginSchema, type LoginSchema } from "@/schemas/loginSchema"
 import { z } from "zod"
@@ -27,6 +28,7 @@ import { Separator } from "@/components/ui/separator"
 type IErrors = Partial<Record<keyof LoginSchema, string>>
 
 const Login = () => {
+  const { t } = useTranslation()
   const { login }   = useAuth()
   const [loading, setLoading] = useState(false)
   const navigate    = useNavigate()
@@ -52,10 +54,10 @@ const Login = () => {
 
     try {
       await login(user.email, user.password)
-      toast.success('Login successfully!')
+      toast.success(t('login.messages.success'))
       navigate('/')
     } catch {
-      toast.error('Invalid credentials.')
+      toast.error(t('login.messages.error'))
     } finally {
       setLoading(false)
     }
@@ -65,19 +67,19 @@ const Login = () => {
     <div className="flex items-center justify-center h-screen">
       <Card className="w-md max-[480px]:w-full max-[480px]:mx-4">
         <CardHeader>
-          <h1 className="text-3xl font-bold text-primary">Fity.ness - Sign in</h1>
+          <h1 className="text-3xl font-bold text-primary">{t('login.title')}</h1>
           <Separator className="mt-4"/>
         </CardHeader>
         <CardHeader className="flex justify-between">
           <div>
-            <CardTitle className="text-xl">Login</CardTitle>
-            <CardDescription>Login to Fity.ness and work out with us!</CardDescription>
+            <CardTitle className="text-xl">{t('login.cardTitle')}</CardTitle>
+            <CardDescription>{t('login.description')}</CardDescription>
           </div>
-          <Link className="p-2 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/80 transition duration-300 cursor-pointer" to="/register">Sign up</Link>
+          <Link className="p-2 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/80 transition duration-300 cursor-pointer" to="/register">{t('login.signUpLink')}</Link>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">{t('login.emailLabel')}</FieldLabel>
             <Input
               id="email"
               autoComplete="off"
@@ -88,11 +90,11 @@ const Login = () => {
             />
             {errors.email
               ? <p className="text-destructive text-sm">{errors.email}</p>
-              : <FieldDescription>Enter your email.</FieldDescription>
+              : <FieldDescription>{t('login.emailDescription')}</FieldDescription>
             }
           </Field>
           <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <FieldLabel htmlFor="password">{t('login.passwordLabel')}</FieldLabel>
             <div className="relative">
                 <Input
                     id="password"
@@ -113,15 +115,15 @@ const Login = () => {
             </div>
             {errors.password
               ? <p className="text-destructive text-sm">{errors.password}</p>
-              : <FieldDescription>Enter your password.</FieldDescription>
+              : <FieldDescription>{t('login.passwordDescription')}</FieldDescription>
             }
           </Field>
         </CardContent>
         <Button onClick={handleLogin} disabled={loading} className="mx-4">
-          {loading ? <Loading text="Connecting" isCol={false} /> : 'Login'}
+          {loading ? <Loading text={t('login.connecting')} isCol={false} /> : t('login.button')}
         </Button>
         <CardFooter>
-          <p className="font-medium">All rights reserved 2026. © Fity.ness</p>
+          <p className="font-medium">{t('login.footer')}</p>
         </CardFooter>
       </Card>
     </div>

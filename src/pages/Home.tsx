@@ -3,6 +3,7 @@ import Header from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from 'react-i18next'
 import {
   Play,
   ArrowRight,
@@ -37,6 +38,7 @@ import {
 import { getStreak } from '@/services/firebase/user'
 
 const Home = () => {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [streak, setStreak] = useState(0)
 
@@ -296,33 +298,33 @@ const Home = () => {
     return [
       {
         icon: Dumbbell,
-        badge: `${completedMonthEvents.length} done`,
+        badge: t('home.metrics.workouts.badge', { count: completedMonthEvents.length }),
         value: String(
           currentMonthEvents.length
         ),
         label:
-          'Workouts this month',
+          t('home.metrics.workouts.label'),
       },
 
       {
         icon: TrendingUp,
-        badge: 'Lifted',
+        badge: t('home.metrics.volume.badge'),
         value: totalVolume,
-        label: 'Total volume',
+        label: t('home.metrics.volume.label'),
       },
 
       {
         icon: Flame,
-        badge: 'Record!',
+        badge: t('home.metrics.streak.badge'),
         value: `${streak}d`,
-        label: 'Active streak',
+        label: t('home.metrics.streak.label'),
       },
 
       {
         icon: Timer,
-        badge: 'This month',
+        badge: t('home.metrics.averageTime.badge'),
         value: formatDuration(averageTime),
-        label: 'Average time',
+        label: t('home.metrics.averageTime.label'),
       },
     ]
   }, [
@@ -330,6 +332,8 @@ const Home = () => {
     completedMonthEvents,
     totalVolume,
     averageTime,
+    streak,
+    t,
   ])
 
   const monthStats = useMemo(() => {
@@ -385,7 +389,7 @@ const Home = () => {
 
           time: '~55m',
 
-          vol: 'Completed',
+          vol: t('home.sections.activityCompletedStatus'),
 
           date:
             new Intl.DateTimeFormat(
@@ -401,16 +405,16 @@ const Home = () => {
             ),
         })
       )
-    }, [completedMonthEvents])
+    }, [completedMonthEvents, t])
 
   const hour = new Date().getHours()
 
   const greeting =
     hour < 12
-      ? 'Morning'
+      ? t('home.greetings.morning')
       : hour < 18
-        ? 'Afternoon'
-        : 'Evening'
+        ? t('home.greetings.afternoon')
+        : t('home.greetings.evening')
 
   const formatName = (name: string) => {
     return name
@@ -446,7 +450,9 @@ const Home = () => {
             <div className="flex items-center bg-primary/10 border border-primary/20 p-2 px-4 w-fit rounded-full">
               <span className="flex items-center gap-2 text-[11px] text-primary font-bold tracking-widest uppercase">
                 <Flame className="w-4 h-4 fill-current text-orange-400" />
-                Streak {streak} {streak === 1 ? 'Day' : 'Days'}
+                {streak === 1 
+                  ? t('home.streak.oneDay', { count: streak }) 
+                  : t('home.streak.otherDays', { count: streak })}
               </span>
             </div>
 
@@ -459,18 +465,18 @@ const Home = () => {
 
                 <span className="text-muted-foreground">
                   {todayEvent
-                    ? `Today's workout is ${todayEvent.title}.`
-                    : 'Today is a rest day.'}
+                    ? t('home.status.todayWorkout', { title: todayEvent.title })
+                    : t('home.status.restDay')}
                 </span>
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-lg font-medium max-w-[500px]">
                {todayWorkout
-                ? `${todayWorkout.exercises.length} exercises · ~${formatDuration(
-                    averageTime *
-                    todayWorkout.exercises.length
-                  )} estimated.`
-                : 'Recover, hydrate and get ready for the next workout.'}
+                ? t('home.status.estimated', {
+                    count: todayWorkout.exercises.length,
+                    duration: formatDuration(averageTime * todayWorkout.exercises.length)
+                  })
+                : t('home.status.recover')}
               </p>
             </div>
 
@@ -491,7 +497,7 @@ const Home = () => {
                 }}
               >
                 <Play className="fill-current w-4 h-4 mr-2" />
-                Start Workout
+                {t('home.buttons.startWorkout')}
               </Button>
 
               <Button
@@ -500,7 +506,7 @@ const Home = () => {
                 asChild
               >
                 <Link to="/calendar">
-                  View monthly plan
+                  {t('home.buttons.viewMonthly')}
 
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
@@ -511,7 +517,7 @@ const Home = () => {
               <div className="bg-card/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-xl">
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-[10px] font-black text-muted-foreground tracking-[0.2em] uppercase">
-                    This Month
+                    {t('home.monthSummary.title')}
                   </span>
 
                   <Trophy className="w-5 h-5 text-yellow-500/80" />
@@ -525,11 +531,7 @@ const Home = () => {
                   </span>
 
                   <span className="text-base font-medium text-muted-foreground">
-                    /{' '}
-                    {
-                      monthStats.total
-                    }{' '}
-                    completed
+                    {t('home.monthSummary.completed', { total: monthStats.total })}
                   </span>
                 </div>
 
@@ -606,19 +608,19 @@ const Home = () => {
               <div className="flex justify-between items-start mb-8">
                 <div>
                   <span className="text-[10px] font-black text-muted-foreground tracking-[0.2em] uppercase">
-                    Today's Workout
+                    {t('home.sections.todaysWorkout')}
                   </span>
 
                   <h2 className="text-3xl font-bold mt-2">
                     {todayEvent?.title ||
-                      'Rest Day'}
+                      t('home.sections.restDayTitle')}
                   </h2>
                 </div>
 
                 <div className="bg-secondary/50 px-4 py-1.5 rounded-full text-xs font-bold border border-border">
                   {todayWorkout
-                    ? `${todayWorkout.exercises.length} Exercises`
-                    : 'Recovery'}
+                    ? t('home.sections.exercisesCount', { count: todayWorkout.exercises.length })
+                    : t('home.sections.recoveryBadge')}
                 </div>
               </div>
 
@@ -626,8 +628,7 @@ const Home = () => {
                 {todayExercises.length ===
                 0 ? (
                   <div className="flex items-center justify-center h-[240px] rounded-2xl border border-dashed border-border text-muted-foreground text-sm font-medium">
-                    No workout scheduled
-                    for today.
+                    {t('home.sections.noWorkoutScheduled')}
                   </div>
                 ) : (
                   todayExercises.map(
@@ -679,7 +680,7 @@ const Home = () => {
             <CardContent className="p-8 flex-1 flex flex-col">
               <div className="flex items-center mb-8">
                 <h2 className="text-xl font-bold">
-                  Recent Activity
+                  {t('home.sections.recentActivity')}
                 </h2>
               </div>
 
@@ -687,7 +688,7 @@ const Home = () => {
                 {recentActivity.length ===
                 0 ? (
                   <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-                    No recent activity.
+                    {t('home.sections.noRecentActivity')}
                   </div>
                 ) : (
                   recentActivity.map(
@@ -745,7 +746,7 @@ const Home = () => {
                 <Dumbbell
                   size={16}
                 />
-                Manage workouts
+                {t('home.sections.manageWorkouts')}
               </Link>
             </CardContent>
           </Card>

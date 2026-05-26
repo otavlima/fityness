@@ -26,6 +26,7 @@ import {
 } from '@/services/firebase/workoutHistory'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 interface SetRow {
   kg: string
@@ -70,6 +71,7 @@ const StartExercises = ({
   onDone,
 }: StartExercisesProps) => {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const exercises = workout?.exercises ?? []
   const [exIdx, setExIdx] = useState(0)
   const [setsMap, setSetsMap] = useState<Record<string, SetRow[]>>({})
@@ -155,7 +157,7 @@ const StartExercises = ({
           console.error(error)
 
           toast.error(
-            'Error loading workout data.'
+            t('startExercises.messages.errorLoad')
           )
         } finally {
           setLoadingSets(false)
@@ -168,6 +170,7 @@ const StartExercises = ({
     workout,
     user,
     exercises,
+    t,
   ])
 
   useEffect(() => {
@@ -212,11 +215,11 @@ const StartExercises = ({
       >
         <DialogContent>
           <DialogTitle>
-            Workout
+            {t('startExercises.dialogTitle')}
           </DialogTitle>
 
           <p>
-            No exercises found.
+            {t('startExercises.noExercises')}
           </p>
         </DialogContent>
       </Dialog>
@@ -273,7 +276,7 @@ const StartExercises = ({
       )
     ) {
       toast.error(
-        'Enter the weight before marking as done.'
+        t('startExercises.messages.weightRequired')
       )
 
       return
@@ -379,7 +382,7 @@ const StartExercises = ({
         await updateUserStreakFromHistory(user.uid)
 
         toast.success(
-          'Workout saved!'
+          t('startExercises.messages.success')
         )
 
         onDone?.()
@@ -389,12 +392,14 @@ const StartExercises = ({
         console.error(error)
 
         toast.error(
-          'Error saving workout.'
+          t('startExercises.messages.errorSave')
         )
       } finally {
         setSaving(false)
       }
     }
+
+  const rawCategory = (workout.category || '').toLowerCase().trim()
 
   return (
     <Dialog
@@ -417,13 +422,11 @@ const StartExercises = ({
       >
         <VisuallyHidden>
           <DialogTitle>
-            Start Workout
+            {t('startExercises.dialogTitle')}
           </DialogTitle>
         </VisuallyHidden>
 
         <div className="flex max-h-[95vh] flex-col overflow-hidden">
-
-          {/* HEADER */}
           <div className="relative bg-foreground px-4 pb-5 pt-5 sm:px-6 sm:pt-6">
 
             <div
@@ -492,10 +495,7 @@ const StartExercises = ({
                     </span>
 
                     <span className="text-xs font-semibold capitalize text-background/40">
-                      {workout.category.replace(
-                        '-',
-                        ' '
-                      )}
+                      {t(rawCategory, { ns: 'translation', keyPrefix: 'history.categories', defaultValue: workout.category })}
                     </span>
                   </>
                 )}
@@ -515,17 +515,15 @@ const StartExercises = ({
               />
             </div>
           </div>
-
-          {/* TABLE */}
           <div className="flex-1 overflow-hidden bg-background px-4 pb-2 pt-5 dark:bg-card sm:px-6">
 
             <div className="grid grid-cols-[30px_1fr_72px_58px_36px] gap-2 px-2 sm:grid-cols-[36px_1fr_90px_72px_40px] sm:px-3">
 
               {[
-                'SET',
-                'PREV',
-                'KG',
-                'REPS',
+                t('startExercises.table.set'),
+                t('startExercises.table.prev'),
+                t('startExercises.table.kg'),
+                t('startExercises.table.reps'),
                 '',
               ].map(
                 (
@@ -546,12 +544,12 @@ const StartExercises = ({
 
               {loadingSets ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">
-                  Loading sets...
+                  {t('startExercises.loading')}
                 </p>
               ) : sets.length ===
                 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">
-                  No sets configured.
+                  {t('startExercises.noSets')}
                 </p>
               ) : (
                 sets.map(
@@ -670,7 +668,7 @@ const StartExercises = ({
                   completedSets
                 }
                 /{sets.length}{' '}
-                completed
+                {t('startExercises.completed')}
               </span>
 
               {!isLast && (
@@ -684,13 +682,11 @@ const StartExercises = ({
                     size={11}
                   />
 
-                  Skip
+                  {t('startExercises.skip')}
                 </button>
               )}
             </div>
           </div>
-
-          {/* FOOTER */}
           <div className="flex gap-3 bg-background px-4 pb-4 pt-4 dark:bg-card sm:px-6 sm:pb-6">
 
             <button
@@ -704,8 +700,8 @@ const StartExercises = ({
               />
 
               {isFirst
-                ? 'Close'
-                : 'Back'}
+                ? t('startExercises.buttons.close')
+                : t('startExercises.buttons.back')}
             </button>
 
             <button
@@ -721,7 +717,7 @@ const StartExercises = ({
 
               {saving ? (
                 <span className="animate-pulse">
-                  Saving...
+                  {t('startExercises.buttons.saving')}
                 </span>
               ) : isLast ? (
                 <>
@@ -732,12 +728,12 @@ const StartExercises = ({
                     }
                   />
 
-                  Done
+                  {t('startExercises.buttons.done')}
                 </>
               ) : (
                 <>
                   <span className="truncate">
-                    Next
+                    {t('startExercises.buttons.next')}
                   </span>
 
                   <ChevronRight

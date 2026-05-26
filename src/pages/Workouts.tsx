@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Header from '@/components/Header'
 import {
   Field,
@@ -23,6 +23,7 @@ import {
 } from '@/services/firebase/workout'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 import { toast } from 'sonner'
 
@@ -66,70 +67,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-const tabOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'upper-body', label: 'Upper' },
-  { value: 'lower-body', label: 'Lower' },
-  { value: 'push', label: 'Push' },
-  { value: 'pull', label: 'Pull' },
-  { value: 'full-body', label: 'Full' },
-]
-
-const formatDuration = (
-  totalSeconds: number
-) => {
-  const hours = Math.floor(
-    totalSeconds / 3600
-  )
-
-  const minutes = Math.floor(
-    (totalSeconds % 3600) / 60
-  )
-
-  const seconds =
-    totalSeconds % 60
-
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`
-  }
-
-  if (minutes > 0) {
-    return `${minutes}m ${seconds}s`
-  }
-
-  return `${seconds}s`
-}
-
-const formatLastDone = (
-  date: Date
-) => {
-  const now = new Date()
-
-  const diff =
-    now.getTime() - date.getTime()
-
-  const days = Math.floor(
-    diff / (1000 * 60 * 60 * 24)
-  )
-
-  if (days === 0) {
-    return 'Today'
-  }
-
-  if (days === 1) {
-    return 'Yesterday'
-  }
-
-  return new Intl.DateTimeFormat(
-    'en-US',
-    {
-      month: 'short',
-      day: 'numeric',
-    }
-  ).format(date)
-}
-
 const Workouts = () => {
+  const { t } = useTranslation()
   const { user } = useAuth()
 
   const [workouts, setWorkouts] = useState<
@@ -162,10 +101,7 @@ const Workouts = () => {
 
   const navigate = useNavigate()
 
-  const [
-    autoOpened,
-    setAutoOpened,
-  ] = useState(false)
+  const [autoOpened, setAutoOpened] = useState(false)
 
   const [historyMap, setHistoryMap] =
     useState<
@@ -200,6 +136,69 @@ const Workouts = () => {
     null
   )
 
+  const tabOptions = useMemo(() => [
+    { value: 'all', label: t('workouts.tabs.all') },
+    { value: 'upper-body', label: t('workouts.tabs.upper') },
+    { value: 'lower-body', label: t('workouts.tabs.lower') },
+    { value: 'push', label: t('workouts.tabs.push') },
+    { value: 'pull', label: t('workouts.tabs.pull') },
+    { value: 'full-body', label: t('workouts.tabs.full') },
+  ], [t])
+
+  const formatDuration = (
+    totalSeconds: number
+  ) => {
+    const hours = Math.floor(
+      totalSeconds / 3600
+    )
+
+    const minutes = Math.floor(
+      (totalSeconds % 3600) / 60
+    )
+
+    const seconds =
+      totalSeconds % 60
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`
+    }
+
+    if (minutes > 0) {
+      return `${minutes}m ${seconds}s`
+    }
+
+    return `${seconds}s`
+  }
+
+  const formatLastDone = (
+    date: Date
+  ) => {
+    const now = new Date()
+
+    const diff =
+      now.getTime() - date.getTime()
+
+    const days = Math.floor(
+      diff / (1000 * 60 * 60 * 24)
+    )
+
+    if (days === 0) {
+      return t('workouts.card.today')
+    }
+
+    if (days === 1) {
+      return t('workouts.card.yesterday')
+    }
+
+    return new Intl.DateTimeFormat(
+      'en-US',
+      {
+        month: 'short',
+        day: 'numeric',
+      }
+    ).format(date)
+  }
+
   const loadWorkouts =
     async () => {
       if (!user) return
@@ -227,7 +226,7 @@ const Workouts = () => {
                     workout.id!,
                     {
                       duration: '0s',
-                      lastDone: 'Never',
+                      lastDone: t('workouts.card.never'),
                     },
                   ]
                 }
@@ -276,11 +275,11 @@ const Workouts = () => {
         )
 
         toast.success(
-          'Workout deleted.'
+          t('workouts.messages.deletedSuccess')
         )
       } catch {
         toast.error(
-          'Error deleting workout.'
+          t('workouts.messages.deletedError')
         )
       }
     }
@@ -384,7 +383,7 @@ const Workouts = () => {
           }
           lastDone={
             historyMap[w.id!]
-              ?.lastDone || 'Never'
+              ?.lastDone || t('workouts.card.never')
           }
           onStart={() =>
             setStartWorkout(w)
@@ -431,12 +430,11 @@ const Workouts = () => {
         </div>
 
         <h3 className="font-bold text-lg mb-1 text-foreground">
-          Create new workout
+          {t('workouts.createCard.title')}
         </h3>
 
         <p className="text-sm text-muted-foreground">
-          Build your workout from
-          scratch
+          {t('workouts.createCard.description')}
         </p>
       </button>
     </div>
@@ -452,17 +450,15 @@ const Workouts = () => {
             <Field className="flex flex-col gap-1">
 
               <FieldDescription className="text-xs font-semibold tracking-widest uppercase">
-                Library
+                {t('workouts.library')}
               </FieldDescription>
 
               <FieldTitle className="text-3xl font-bold tracking-tight">
-                Workouts
+                {t('workouts.title')}
               </FieldTitle>
 
               <FieldDescription>
-                Organize, edit, and
-                start any routine in
-                seconds.
+                {t('workouts.description')}
               </FieldDescription>
             </Field>
 
@@ -477,7 +473,7 @@ const Workouts = () => {
               className="w-full sm:w-auto rounded-full gap-2 px-6"
             >
               <Plus size={18} />
-              New workout
+              {t('workouts.newWorkout')}
             </Button>
           </div>
 
@@ -542,7 +538,7 @@ const Workouts = () => {
               />
 
               <Input
-                placeholder="Search for workouts..."
+                placeholder={t('workouts.searchPlaceholder')}
                 value={search}
                 onChange={e =>
                   setSearch(
@@ -562,7 +558,7 @@ const Workouts = () => {
                 <Loader2 className="w-8 h-8 animate-spin" />
 
                 <span className="text-sm font-medium">
-                  Loading workouts...
+                  {t('workouts.loading')}
                 </span>
               </div>
             </div>
@@ -604,7 +600,7 @@ const Workouts = () => {
             workout={startWorkout}
             onDone={async () => {
               toast.success(
-                'Workout completed!'
+                t('workouts.messages.completedSuccess')
               )
 
               await loadWorkouts()
@@ -623,19 +619,18 @@ const Workouts = () => {
             <AlertDialogHeader>
 
               <AlertDialogTitle>
-                Delete workout
+                {t('workouts.deleteModal.title')}
               </AlertDialogTitle>
 
               <AlertDialogDescription>
-                This action cannot be
-                undone.
+                {t('workouts.deleteModal.description')}
               </AlertDialogDescription>
             </AlertDialogHeader>
 
             <AlertDialogFooter>
 
               <AlertDialogCancel>
-                Cancel
+                {t('workouts.deleteModal.cancel')}
               </AlertDialogCancel>
 
               <AlertDialogAction
@@ -656,7 +651,7 @@ const Workouts = () => {
                   )
                 }}
               >
-                Delete
+                {t('workouts.deleteModal.confirm')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

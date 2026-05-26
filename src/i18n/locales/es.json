@@ -1,0 +1,589 @@
+{
+  "login": {
+    "title": "Fity.ness - Iniciar sesión",
+    "cardTitle": "Login",
+    "description": "¡Inicia sesión en Fity.ness y ven a entrenar con nosotros!",
+    "signUpLink": "Registrarse",
+    "emailLabel": "Correo electrónico",
+    "emailDescription": "Introduce tu correo electrónico.",
+    "passwordLabel": "Contraseña",
+    "passwordDescription": "Introduce tu contraseña.",
+    "button": "Iniciar sesión",
+    "connecting": "Conectando",
+    "footer": "Todos los derechos reservados 2026. © Fity.ness",
+    "messages": {
+      "success": "¡Inicio de sesión exitoso!",
+      "error": "Credenciales inválidas."
+    }
+  },
+  "register": {
+    "title": "Fity.ness - Registrarse",
+    "cardTitle": "Crea tu cuenta",
+    "description": "¡Regístrate en Fity.ness y ven a entrenar con nosotros!",
+    "signInLink": "Iniciar sesión",
+    "steps": {
+      "info": "1. Info",
+      "account": "2. Cuenta"
+    },
+    "fields": {
+      "nameLabel": "Nombre",
+      "nameDescription": "Introduce tu nombre completo.",
+      "usernameLabel": "Nombre de usuario",
+      "usernameDescription": "Introduce tu nombre de usuario.",
+      "emailLabel": "Correo electrónico",
+      "emailDescription": "Es posible que enviemos notificaciones.",
+      "passwordLabel": "Contraseña",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "confirmPasswordDescription": "Usa una contraseña segura para evitar riesgos."
+    },
+    "buttons": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "register": "Registrarse",
+      "registering": "Registrando"
+    },
+    "messages": {
+      "success": "¡Cuenta creada con éxito!",
+      "emailInUse": "Este correo electrónico ya está en uso.",
+      "error": "Error al crear la cuenta."
+    }
+  },
+  "configurations": {
+    "title": "Configuraciones",
+    "description": "Gestiona tu perfil, preferencias y plan",
+
+    "sections": {
+      "account": "Cuenta",
+      "profile": "Perfil",
+      "preferences": "Preferencias",
+      "security": "Seguridad",
+      "dangerZone": "Zona de peligro"
+    },
+
+    "profile": {
+      "title": "Perfil",
+      "save": "Guardar cambios",
+      "saved": "¡Perfil actualizado!",
+      "error": "Error al actualizar perfil",
+      "avatarHint": "JPG o PNG",
+      "name": "Nombre",
+      "username": "Usuario",
+      "email": "Correo"
+    },
+
+    "preferences": {
+      "theme": "Tema",
+      "themeDescription": "Cambiar entre claro y oscuro",
+      "language": "Idioma",
+      "languageDescription": "Selecciona tu idioma",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+
+    "security": {
+      "save": "Guardar cambios",
+      "saved": "¡Contraseña actualizada!",
+      "error": "Contraseña actual incorrecta",
+      "password": "Contraseña",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "mismatch": "Las contraseñas no coinciden",
+      "minLength": "La contraseña debe tener al menos 6 caracteres"
+    },
+
+    "danger": {
+      "title": "Eliminar cuenta",
+      "description": "Esta acción es permanente e irreversible",
+      "button": "Eliminar cuenta",
+      "confirmTitle": "¿Estás seguro?",
+      "confirmDescription": "Todos los datos serán eliminados",
+      "cancel": "Cancelar"
+    }
+  },
+  "sidebar": {
+    "tagline": "ENTRENA. CONTROLA. TRANSFÓRMATE.",
+
+    "groups": {
+      "menu": "Menú",
+      "general": "General"
+    },
+
+    "menu": {
+      "dashboard": "Panel",
+      "workouts": "Entrenamientos",
+      "calendar": "Calendario",
+      "history": "Historial",
+      "progress": "Progreso",
+      "configurations": "Configuraciones"
+    },
+
+    "dropdown": {
+      "planFree": "Plan Gratuito",
+      "configurations": "Configuraciones",
+      "activeAi": "Activar IA",
+      "logout": "Cerrar sesión"
+    },
+
+    "userFallback": "Usuario"
+  },
+  "progress": {
+    "analytics": "Análisis",
+    "title": "Progreso",
+    "description": "Realiza el seguimiento de tu progresión de carga y consistencia.",
+    "loading": "Cargando progreso...",
+    "strength": {
+      "title": "Fuerza (Big 4)",
+      "label": "carga media de entrenamiento"
+    },
+    "volume": {
+      "title": "Volumen",
+      "label": "volumen de entrenamiento"
+    },
+    "consistency": {
+      "title": "Consistencia",
+      "label": "semanas entrenadas"
+    },
+    "big4": {
+      "title": "Big 4 — Cargas",
+      "noData": "Sin datos aún",
+      "averageLabel": "carga media de entrenamiento",
+      "categories": {
+        "push": { "title": "Push", "subtitle": "Pecho & Tríceps" },
+        "pull": { "title": "Pull", "subtitle": "Espalda & Bíceps" },
+        "lowerBody": { "title": "Tren Inferior", "subtitle": "Piernas & Glúteos" },
+        "upperBody": { "title": "Tren Superior", "subtitle": "Hombros & Brazos" }
+      }
+    },
+    "records": {
+      "title": "Récords Recientes",
+      "empty": "No hay récords aún. Completa un entrenamiento para ver tus PRs.",
+      "fallbackExercise": "Ejercicio"
+    },
+    "distribution": {
+      "title": "Distribución Muscular",
+      "empty": "Sin datos aún.",
+      "fallbackCategory": "Otro"
+    },
+    "date": {
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    }
+  },
+  "home": {
+    "streak": {
+      "oneDay": "Racha {{count}} Día",
+      "otherDays": "Racha {{count}} Días"
+    },
+    "greetings": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "status": {
+      "todayWorkout": "El entrenamiento de hoy es {{title}}.",
+      "restDay": "Hoy es un día de descanso.",
+      "estimated": "{{count}} ejercicios · ~{{duration}} estimado.",
+      "recover": "Recupérate, hidrátate y prepárate para el próximo entrenamiento."
+    },
+    "buttons": {
+      "startWorkout": "Iniciar Entrenamiento",
+      "viewMonthly": "Ver plan mensual"
+    },
+    "monthSummary": {
+      "title": "Este Mes",
+      "completed": "/ {{total}} completados"
+    },
+    "metrics": {
+      "workouts": {
+        "badge": "{{count}} hechos",
+        "label": "Entrenamientos este mes"
+      },
+      "volume": {
+        "badge": "Levantado",
+        "label": "Volumen total"
+      },
+      "streak": {
+        "badge": "¡Récord!",
+        "label": "Racha activa"
+      },
+      "averageTime": {
+        "badge": "Este mes",
+        "label": "Tiempo promedio"
+      }
+    },
+    "sections": {
+      "todaysWorkout": "Entrenamiento de Hoy",
+      "restDayTitle": "Día de Descanso",
+      "recoveryBadge": "Recuperación",
+      "exercisesCount": "{{count}} Ejercicios",
+      "noWorkoutScheduled": "No hay entrenamientos programados para hoy.",
+      "recentActivity": "Actividad Reciente",
+      "noRecentActivity": "Sin actividad reciente.",
+      "activityCompletedStatus": "Completado",
+      "manageWorkouts": "Gestionar entrenamientos"
+    }
+  },
+  "workouts": {
+    "library": "Biblioteca",
+    "title": "Entrenamientos",
+    "description": "Organiza, edita e inicia cualquier rutina en segundos.",
+    "newWorkout": "Nuevo entrenamiento",
+    "searchPlaceholder": "Buscar entrenamientos...",
+    "loading": "Cargando entrenamientos...",
+    "tabs": {
+      "all": "Todos",
+      "upper": "Superior",
+      "lower": "Inferior",
+      "push": "Empujar (Push)",
+      "pull": "Jalar (Pull)",
+      "full": "Cuerpo Completo"
+    },
+    "card": {
+      "never": "Nunca",
+      "today": "Hoy",
+      "yesterday": "Ayer"
+    },
+    "createCard": {
+      "title": "Crear nuevo entrenamiento",
+      "description": "Arma tu entrenamiento desde cero"
+    },
+    "messages": {
+      "deletedSuccess": "Entrenamiento eliminado.",
+      "deletedError": "Error al eliminar el entrenamiento.",
+      "completedSuccess": "¡Entrenamiento completado!"
+    },
+    "deleteModal": {
+      "title": "Eliminar entrenamiento",
+      "description": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    }
+  },
+  "calendar": {
+    "planning": "Planificación",
+    "title": "Calendario",
+    "description": "Programa tus entrenamientos y realiza el seguimiento de tu frecuencia.",
+    "newSchedule": "Programar entreno",
+    "loading": "Cargando calendario...",
+    "legend": {
+      "completed": "Completado",
+      "scheduled": "Programado"
+    },
+    "more": "+{{count}} más",
+    "weekdays": ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"],
+    "months": [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ],
+    "upcoming": {
+      "title": "Próximos Entrenamientos",
+      "empty": "No hay entrenamientos programados."
+    },
+    "frequency": {
+      "title": "Frecuencia Mensal",
+      "average": "Promedio: <span class=\"font-bold text-foreground\">{{count}} entrenamientos/semana</span>"
+    }
+  },
+  "history": {
+    "timeline": "Línea de Tiempo",
+    "title": "Historial",
+    "description": "Cada entrenamiento guardado. Cada récord registrado.",
+    "filter": "Filtrar",
+    "loading": "Cargando historial...",
+    "empty": {
+      "title": "Ningún entrenamiento registrado aún",
+      "description": "Comienza a hacer un seguimiento de tu progreso creando teu primer entrenamiento."
+    },
+    "stats": {
+      "total": "Total",
+      "sessionsCount": "sesiones registradas",
+      "volume": "Volumen",
+      "totalLifted": "total levantado",
+      "records": "Récords",
+      "activePrs": "PRs de entrenamientos activos"
+    },
+    "buttons": {
+      "loadMore": "Cargar más"
+    },
+    "categories": {
+      "all": "Todas",
+      "upper-body": "Superior",
+      "lower-body": "Inferior",
+      "push": "Empujar (Push)",
+      "pull": "Jalar (Pull)",
+      "full-body": "Cuerpo Completo"
+    }
+  },
+  "historyCard": {
+    "defaultCategory": "Entrenamiento",
+    "sessionsCount": "{{count}} sesiones registradas",
+    "labels": {
+      "sessions": "Sesiones",
+      "volume": "Volumen",
+      "last": "Último",
+      "currentPr": "PR Actual"
+    },
+    "noPr": "Sin PR aún"
+  },
+  "historyModal": {
+    "sessionsCount": "{{count}} sesiones registradas",
+    "recentCount": "{{count}} recientes",
+    "labels": {
+      "sessions": "Sesiones",
+      "best": "Mejor",
+      "last": "Último",
+      "pr": "PR",
+      "currentRecord": "Récord atual",
+      "performanceHint": "Mejor rendimiento registrado",
+      "sessionHistory": "Historial de sesiones"
+    },
+    "buttons": {
+      "close": "Cerrar"
+    }
+  },
+  "sessionHistoryModal": {
+    "subtitle": "Sesión de Entrenamiento",
+    "total": "total",
+    "labels": {
+      "duration": "Duración",
+      "volume": "Volumen",
+      "sets": "Series",
+      "exercises": "Ejercicios",
+      "setCounter": "Serie {{index}}",
+      "setsCount": "{{count}} series"
+    }
+  },
+  "filterModal": {
+    "title": "Filtrar historial",
+    "description": "Refina tu línea de tiempo de entrenamientos",
+    "labels": {
+      "period": "Período",
+      "category": "Categoría",
+      "duration": "Duración",
+      "orderBy": "Ordenar por",
+      "onlyPrTitle": "Solo entrenamientos con PR",
+      "onlyPrDesc": "Mostrar solo récords personales"
+    },
+    "periods": {
+      "select": "Selecciona el período",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 dias",
+      "90d": "Últimos 90 dias",
+      "all": "Todo el tiempo"
+    },
+    "durations": {
+      "any": "Cualquiera",
+      "short": "Hasta 30 minutos",
+      "medium": "30-60min",
+      "long": "Más de 60min"
+    },
+    "orders": {
+      "recent": "Más reciente",
+      "volume": "Mayor volumen",
+      "duration": "Mayor duración"
+    },
+    "buttons": {
+      "clear": "Limpiar",
+      "apply": "Aplicar filtros"
+    }
+  },
+  "scheduleModal": {
+    "title": "Programar entrenamiento",
+    "description": "Selecciona un entrenamiento y define tu horario de actividades.",
+    "saving": "Programando...",
+    "submit": "Programar",
+    "cancel": "Cancelar",
+    "workoutLabel": "Entrenamiento",
+    "workoutPlaceholder": "Selecciona un entrenamiento existente",
+    "startsOn": "Comienza en",
+    "date": "Fecha",
+    "datePlaceholder": "Fecha",
+    "timeLabel": "Hora",
+    "repeatTitle": "Repetir entrenamiento",
+    "repeatDesc": "Programar automáticamente en una frecuencia fija.",
+    "frequencyLabel": "Frecuencia",
+    "frequencies": {
+      "weekly": "Semanal (mismo día)",
+      "biweekly": "Cada 2 semanas",
+      "specific_days": "Días específicos de la semana"
+    },
+    "weekdaysLabel": "Días de la semana",
+    "weekdays": {
+      "0": "D",
+      "1": "L",
+      "2": "M",
+      "3": "M",
+      "4": "J",
+      "5": "V",
+      "6": "S"
+    },
+    "endsLabel": "Termina",
+    "endConditions": {
+      "never": "Nunca",
+      "after_x": "Después de X ocurrencias",
+      "on_date": "En una fecha específica"
+    },
+    "occurrencesPlaceholder": "Ej: 10",
+    "endDatePlaceholder": "Fecha de finalización",
+    "notesLabel": "Notas (opcional)",
+    "notesPlaceholder": "Enfoque en la ejecución, hidratación...",
+    "messages": {
+      "success": "¡Entrenamiento programado!",
+      "error": "Error al programar el entrenamiento."
+    }
+  },
+  "startExercises": {
+    "dialogTitle": "Iniciar Entrenamiento",
+    "noExercises": "No se encontraron ejercicios.",
+    "loading": "Cargando series...",
+    "noSets": "No hay series configuradas.",
+    "completed": "completadas",
+    "skip": "Omitir",
+    "buttons": {
+      "close": "Cerrar",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "done": "Finalizar",
+      "saving": "Guardando..."
+    },
+    "table": {
+      "set": "SERIE",
+      "prev": "ANTERIOR",
+      "kg": "KG",
+      "reps": "REPS"
+    },
+    "messages": {
+      "weightRequired": "Ingresa el peso antes de marcar como completado.",
+      "success": "¡Entrenamiento guardado!",
+      "errorLoad": "Error al cargar los datos del entrenamiento.",
+      "errorSave": "Error al guardar el entrenamiento."
+    }
+  },
+  "workoutModal": {
+    "titleCreate": "Crear nuevo entrenamiento",
+    "titleEdit": "Editar entrenamiento",
+    "descCreate": "Configura tu sesión y organiza tus ejercicios.",
+    "descEdit": "Actualiza los detalles de tu entrenamiento.",
+    "cancel": "Cancelar",
+    "saveChanges": "Guardar cambios",
+    "createWorkout": "Crear entrenamiento",
+    "saving": "Guardando",
+    "creating": "Creando",
+    "nameLabel": "Nombre del entrenamiento",
+    "namePlaceholder": "Ej: Pecho & Tríceps",
+    "categoryLabel": "Categoría",
+    "categories": {
+      "upper-body": "Superior",
+      "lower-body": "Inferior",
+      "push": "Empujar",
+      "pull": "Jalar",
+      "full-body": "Cuerpo completo"
+    },
+    "notesLabel": "Notas",
+    "notesPlaceholder": "Enfoque en la técnica, descanse 90 segundos entre series pesadas.",
+    "exercisesTitle": "Ejercicios",
+    "btnNew": "Nuevo",
+    "noExercises": "Aún no se han añadido ejercicios.",
+    "inputExNameMobile": "Nombre",
+    "inputExName": "Nombre del ejercicio",
+    "inputSets": "Series",
+    "inputReps": "Reps",
+    "tableHeaderExercise": "Ejercicio",
+    "tableHeaderSeries": "Series",
+    "tableHeaderReps": "Reps",
+    "tableHeaderRest": "Descanso",
+    "messages": {
+      "successCreate": "¡Entrenamiento creado!",
+      "successUpdate": "¡Entrenamiento actualizado!",
+      "errorCreate": "Error al crear el entrenamiento.",
+      "errorUpdate": "Error al actualizar el entrenamiento."
+    }
+  },
+  "cardWorkout": {
+    "categories": {
+      "upper-body": "Superior",
+      "lower-body": "Inferior",
+      "push": "Empujar",
+      "pull": "Jalar",
+      "full-body": "Cuerpo Completo"
+    },
+    "menu": {
+      "edit": "Editar",
+      "schedule": "Agendar",
+      "delete": "Eliminar"
+    },
+    "exercises": "ejercicios",
+    "lastDone": "Último entreno:",
+    "btnStart": "Iniciar"
+  },
+  "header": {
+    "searchPlaceholder": "Buscar entrenamientos, ejercicios...",
+    "streak": "Racha",
+    "day": "Día",
+    "days": "Días"
+  },
+  "scheduleDialog": {
+    "recurrence": {
+      "once": "Una vez",
+      "weekly": "Semanal",
+      "biweekly": "Cada 2 semanas",
+      "everyDay": "Todos los días"
+    },
+    "status": {
+      "completed": "Completado",
+      "scheduled": "Programado"
+    },
+    "labels": {
+      "time": "Hora",
+      "rest": "Descanso",
+      "exercises": "Ejercicios",
+      "recurrenceTitle": "Recurrencia",
+      "notesTitle": "Notas"
+    },
+    "buttons": {
+      "revert": "REVERTIR",
+      "complete": "COMPLETAR ENTRENO"
+    },
+    "alert": {
+      "title": "¿Eliminar programación?",
+      "descOnce": "Esto eliminará permanentemente \"{{title}}\".",
+      "descRecurring": "Esto eliminará permanentemente \"{{title}}\" y todas sus ocurrencias — pasadas y futuras.",
+      "cancel": "Cancelar",
+      "confirm": "Sí, eliminar"
+    },
+    "messages": {
+      "successDelete": "Programación eliminada.",
+      "errorDelete": "Error al eliminar la programación.",
+      "statusScheduled": "Entrenamiento marcado como programado.",
+      "statusCompleted": "¡Entrenamiento completado!"
+    }
+  },
+  "dialogSchedules": {
+    "scheduledWorkouts_one": "{{count}} entreno programado",
+    "scheduledWorkouts_other": "{{count}} entrenos programados",
+    "status": {
+      "completed": "Completado",
+      "scheduled": "Programado"
+    }
+  },
+  "aiChat": {
+    "title": "Fity.ness AI",
+    "subtitle": "Tu asistente de fitness",
+    "placeholder": "Pregunta algo...",
+    "welcome": "Hola 👋",
+    "welcomeDesc": "Pregúntame sobre entrenamientos, nutrición o ejercicios.",
+    "suggestions": {
+      "hypertrophy": "Crear un entrenamiento de hipertrofia",
+      "chest": "Los mejores ejercicios para pecho",
+      "protein": "Ideas de comidas ricas en proteínas"
+    },
+    "errors": {
+      "noResponse": "Sin respuesta.",
+      "unavailable": "La IA no está disponible temporalmente.",
+      "rateLimit": "Demasiadas solicitudes. Por favor, espera unos segundos.",
+      "unauthorized": "Clave API de IA no válida.",
+      "network": "Error de conexión. Revisa tu internet.",
+      "timeout": "La IA tardó demasiado en responder."
+    }
+  }
+}

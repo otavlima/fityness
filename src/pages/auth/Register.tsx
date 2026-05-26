@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 import {
   registerSchema,
   type RegisterSchema
@@ -30,6 +31,7 @@ import { Separator } from "@/components/ui/separator"
 type IErrors = Partial<Record<keyof RegisterSchema, string>>
 
 const Register = () => {
+  const { t } = useTranslation()
   const [step, setStep] = useState(1)
   const [direction, setDirection] = useState(1)
 
@@ -98,15 +100,15 @@ const Register = () => {
 
     try {
       await register(user.name, user.username, user.email, user.password)
-      toast.success('Account created successfully!')
+      toast.success(t('register.messages.success'))
       navigate('/')
     } catch (err: any) {
       if (err?.code === 'auth/email-already-in-use') {
-        setErrors({ email: 'This email is already in use.' })
+        setErrors({ email: t('register.messages.emailInUse') })
         return
       }
 
-      toast.error('Error creating account.')
+      toast.error(t('register.messages.error'))
     } finally {
       setLoading(false)
     }
@@ -116,13 +118,13 @@ const Register = () => {
     <div className="flex items-center justify-center h-screen">
       <Card className="w-md max-[480px]:w-full max-[480px]:mx-4">
         <CardHeader>
-          <h1 className="text-3xl font-bold text-primary">Fity.ness - Sign up</h1>
+          <h1 className="text-3xl font-bold text-primary">{t('register.title')}</h1>
           <Separator className="mt-4"/>
           <div className="flex justify-between items-center mt-4">
             <div>
-              <CardTitle className="text-xl">Create your account</CardTitle>
+              <CardTitle className="text-xl">{t('register.cardTitle')}</CardTitle>
               <CardDescription>
-                Register to Fity.ness and work out with us!
+                {t('register.description')}
               </CardDescription>
             </div>
 
@@ -130,7 +132,7 @@ const Register = () => {
               to="/login"
               className="p-2 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/80 transition"
             >
-              Sign in
+              {t('register.signInLink')}
             </Link>
           </div>
         </CardHeader>
@@ -142,11 +144,11 @@ const Register = () => {
               transition={{ duration: 0.25 }}
             />
             <div className={`flex-1 text-center py-2 z-10 ${step === 1 ? "text-primary" : "text-muted-foreground"}`}>
-              1. Info
+              {t('register.steps.info')}
             </div>
             <div className="w-px bg-border z-10" />
             <div className={`flex-1 text-center py-2 z-10 ${step === 2 ? "text-primary" : "text-muted-foreground"}`}>
-              2. Account
+              {t('register.steps.account')}
             </div>
           </div>
         </div>
@@ -163,7 +165,7 @@ const Register = () => {
               {step === 1 && (
                 <>
                   <Field>
-                    <FieldLabel>Name</FieldLabel>
+                    <FieldLabel>{t('register.fields.nameLabel')}</FieldLabel>
                     <Input
                       placeholder="John Doe"
                       value={user.name}
@@ -172,10 +174,10 @@ const Register = () => {
                     />
                     {errors.name
                       ? <p className="text-destructive text-sm">{errors.name}</p>
-                      : <FieldDescription>Enter your full name.</FieldDescription>}
+                      : <FieldDescription>{t('register.fields.nameDescription')}</FieldDescription>}
                   </Field>
                   <Field>
-                    <FieldLabel>Username</FieldLabel>
+                    <FieldLabel>{t('register.fields.usernameLabel')}</FieldLabel>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">@</span>
                       <Input
@@ -189,14 +191,14 @@ const Register = () => {
                     </div>
                     {errors.username
                       ? <p className="text-destructive text-sm">{errors.username}</p>
-                      : <FieldDescription>Enter your username.</FieldDescription>}
+                      : <FieldDescription>{t('register.fields.usernameDescription')}</FieldDescription>}
                   </Field>
                 </>
               )}
               {step === 2 && (
                 <>
                   <Field>
-                    <FieldLabel>Email</FieldLabel>
+                    <FieldLabel>{t('register.fields.emailLabel')}</FieldLabel>
                     <Input
                       placeholder="name@example.com"
                       value={user.email}
@@ -205,10 +207,10 @@ const Register = () => {
                     />
                     {errors.email
                       ? <p className="text-destructive text-sm">{errors.email}</p>
-                      : <FieldDescription>We might send notifications.</FieldDescription>}
+                      : <FieldDescription>{t('register.fields.emailDescription')}</FieldDescription>}
                   </Field>
                   <Field>
-                    <FieldLabel>Password</FieldLabel>
+                    <FieldLabel>{t('register.fields.passwordLabel')}</FieldLabel>
                     <div className="relative">
                       <Input
                         type={showPassword ? 'text' : 'password'}
@@ -228,7 +230,7 @@ const Register = () => {
                     {errors.password && <p className="text-destructive text-sm">{errors.password}</p>}
                   </Field>
                   <Field>
-                    <FieldLabel>Confirm password</FieldLabel>
+                    <FieldLabel>{t('register.fields.confirmPasswordLabel')}</FieldLabel>
                     <div className="relative">
                       <Input
                         type={showConfirmPassword ? 'text' : 'password'}
@@ -247,7 +249,7 @@ const Register = () => {
                     </div>
                     {errors.confirmPassword
                       ? <p className="text-destructive text-sm">{errors.confirmPassword}</p>
-                      : <FieldDescription>Use a strong password to avoid risks.</FieldDescription>}
+                      : <FieldDescription>{t('register.fields.confirmPasswordDescription')}</FieldDescription>}
                   </Field>
                 </>
               )}
@@ -257,17 +259,17 @@ const Register = () => {
         <CardFooter className="flex justify-between">
           {step === 2 && (
             <Button variant="ghost" onClick={handleBack}>
-              Back
+              {t('register.buttons.back')}
             </Button>
           )}
           <div className="ml-auto">
             {step === 1 ? (
               <Button onClick={handleNext}>
-                Continue
+                {t('register.buttons.continue')}
               </Button>
             ) : (
               <Button onClick={handleRegister} disabled={loading}>
-                {loading ? <Loading text="Registering" isCol={false}/> : "Register"}
+                {loading ? <Loading text={t('register.buttons.registering')} isCol={false}/> : t('register.buttons.register')}
               </Button>
             )}
           </div>

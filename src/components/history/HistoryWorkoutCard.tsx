@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import type { WorkoutGroup } from '@/pages/History'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   workout: WorkoutGroup
@@ -17,7 +18,6 @@ const formatVolume = (volume: number) => {
   if (volume >= 1000) {
     return `${((volume / 1000)).toFixed(1)}t`
   }
-
   return `${volume}kg`
 }
 
@@ -29,6 +29,9 @@ const formatDuration = (seconds: number) => {
 }
 
 const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
+  const { t } = useTranslation()
+  const rawCategory = (workout.category || '').toLowerCase().trim()
+
   return (
     <Card
       onClick={onClick}
@@ -38,13 +41,16 @@ const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="inline-flex items-center rounded-full border border-border/50 bg-secondary/50 px-2 py-0.5 text-[9px] font-semibold tracking-[0.14em] uppercase text-muted-foreground mb-1">
-              {workout.category || 'Workout'}
+              {rawCategory 
+                ? t(rawCategory, { ns: 'translation', keyPrefix: 'history.categories', defaultValue: workout.category }) 
+                : t('historyCard.defaultCategory')
+              }
             </div>
             <h2 className="text-xl font-bold tracking-tight leading-none truncate">
               {workout.workoutName}
             </h2>
             <p className="text-[11px] text-muted-foreground mt-1">
-              {workout.totalSessions} sessions registered
+              {t('historyCard.sessionsCount', { count: workout.totalSessions })}
             </p>
           </div>
           <div className="flex items-center justify-center w-7 h-7 rounded-full bg-secondary/60 border border-border/50 shrink-0 mt-1">
@@ -62,7 +68,7 @@ const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
                 className="text-muted-foreground"
               />
               <span className="text-[8px] uppercase tracking-[0.12em] font-bold text-muted-foreground">
-                Sessions
+                {t('historyCard.labels.sessions')}
               </span>
             </div>
             <p className="text-lg font-bold leading-none">
@@ -76,7 +82,7 @@ const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
                 className="text-muted-foreground"
               />
               <span className="text-[8px] uppercase tracking-[0.12em] font-bold text-muted-foreground">
-                Volume
+                {t('historyCard.labels.volume')}
               </span>
             </div>
             <p className="text-lg font-bold leading-none truncate">
@@ -92,7 +98,7 @@ const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
                 className="text-muted-foreground"
               />
               <span className="text-[8px] uppercase tracking-[0.12em] font-bold text-muted-foreground">
-                Last
+                {t('historyCard.labels.last')}
               </span>
             </div>
             <p className="text-lg font-bold leading-none">
@@ -105,11 +111,10 @@ const HistoryWorkoutCard = ({ workout, onClick, }: Props) => {
         <div className="flex items-center justify-between rounded-2xl border border-border/50 bg-secondary/10 px-3 py-2">
           <div className="min-w-0">
             <p className="text-[8px] uppercase tracking-[0.12em] font-bold text-muted-foreground">
-              Current PR
+              {t('historyCard.labels.currentPr')}
             </p>
             <p className="text-xs font-semibold truncate">
-              {workout.currentPRExercise ||
-                'No PR yet'}
+              {workout.currentPRExercise || t('historyCard.noPr')}
             </p>
           </div>
           <Trophy

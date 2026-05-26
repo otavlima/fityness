@@ -8,6 +8,7 @@ import type {
   WorkoutSession,
 } from '@/pages/History'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   group: WorkoutGroup
@@ -20,7 +21,6 @@ const formatVolume = (volume: number) => {
   if (volume >= 1000) {
     return `${(volume / 1000).toFixed(1)}t`
   }
-
   return `${volume}kg`
 }
 
@@ -32,7 +32,6 @@ const formatDuration = (seconds: number) => {
   if (hours > 0) {
     return `${hours}h ${minutes.toString().padStart(2, '0')}m`
   }
-
   return `${totalMinutes}m`
 }
 
@@ -49,6 +48,8 @@ const SessionHistoryModal = ({
   open,
   onOpenChange,
 }: Props) => {
+  const { t, i18n } = useTranslation()
+
   if (!session) return null
 
   const date = new Date(session.completedAt)
@@ -69,7 +70,7 @@ const SessionHistoryModal = ({
             <div className="mb-5 flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                  Workout Session
+                  {t('sessionHistoryModal.subtitle')}
                 </p>
 
                 <h2 className="truncate text-[28px] font-semibold">
@@ -78,9 +79,8 @@ const SessionHistoryModal = ({
 
                 <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
                   <CalendarDays className="size-3.5" />
-
                   <span className="truncate">
-                    {date.toLocaleDateString('en-US', {
+                    {date.toLocaleDateString(i18n.language, {
                       weekday: 'long',
                       day: 'numeric',
                       month: 'long',
@@ -100,9 +100,8 @@ const SessionHistoryModal = ({
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-2xl bg-card p-3">
                 <p className="text-xs text-muted-foreground">
-                  Duration
+                  {t('sessionHistoryModal.labels.duration')}
                 </p>
-
                 <p className="text-lg font-semibold">
                   {formatDuration(session.duration)}
                 </p>
@@ -110,9 +109,8 @@ const SessionHistoryModal = ({
 
               <div className="rounded-2xl bg-card p-3">
                 <p className="text-xs text-muted-foreground">
-                  Volume
+                  {t('sessionHistoryModal.labels.volume')}
                 </p>
-
                 <p className="text-lg font-semibold">
                   {formatVolume(session.volume)}
                 </p>
@@ -120,9 +118,8 @@ const SessionHistoryModal = ({
 
               <div className="rounded-2xl bg-card p-3">
                 <p className="text-xs text-muted-foreground">
-                  Sets
+                  {t('sessionHistoryModal.labels.sets')}
                 </p>
-
                 <p className="text-lg font-semibold">
                   {getTotalSets(session)}
                 </p>
@@ -133,13 +130,13 @@ const SessionHistoryModal = ({
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 scrollbar-hide">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                Exercises
+                {t('sessionHistoryModal.labels.exercises')}
               </p>
-
               <span className="text-xs text-muted-foreground">
-                {session.exercises.length} total
+                {session.exercises.length} {t('sessionHistoryModal.total')}
               </span>
             </div>
+
             <div
               className="
                 flex gap-3 overflow-x-auto 
@@ -169,9 +166,8 @@ const SessionHistoryModal = ({
                         <h3 className="truncate text-lg font-semibold">
                           {exercise.exerciseName}
                         </h3>
-
                         <p className="text-xs text-muted-foreground">
-                          {exercise.sets.length} sets
+                          {t('sessionHistoryModal.labels.setsCount', { count: exercise.sets.length })}
                         </p>
                       </div>
                     </div>
@@ -190,9 +186,8 @@ const SessionHistoryModal = ({
                             className="flex justify-between rounded-xl bg-muted/20 px-3 py-2"
                           >
                             <span className="text-sm text-muted-foreground">
-                              Set {i + 1}
+                              {t('sessionHistoryModal.labels.setCounter', { index: i + 1 })}
                             </span>
-
                             <span className="text-sm font-medium">
                               {set.kg} × {set.reps}
                             </span>
@@ -232,9 +227,8 @@ const SessionHistoryModal = ({
                             className="flex justify-between rounded-xl bg-muted/20 px-3 py-2"
                           >
                             <span className="text-sm text-muted-foreground">
-                              Set {i + 1}
+                              {t('sessionHistoryModal.labels.setCounter', { index: i + 1 })}
                             </span>
-
                             <span className="text-sm font-medium">
                               {set.kg} × {set.reps}
                             </span>

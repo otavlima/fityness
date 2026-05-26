@@ -17,6 +17,7 @@ import {
 import { Card } from '@/components/ui/card'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 import {
   getWorkoutHistory,
@@ -89,6 +90,7 @@ const defaultFilters: HistoryFilters =
   }
 
 const History = () => {
+  const { t } = useTranslation()
   const { user } = useAuth()
 
   const [history, setHistory] =
@@ -129,12 +131,10 @@ const History = () => {
   const [loading, setLoading] =
     useState(true)
 
-  const [
-    selectedGroup,
-    setSelectedGroup,
-  ] = useState<WorkoutGroup | null>(
-    null
-  )
+  const [selectedGroup, setSelectedGroup] =
+    useState<WorkoutGroup | null>(
+      null
+    )
 
   const [visibleGroups, setVisibleGroups] =
     useState(10)
@@ -499,16 +499,15 @@ const History = () => {
             <Field className="flex flex-col gap-1">
 
               <FieldDescription className="text-xs font-semibold uppercase tracking-widest">
-                Timeline
+                {t('history.timeline')}
               </FieldDescription>
 
               <FieldTitle className="text-3xl font-bold tracking-tight">
-                History
+                {t('history.title')}
               </FieldTitle>
 
               <FieldDescription>
-                Every workout saved.
-                Every PR recorded.
+                {t('history.description')}
               </FieldDescription>
             </Field>
 
@@ -520,8 +519,7 @@ const History = () => {
               }
             >
               <FilterIcon size={15} />
-
-              Filter
+              {t('history.filter')}
             </Button>
           </div>
 
@@ -533,7 +531,7 @@ const History = () => {
                 <Loader2 className="h-7 w-7 animate-spin" />
 
                 <span className="text-sm">
-                  Loading history...
+                  {t('history.loading')}
                 </span>
               </div>
             </div>
@@ -547,15 +545,11 @@ const History = () => {
                 <div className="flex flex-col items-center gap-2 text-center">
 
                   <h2 className="text-lg font-medium">
-                    No workouts
-                    registered yet
+                    {t('history.empty.title')}
                   </h2>
 
                   <p className="text-sm text-muted-foreground">
-                    Start tracking
-                    your progress by
-                    creating your
-                    first workout.
+                    {t('history.empty.description')}
                   </p>
                 </div>
               </div>
@@ -569,7 +563,7 @@ const History = () => {
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Total
+                      {t('history.stats.total')}
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
@@ -577,13 +571,13 @@ const History = () => {
                     </h2>
 
                     <p className="text-sm text-muted-foreground">
-                      sessions registered
+                      {t('history.stats.sessionsCount')}
                     </p>
                   </Card>
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5 font-bold">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Volume
+                      {t('history.stats.volume')}
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
@@ -593,13 +587,13 @@ const History = () => {
                     </h2>
 
                     <p className="text-sm text-muted-foreground">
-                      total lifted
+                      {t('history.stats.totalLifted')}
                     </p>
                   </Card>
 
                   <Card className="rounded-3xl border-none bg-brand-gradient p-5 font-bold text-background">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
-                      Records
+                      {t('history.stats.records')}
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
@@ -607,8 +601,7 @@ const History = () => {
                     </h2>
 
                     <p className="text-sm opacity-60">
-                      active workout
-                      PRs
+                      {t('history.stats.activePrs')}
                     </p>
                   </Card>
                 </div>
@@ -617,7 +610,7 @@ const History = () => {
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Total
+                      {t('history.stats.total')}
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
@@ -625,13 +618,13 @@ const History = () => {
                     </h2>
 
                     <p className="text-sm text-muted-foreground">
-                      sessions registered
+                      {t('history.stats.sessionsCount')}
                     </p>
                   </Card>
 
                   <Card className="rounded-3xl border-border/40 bg-card/40 p-5">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                      Volume
+                      {t('history.stats.volume')}
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
@@ -641,13 +634,13 @@ const History = () => {
                     </h2>
 
                     <p className="text-sm text-muted-foreground">
-                      total lifted
+                      {t('history.stats.totalLifted')}
                     </p>
                   </Card>
 
                   <Card className="rounded-3xl border-none bg-brand-gradient p-5 text-background">
                     <p className="mb-2 text-[10px] font-medium uppercase tracking-wider opacity-60">
-                      Records
+                      {t('history.stats.records')}
                     </p>
 
                     <h2 className="text-4xl tracking-tight">
@@ -655,8 +648,7 @@ const History = () => {
                     </h2>
 
                     <p className="text-sm opacity-60">
-                      active workout
-                      PRs
+                      {t('history.stats.activePrs')}
                     </p>
                   </Card>
                 </div>
@@ -701,7 +693,7 @@ const History = () => {
                           )
                         }
                       >
-                        Load more
+                        {t('history.buttons.loadMore')}
                       </Button>
                     </div>
                   )}

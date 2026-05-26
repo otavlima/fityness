@@ -82,6 +82,7 @@ function SheetContent({
   children,
   side = 'right',
   showCloseButton = true,
+  fullScreenOnMobile = false, // <-- Nova prop com valor padrão falso
   ...props
 }: React.ComponentProps<
   typeof SheetPrimitive.Content
@@ -92,6 +93,7 @@ function SheetContent({
     | 'bottom'
     | 'left'
   showCloseButton?: boolean
+  fullScreenOnMobile?: boolean // <-- Tipagem da nova prop
 }) {
   return (
     <SheetPortal>
@@ -120,14 +122,12 @@ function SheetContent({
           data-[side=left]:inset-y-0
           data-[side=left]:left-0
           data-[side=left]:h-full
-          data-[side=left]:w-full
           data-[side=left]:border-r
 
           data-[side=right]:inset-y-0
           data-[side=right]:right-0
           data-[side=right]:h-full
-          data-[side=right]:w-full
-          data-[side=right]:border-l
+          data-[side=border-l]
 
           sm:data-[side=left]:max-w-[400px]
           sm:data-[side=right]:max-w-[400px]
@@ -148,6 +148,10 @@ function SheetContent({
           data-[side=right]:data-closed:slide-out-to-right-10
           data-[side=top]:data-closed:slide-out-to-top-10
           `,
+          // Controle dinâmico da largura no mobile baseado na prop
+          fullScreenOnMobile
+            ? 'data-[side=left]:w-full data-[side=right]:w-full'
+            : 'data-[side=left]:w-3/4 data-[side=right]:w-3/4',
           className
         )}
         {...props}

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react'
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts"
 import { cn } from "@/lib/utils"
+import { useTranslation } from 'react-i18next'
 import ScheduleModal from '@/components/modals/ScheduleModal'
 import DialogSchedules from '@/components/DialogSchedules'
 import { getSchedules, generateOccurrencesForMonth, type ScheduleRule } from '@/services/firebase/schedule'
@@ -35,10 +36,8 @@ type CalendarDay = {
   events?: WorkoutEvent[]
 }
 
-const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-const MONTHS   = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
 const Calendar = () => {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const today    = new Date()
   const [isMobile, setIsMobile] = useState(false)
@@ -52,6 +51,9 @@ const Calendar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [selectedDetailEvent, setSelectedDetailEvent] = useState<WorkoutEvent | null>(null)
+
+  const WEEKDAYS = useMemo(() => t('calendar.weekdays', { returnObjects: true }) as string[], [t])
+  const MONTHS   = useMemo(() => t('calendar.months', { returnObjects: true }) as string[], [t])
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 526)
@@ -236,12 +238,12 @@ const Calendar = () => {
         <div className="flex flex-col gap-4 w-full max-w-5xl">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <Field className="flex flex-col gap-1">
-              <FieldDescription className="text-xs font-semibold tracking-widest uppercase">Planning</FieldDescription>
-              <FieldTitle className="text-3xl font-bold tracking-tight">Calendar</FieldTitle>
-              <FieldDescription>Schedule your workouts and track your frequency.</FieldDescription>
+              <FieldDescription className="text-xs font-semibold tracking-widest uppercase">{t('calendar.planning')}</FieldDescription>
+              <FieldTitle className="text-3xl font-bold tracking-tight">{t('calendar.title')}</FieldTitle>
+              <FieldDescription>{t('calendar.description')}</FieldDescription>
             </Field>
             <Button className="w-full sm:w-auto rounded-full gap-2 px-6" onClick={() => setIsModalOpen(true)}>
-              <Plus size={18} strokeWidth={2} /> New schedule
+              <Plus size={18} strokeWidth={2} /> {t('calendar.newSchedule')}
             </Button>
           </div>
 
@@ -273,7 +275,7 @@ const Calendar = () => {
               <div className="flex flex-col items-center gap-3 text-muted-foreground">
                 <Loader2 className="w-8 h-8 animate-spin" />
                 <span className="text-sm font-medium">
-                  Loading calendar...
+                  {t('calendar.loading')}
                 </span>
               </div>
             </div>
@@ -287,8 +289,8 @@ const Calendar = () => {
                     <Button variant="ghost" size="icon" onClick={nextMonth} className="rounded-full"><ChevronRight size={20} /></Button>
                   </div>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mt-4 sm:mt-0">
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-primary" /> Completed</div>
-                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground bg-transparent" /> Scheduled</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-primary" /> {t('calendar.legend.completed')}</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full border border-muted-foreground bg-transparent" /> {t('calendar.legend.scheduled')}</div>
                   </div>
                 </div>
 
@@ -368,7 +370,7 @@ const Calendar = () => {
                                   }}
                                   className="w-full text-[10px] px-3 py-1.5 rounded-full border border-dashed border-border text-muted-foreground font-bold hover:bg-muted/40 transition"
                                 >
-                                  +{dayObj.events!.length - 1} more
+                                  {t('calendar.more', { count: dayObj.events!.length - 1 })}
                                 </button>
                               )}
                             </div>
@@ -394,10 +396,10 @@ const Calendar = () => {
               </Card>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="shadow-sm">
-                  <CardHeader><CardTitle className="text-lg font-bold">Upcoming Workouts</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-lg font-bold">{t('calendar.upcoming.title')}</CardTitle></CardHeader>
                   <CardContent className="flex flex-col gap-3">
                     {upcomingWorkouts.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">No upcoming workouts.</p>
+                      <p className="text-sm text-muted-foreground">{t('calendar.upcoming.empty')}</p>
                     ) : (
                       upcomingWorkouts.map((event, i) => {
                         const date = new Date(event.date + "T12:00:00")
@@ -422,7 +424,7 @@ const Calendar = () => {
                   </CardContent>
                 </Card>
                 <Card className="shadow-sm flex flex-col">
-                  <CardHeader><CardTitle className="text-lg font-bold">Monthly Frequency</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-lg font-bold">{t('calendar.frequency.title')}</CardTitle></CardHeader>
                   <CardContent className="flex-1 flex flex-col justify-between">
                     <div className="h-[160px] w-full mt-2">
                       <ResponsiveContainer width="100%" height="100%">
@@ -433,11 +435,11 @@ const Calendar = () => {
                       </ResponsiveContainer>
                     </div>
                     <div className="mt-6 pt-4 border-t border-border">
-                      <p className="text-sm text-muted-foreground font-medium">
-                        Average: <span className="font-bold text-foreground">
-                          {(frequencyData.reduce((acc, curr) => acc + curr.total, 0) / 52).toFixed(1)} workouts/week
-                        </span>
-                      </p>
+                      <p className="text-sm text-muted-foreground font-medium" dangerouslySetInnerHTML={{
+                        __html: t('calendar.frequency.average', {
+                          count: (frequencyData.reduce((acc, curr) => acc + curr.total, 0) / 52).toFixed(1)
+                        })
+                      }} />
                     </div>
                   </CardContent>
                 </Card>

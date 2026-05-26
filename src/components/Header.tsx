@@ -20,6 +20,8 @@ import { getStreak } from '@/services/firebase/user'
 
 import AiChat from './AiChat'
 
+import { useTranslation } from 'react-i18next'
+
 const Header = ({
   children,
 }: {
@@ -31,6 +33,7 @@ const Header = ({
     state === 'collapsed'
 
   const { user } = useAuth()
+  const { t } = useTranslation()
 
   const [streak, setStreak] = useState(0)
   const [openAiChat, setOpenAiChat] =
@@ -60,7 +63,7 @@ const Header = ({
           />
 
           <Input
-            placeholder="Search for workouts, exercises..."
+            placeholder={t('header.searchPlaceholder')}
             className="w-full max-w-96 border-none bg-muted/20 pl-8"
           />
         </div>
@@ -77,8 +80,8 @@ const Header = ({
             <div className="h-2 w-2 animate-pulse rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
 
             <span className="text-xs font-bold uppercase tracking-wider">
-              Streak {streak}{' '}
-              {streak === 1 ? 'Day' : 'Days'}
+              {t('header.streak')} {streak}{' '}
+              {streak === 1 ? t('header.day') : t('header.days')}
             </span>
           </div>
         </div>

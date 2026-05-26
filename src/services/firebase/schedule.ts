@@ -88,29 +88,11 @@ export const generateOccurrencesForMonth = (
 
   const { type, weekdays, startDate, endCondition, occurrences, endDate } = rule.recurrence
   const [hh, mm] = rule.time.split(":").map(Number)
-
-
-  const today = new Date()
-
-  let dtstart: Date
-
-  if (type === "specific_days" && weekdays && weekdays.length > 0) {
-    if (startDate) {
-      dtstart = parseLocalDateUTC(startDate, hh, mm)
-    } else {
-      dtstart = toUTC(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        hh,
-        mm
-      )
-    }
-  } else if (startDate) {
-    dtstart = parseLocalDateUTC(startDate, hh, mm)
-  } else {
-    return []
-  }
+  const today    = new Date()
+  
+  const dtstart: Date = startDate
+    ? parseLocalDateUTC(startDate, hh, mm)
+    : toUTC(today.getFullYear(), today.getMonth(), today.getDate(), hh, mm)
 
   let until = new Date(monthEnd)
 
@@ -130,28 +112,30 @@ export const generateOccurrencesForMonth = (
   }
 
   if (type === "weekly") {
-    rruleOptions.freq = RRule.WEEKLY
+    rruleOptions.freq     = RRule.WEEKLY
     rruleOptions.interval = 1
   } else if (type === "biweekly") {
-    rruleOptions.freq = RRule.WEEKLY
+    rruleOptions.freq     = RRule.WEEKLY
     rruleOptions.interval = 2
   } else if (type === "specific_days" && weekdays && weekdays.length > 0) {
-    rruleOptions.freq = RRule.WEEKLY
-    rruleOptions.interval = 1
+    rruleOptions.freq      = RRule.WEEKLY
+    rruleOptions.interval  = 1
     rruleOptions.byweekday = weekdays.map(d => JS_TO_RRULE[d])
+  } else {
+    return []
   }
 
   const rrule = new RRule(rruleOptions)
   const dates = rrule.between(monthStart, monthEnd, true)
 
-  return dates.map((date) => ({
-    id: `${rule.id}-${toLocalDateString(date)}`,
+  return dates.map(date => ({
+    id:         `${rule.id}-${toLocalDateString(date)}`,
     scheduleId: rule.id,
-    workoutId: rule.workoutId,
-    date: toLocalDateString(date),
-    title: rule.workoutName,
-    time: rule.time,
-    status: "scheduled",
+    workoutId:  rule.workoutId,
+    date:       toLocalDateString(date),
+    title:      rule.workoutName,
+    time:       rule.time,
+    status:     "scheduled",
   }))
 }
 

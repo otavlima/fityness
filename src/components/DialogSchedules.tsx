@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { type WorkoutEvent } from "@/pages/Calendar"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 type DialogSchedulesProps = {
   isOpen: boolean
@@ -11,12 +12,16 @@ type DialogSchedulesProps = {
 }
 
 const DialogSchedules = ({ isOpen, onClose, events, date, onOpenDetail }: DialogSchedulesProps) => {
+  const { t } = useTranslation()
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="p-0 pb-4 overflow-hidden">
         <div className="p-5 border-b border-border bg-foreground/90">
           <DialogTitle className="text-base font-bold text-background/80">{date}</DialogTitle>
-          <p className="text-xs text-muted/80 mt-1">{events.length} scheduled workouts</p>
+          <p className="text-xs text-muted/80 mt-1">
+            {t('dialogSchedules.scheduledWorkouts', { count: events.length })}
+          </p>
         </div>
 
         <div className="flex flex-col max-h-[320px] overflow-y-auto p-4 gap-2 scrollbar-hide">
@@ -34,7 +39,11 @@ const DialogSchedules = ({ isOpen, onClose, events, date, onOpenDetail }: Dialog
               )}
             >
               <span>{event.title}</span>
-              <span className="text-[10px] opacity-70">{event.status}</span>
+              <span className="text-[10px] opacity-70">
+                {event.status === 'completed' 
+                  ? t('dialogSchedules.status.completed') 
+                  : t('dialogSchedules.status.scheduled')}
+              </span>
             </button>
           ))}
         </div>

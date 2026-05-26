@@ -16,6 +16,7 @@ import type {
   WorkoutSession,
 } from '@/pages/History'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   workout: WorkoutGroup | null
@@ -28,20 +29,16 @@ const formatVolume = (volume: number) => {
   if (volume >= 1000) {
     return `${(volume / 1000).toFixed(1)}t`
   }
-
   return `${volume}kg`
 }
 
 const formatDuration = (seconds: number) => {
   const minutes = Math.max(1, Math.floor(seconds / 60))
-
   if (minutes >= 60) {
     const hours = Math.floor(minutes / 60)
     const remainingMinutes = minutes % 60
-
     return `${hours}h ${remainingMinutes}m`
   }
-
   return `${minutes}m`
 }
 
@@ -51,6 +48,8 @@ const WorkoutHistoryModal = ({
   onOpenChange,
   onSelectSession,
 }: Props) => {
+  const { t, i18n } = useTranslation()
+
   if (!workout) return null
 
   const sessions = workout.sessions || []
@@ -65,7 +64,7 @@ const WorkoutHistoryModal = ({
       : null
 
   const latestSession = sessions[0]
-  const workoutCategory = workout.category || 'Workout'
+  const rawCategory = (workout.category || '').toLowerCase().trim()
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,7 +97,10 @@ const WorkoutHistoryModal = ({
             <div className="relative z-10 px-4 pb-6 pt-5 sm:px-5 sm:pb-7 sm:pt-6">
               <div className="mb-4 inline-flex items-center rounded-full border border-background/10 bg-background/10 px-2.5 py-1 backdrop-blur-sm">
                 <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-background/70">
-                  {workoutCategory}
+                  {rawCategory 
+                    ? t(rawCategory, { ns: 'translation', keyPrefix: 'history.categories', defaultValue: workout.category }) 
+                    : t('historyCard.defaultCategory')
+                  }
                 </span>
               </div>
 
@@ -107,7 +109,7 @@ const WorkoutHistoryModal = ({
               </h2>
 
               <p className="mt-2 text-xs font-medium text-background/60">
-                {workout.totalSessions} sessions recorded
+                {t('historyModal.sessionsCount', { count: workout.totalSessions })}
               </p>
             </div>
           </div>
@@ -118,7 +120,7 @@ const WorkoutHistoryModal = ({
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <CalendarDays size={11} />
                   <span className="text-[8px] font-semibold uppercase tracking-[0.18em]">
-                    Sessions
+                    {t('historyModal.labels.sessions')}
                   </span>
                 </div>
                 <p className="mt-2 text-[22px] font-bold leading-none sm:text-[24px]">
@@ -130,7 +132,7 @@ const WorkoutHistoryModal = ({
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <TrendingUp size={11} />
                   <span className="text-[8px] font-semibold uppercase tracking-[0.18em]">
-                    Best
+                    {t('historyModal.labels.best')}
                   </span>
                 </div>
                 <p className="mt-2 text-[22px] font-bold leading-none sm:text-[24px]">
@@ -142,7 +144,7 @@ const WorkoutHistoryModal = ({
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Clock3 size={11} />
                   <span className="text-[8px] font-semibold uppercase tracking-[0.18em]">
-                    Last
+                    {t('historyModal.labels.last')}
                   </span>
                 </div>
                 <p className="mt-2 text-[22px] font-bold leading-none sm:text-[24px]">
@@ -154,7 +156,7 @@ const WorkoutHistoryModal = ({
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Trophy size={11} />
                   <span className="text-[8px] font-semibold uppercase tracking-[0.18em]">
-                    PR
+                    {t('historyModal.labels.pr')}
                   </span>
                 </div>
                 <p className="mt-2 text-[22px] font-bold leading-none sm:text-[24px]">
@@ -168,17 +170,15 @@ const WorkoutHistoryModal = ({
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-background">
                   <Trophy size={14} />
                 </div>
-
                 <div>
                   <p className="text-[11px] text-muted-foreground">
-                    Current record
+                    {t('historyModal.labels.currentRecord')}
                   </p>
                   <p className="text-xs font-medium">
-                    Best recorded performance
+                    {t('historyModal.labels.performanceHint')}
                   </p>
                 </div>
               </div>
-
               <p className="pl-[52px] text-xs font-semibold sm:pl-0">
                 {bestSession ? formatVolume(bestSession.volume) : '0kg'}
               </p>
@@ -186,10 +186,10 @@ const WorkoutHistoryModal = ({
 
             <div className="mb-2.5 flex items-center justify-between">
               <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                Session history
+                {t('historyModal.labels.sessionHistory')}
               </p>
               <p className="text-[11px] text-muted-foreground">
-                {sessions.length} recent
+                {t('historyModal.recentCount', { count: sessions.length })}
               </p>
             </div>
 
@@ -202,7 +202,6 @@ const WorkoutHistoryModal = ({
               <div className="flex flex-col gap-2 pb-4">
                 {sessions.map((session) => {
                   const date = new Date(session.completedAt)
-
                   return (
                     <button
                       key={session.id}
@@ -218,23 +217,21 @@ const WorkoutHistoryModal = ({
                             {date.getDate()}
                           </span>
                           <span className="mt-0.5 text-[8px] font-semibold uppercase text-muted-foreground">
-                            {date.toLocaleDateString('en-US', { month: 'short' })}
+                            {date.toLocaleDateString(i18n.language, { month: 'short' })}
                           </span>
                         </div>
 
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-1.5">
                             <p className="truncate text-base font-bold tracking-[-0.04em] sm:text-lg">
-                              {date.toLocaleDateString('en-US', { weekday: 'long' })}
+                              {date.toLocaleDateString(i18n.language, { weekday: 'long' })}
                             </p>
-
                             {session.isPR && (
                               <div className="rounded-full bg-foreground px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-background">
-                                PR
+                                {t('historyModal.labels.pr')}
                               </div>
                             )}
                           </div>
-
                           <p className="mt-0.5 text-[11px] text-muted-foreground">
                             {formatDuration(session.duration)} • {session.sets} sets
                           </p>
@@ -258,7 +255,7 @@ const WorkoutHistoryModal = ({
                 onClick={() => onOpenChange(false)}
                 className="rounded-2xl border bg-card px-4 py-2 text-xs font-medium transition-all hover:bg-secondary"
               >
-                Close
+                {t('historyModal.buttons.close')}
               </button>
             </div>
           </div>

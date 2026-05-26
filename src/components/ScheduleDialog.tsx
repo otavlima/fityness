@@ -33,6 +33,7 @@ import {
 } from "@/services/firebase/workout"
 import { toast } from "sonner"
 import { useAuth } from "@/contexts/AuthContext"
+import { useTranslation } from "react-i18next"
 
 interface ScheduleDialogProps {
   isOpen: boolean
@@ -43,51 +44,12 @@ interface ScheduleDialogProps {
   onCompleted: (event: WorkoutEvent) => void
 }
 
-const formatRecurrence = (rule: ScheduleRule): string => {
-  if (!rule.isRecurring) return "Once"
-
-  const r = rule.recurrence
-  if (!r) return "Once"
-  if (r.type === "weekly") return "Weekly"
-  if (r.type === "biweekly") return "Every 2 weeks"
-
-  if (r.type === "specific_days" && r.weekdays && r.weekdays.length > 0) {
-    const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const sortedDays = [...r.weekdays].sort((a, b) => a - b)
-    
-    if (sortedDays.length === 7) return "Every day"
-
-    const parts: string[] = []
-    let i = 0
-
-    while (i < sortedDays.length) {
-      let j = i
-      
-      while (j + 1 < sortedDays.length && sortedDays[j + 1] === sortedDays[j] + 1) {
-        j++
-      }
-
-      if (j - i >= 2) {
-        parts.push(`${names[sortedDays[i]]} - ${names[sortedDays[j]]}`)
-        i = j + 1
-      } else {
-        parts.push(names[sortedDays[i]])
-        i++
-      }
-    }
-
-    return parts.join(', ')
-  }
-
-  return "Once"
-}
-
-const formatDate = (dateStr: string): string => {
+const formatDate = (dateStr: string, lng: string): string => {
   const [y, m, d] = dateStr.split("-").map(Number)
 
   const date = new Date(y, m - 1, d)
 
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(lng === 'pt' ? 'pt-BR' : lng === 'es' ? 'es-ES' : 'en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -107,6 +69,50 @@ const ScheduleDialog = ({
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const { user } = useAuth()
+  const { t, i18n } = useTranslation()
+
+  const formatRecurrence = (rule: ScheduleRule): string => {
+    if (!rule.isRecurring) return t("scheduleDialog.recurrence.once")
+
+    const r = rule.recurrence
+    if (!r) return t("scheduleDialog.recurrence.once")
+    if (r.type === "weekly") return t("scheduleDialog.recurrence.weekly")
+    if (r.type === "biweekly") return t("scheduleDialog.recurrence.biweekly")
+
+    if (r.type === "specific_days" && r.weekdays && r.weekdays.length > 0) {
+      const namesPT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+      const namesES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+      const namesEN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      const names = i18n.language === 'pt' ? namesPT : i18n.language === 'es' ? namesES : namesEN
+      
+      const sortedDays = [...r.weekdays].sort((a, b) => a - b)
+      
+      if (sortedDays.length === 7) return t("scheduleDialog.recurrence.everyDay")
+
+      const parts: string[] = []
+      let i = 0
+
+      while (i < sortedDays.length) {
+        let j = i
+        
+        while (j + 1 < sortedDays.length && sortedDays[j + 1] === sortedDays[j] + 1) {
+          j++
+        }
+
+        if (j - i >= 2) {
+          parts.push(`${names[sortedDays[i]]} - ${names[sortedDays[j]]}`)
+          i = j + 1
+        } else {
+          parts.push(names[sortedDays[i]])
+          i++
+        }
+      }
+
+      return parts.join(', ')
+    }
+
+    return t("scheduleDialog.recurrence.once")
+  }
 
   const schedule = event
     ? schedules.find(s => s.id === event.scheduleId)
@@ -161,11 +167,11 @@ const ScheduleDialog = ({
     try {
       await deleteSchedule(user.uid, schedule.id)
 
-      toast.success("Schedule deleted.")
+      toast.success(t("scheduleDialog.messages.successDelete"))
 
       onDeleted?.(schedule.id)
     } catch {
-      toast.error("Error deleting schedule.")
+      toast.error(t("scheduleDialog.messages.errorDelete"))
     } finally {
       setDeleting(false)
     }
@@ -177,8 +183,8 @@ const ScheduleDialog = ({
 
     toast.success(
       isCompleted
-        ? "Workout marked as scheduled."
-        : "Workout completed!"
+        ? t("scheduleDialog.messages.statusScheduled")
+        : t("scheduleDialog.messages.statusCompleted")
     )
   }
 
@@ -208,7 +214,7 @@ const ScheduleDialog = ({
                   ? "bg-white text-black"
                   : "bg-zinc-800 text-zinc-400 border border-zinc-700"
               )}>
-                {isCompleted ? "Completed" : "Scheduled"}
+                {isCompleted ? t("scheduleDialog.status.completed") : t("scheduleDialog.status.scheduled")}
               </span>
             </div>
             <div>
@@ -216,7 +222,7 @@ const ScheduleDialog = ({
                 {event.title}
               </DialogTitle>
               <p className="text-zinc-500 text-sm mt-2 font-medium italic">
-                {formatDate(event.date)}
+                {formatDate(event.date, i18n.language)}
               </p>
             </div>
           </div>
@@ -231,9 +237,9 @@ const ScheduleDialog = ({
             <>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Time", val: event.time, icon: Clock },
-                  { label: "Rest", val: formatRest(totalRestSecs), icon: Timer },
-                  { label: "Exercises", val: String(workout?.exercises.length ?? 0), icon: Dumbbell },
+                  { label: t("scheduleDialog.labels.time"), val: event.time, icon: Clock },
+                  { label: t("scheduleDialog.labels.rest"), val: formatRest(totalRestSecs), icon: Timer },
+                  { label: t("scheduleDialog.labels.exercises"), val: String(workout?.exercises.length ?? 0), icon: Dumbbell },
                 ].map((item, i) => (
                   <div key={i} className="min-w-0 overflow-hidden bg-muted/40 dark:bg-secondary/20 border border-border/50 rounded-2xl p-4 flex flex-col gap-1">
                     <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
@@ -251,16 +257,16 @@ const ScheduleDialog = ({
                 <div className="flex items-center justify-between border-b border-border/50 pb-4">
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <RotateCcw size={16} strokeWidth={2.5} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Recurrence</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{t("scheduleDialog.labels.recurrenceTitle")}</span>
                   </div>
                   <span className="text-sm font-bold text-foreground">
-                    {schedule ? formatRecurrence(schedule) : "Once"}
+                    {schedule ? formatRecurrence(schedule) : t("scheduleDialog.recurrence.once")}
                   </span>
                 </div>
 
                 {workout?.exercises && workout.exercises.length > 0 && (
                   <div className="bg-muted/30 dark:bg-muted/10 border border-border/40 rounded-2xl p-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Exercises</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">{t("scheduleDialog.labels.exercises")}</span>
                     <div className="flex flex-col gap-1">
                       {workout.exercises.map((ex, i) => (
                         <div key={i} className="flex items-center justify-between text-sm">
@@ -274,7 +280,7 @@ const ScheduleDialog = ({
 
                 {schedule?.notes && (
                   <div className="bg-muted/30 dark:bg-muted/10 border border-border/40 rounded-2xl p-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">Notes</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">{t("scheduleDialog.labels.notesTitle")}</span>
                     <p className="text-sm font-medium text-foreground/80 leading-relaxed italic">"{schedule.notes}"</p>
                   </div>
                 )}
@@ -291,9 +297,9 @@ const ScheduleDialog = ({
                   )}
                 >
                   {isCompleted ? (
-                    <><RotateCcw size={18} strokeWidth={2.5} /><span className="truncate">REVERT</span></>
+                    <><RotateCcw size={18} strokeWidth={2.5} /><span className="truncate">{t("scheduleDialog.buttons.revert")}</span></>
                   ) : (
-                    <><CheckCircle2 size={18} strokeWidth={2.5} /><span className="truncate">COMPLETE WORKOUT</span></>
+                    <><CheckCircle2 size={18} strokeWidth={2.5} /><span className="truncate">{t("scheduleDialog.buttons.complete")}</span></>
                   )}
                 </button>
 
@@ -305,24 +311,22 @@ const ScheduleDialog = ({
                   </AlertDialogTrigger>
                   <AlertDialogContent className="rounded-[32px] w-[min(380px,calc(100vw-32px))]">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="text-xl font-bold">Delete schedule?</AlertDialogTitle>
+                      <AlertDialogTitle className="text-xl font-bold">{t("scheduleDialog.alert.title")}</AlertDialogTitle>
                       <AlertDialogDescription className="text-sm">
-                        This will permanently delete{" "}
-                        <span className="font-bold text-foreground">"{event.title}"</span>
                         {schedule?.isRecurring
-                          ? " and all its occurrences — past and future."
-                          : "."
+                          ? t("scheduleDialog.alert.descRecurring", { title: event.title })
+                          : t("scheduleDialog.alert.descOnce", { title: event.title })
                         }
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="mt-4 gap-2">
-                      <AlertDialogCancel className="rounded-2xl font-bold h-12 mt-0">Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className="rounded-2xl font-bold h-12 mt-0">{t("scheduleDialog.alert.cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDelete}
                         className="rounded-2xl font-bold h-12"
                         variant="destructive"
                       >
-                        Yes, delete
+                        {t("scheduleDialog.alert.confirm")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

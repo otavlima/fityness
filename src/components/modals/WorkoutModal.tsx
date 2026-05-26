@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
 import Loading from '@/components/Loading'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 
 const initialWorkout: Workout = {
   name: '',
@@ -34,6 +35,7 @@ type Props = {
 
 const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => {
   const { user } = useAuth()
+  const { t } = useTranslation()
 
   const [workout, setWorkout] = useState<Workout>(initialWorkout)
   const [saving, setSaving] = useState(false)
@@ -142,7 +144,7 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
           true
         )
 
-        toast.success('Workout updated!')
+        toast.success(t('workoutModal.messages.successUpdate'))
       } else {
         const id = await createWorkout(user.uid, result.data)
 
@@ -155,12 +157,12 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
 
         onSuccess(newWorkout, false)
 
-        toast.success('Workout created!')
+        toast.success(t('workoutModal.messages.successCreate'))
       }
 
       onClose()
     } catch {
-      toast.error(isEditing ? 'Error updating workout.' : 'Error creating workout.')
+      toast.error(isEditing ? t('workoutModal.messages.errorUpdate') : t('workoutModal.messages.errorCreate'))
     } finally {
       setSaving(false)
     }
@@ -176,16 +178,16 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
     <Modal
       open={isOpen}
       onOpenChange={open => { if (!open) handleCloseModal() }}
-      title={isEditing ? 'Edit workout' : 'Create new workout'}
-      description={isEditing ? 'Update your workout details.' : 'Set up your session and organize your exercises.'}
+      title={isEditing ? t('workoutModal.titleEdit') : t('workoutModal.titleCreate')}
+      description={isEditing ? t('workoutModal.descEdit') : t('workoutModal.descCreate')}
       icon={<Dumbbell />}
       footer={
         <>
-          <Button variant="ghost" onClick={handleCloseModal}>Cancel</Button>
+          <Button variant="ghost" onClick={handleCloseModal}>{t('workoutModal.cancel')}</Button>
           <Button className="font-bold px-6" onClick={handleSave} disabled={saving}>
             {saving
-              ? <Loading text={isEditing ? 'Saving' : 'Creating'} isCol={false} />
-              : isEditing ? 'Save changes' : 'Create workout'
+              ? <Loading text={isEditing ? t('workoutModal.saving') : t('workoutModal.creating')} isCol={false} />
+              : isEditing ? t('workoutModal.saveChanges') : t('workoutModal.createWorkout')
             }
           </Button>
         </>
@@ -194,21 +196,21 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4">
           <Field>
-            <FieldTitle>Workout name</FieldTitle>
+            <FieldTitle>{t('workoutModal.nameLabel')}</FieldTitle>
             <Input
               value={workout.name}
               onChange={e => {
                 setWorkout(old => ({ ...old, name: e.target.value }))
                 setErrors(old => ({ ...old, name: undefined }))
               }}
-              placeholder='Ex: Chest & Triceps'
+              placeholder={t('workoutModal.namePlaceholder')}
               className={errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
             />
             {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
           </Field>
 
           <Field>
-            <FieldTitle>Category</FieldTitle>
+            <FieldTitle>{t('workoutModal.categoryLabel')}</FieldTitle>
             <Select
               value={workout.category}
               onValueChange={value =>
@@ -217,37 +219,37 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
             >
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="upper-body">Upper body</SelectItem>
-                <SelectItem value="lower-body">Lower body</SelectItem>
-                <SelectItem value="push">Push</SelectItem>
-                <SelectItem value="pull">Pull</SelectItem>
-                <SelectItem value="full-body">Full body</SelectItem>
+                <SelectItem value="upper-body">{t('workoutModal.categories.upper-body')}</SelectItem>
+                <SelectItem value="lower-body">{t('workoutModal.categories.lower-body')}</SelectItem>
+                <SelectItem value="push">{t('workoutModal.categories.push')}</SelectItem>
+                <SelectItem value="pull">{t('workoutModal.categories.pull')}</SelectItem>
+                <SelectItem value="full-body">{t('workoutModal.categories.full-body')}</SelectItem>
               </SelectContent>
             </Select>
           </Field>
         </div>
 
         <Field>
-          <FieldTitle>Notes</FieldTitle>
+          <FieldTitle>{t('workoutModal.notesLabel')}</FieldTitle>
           <Textarea
             value={workout.notes}
             onChange={e => setWorkout(old => ({ ...old, notes: e.target.value }))}
-            placeholder="Focus on technique, rest 90 seconds between heavy sets."
+            placeholder={t('workoutModal.notesPlaceholder')}
           />
         </Field>
 
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <h3 className="font-medium">Exercises</h3>
+            <h3 className="font-medium">{t('workoutModal.exercisesTitle')}</h3>
             <Button onClick={addExercise} size="sm">
-              <Plus size={14} /> New
+              <Plus size={14} /> {t('workoutModal.btnNew')}
             </Button>
           </div>
 
           {workout.exercises.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-2xl bg-muted/5 gap-2">
               <ClipboardList className="text-muted-foreground/20" size={32} />
-              <p className="text-sm text-muted-foreground font-medium">No exercises added yet.</p>
+              <p className="text-sm text-muted-foreground font-medium">{t('workoutModal.noExercises')}</p>
             </div>
           ) : (
             <>
@@ -261,7 +263,7 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
                         <GripVertical size={16} className="text-muted-foreground/30 shrink-0" />
                         <span className="text-xs font-bold text-muted-foreground/50 w-4 shrink-0">{idx + 1}</span>
                         <Input
-                          placeholder={isMobile ? 'Name' : 'Exercise name'}
+                          placeholder={isMobile ? t('workoutModal.inputExNameMobile') : t('workoutModal.inputExName')}
                           value={ex.name}
                           onChange={e => updateExercise(ex.id, 'name', e.target.value)}
                           className={`border-none bg-transparent shadow-none focus-visible:ring-0 p-0 font-medium flex-1 min-w-[0px] ${exErr?.name ? 'placeholder:text-destructive' : ''}`}
@@ -275,7 +277,7 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
                               const onlyNumbers = e.target.value.replace(/\D/g, '')
                               updateExercise(ex.id, 'sets', onlyNumbers)
                             }}
-                            placeholder={isMobile ? "Sets" : ""}
+                            placeholder={isMobile ? t('workoutModal.inputSets') : ""}
                             className={`w-16 min-[464px]:w-12 h-8 text-center bg-muted text-sm ${exErr?.sets ? 'border-destructive' : ''}`}
                           />
                           <span className="text-muted-foreground/40 text-xs">×</span>
@@ -285,7 +287,7 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
                               const onlyNumbers = e.target.value.replace(/\D/g, '')
                               updateExercise(ex.id, 'reps', onlyNumbers)
                             }}
-                            placeholder={isMobile ? "Reps" : ""}
+                            placeholder={isMobile ? t('workoutModal.inputReps') : ""}
                             className={`w-16 min-[464px]:w-12 h-8 text-center bg-muted text-sm ${exErr?.reps ? 'border-destructive' : ''}`}
                           />
                         </div>
@@ -321,11 +323,11 @@ const WorkoutModal = ({ isOpen, onClose, onSuccess, editingWorkout }: Props) => 
               })}
             </div>
             <div className="hidden min-[464px]:grid grid-cols-12 px-10 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              <span className="col-span-6">Exercise</span>
+              <span className="col-span-6">{t('workoutModal.tableHeaderExercise')}</span>
               <div className="col-span-6 flex justify-between text-right">
-                <span>Series</span>
-                <span>Reps</span>
-                <span>Rest</span>
+                <span>{t('workoutModal.tableHeaderSeries')}</span>
+                <span>{t('workoutModal.tableHeaderReps')}</span>
+                <span>{t('workoutModal.tableHeaderRest')}</span>
               </div>
             </div>
             </>

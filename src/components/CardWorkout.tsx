@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface CardWorkoutProps {
   name: string
@@ -33,17 +34,6 @@ interface CardWorkoutProps {
   onSchedule?: () => void
 }
 
-const categoryMap: Record<
-  CardWorkoutProps['category'],
-  string
-> = {
-  'upper-body': 'Upper Body',
-  'lower-body': 'Lower Body',
-  push: 'Push',
-  pull: 'Pull',
-  'full-body': 'Full Body',
-}
-
 export const CardWorkout = ({
   name,
   category,
@@ -55,6 +45,8 @@ export const CardWorkout = ({
   onClick,
   onSchedule,
 }: CardWorkoutProps) => {
+  const { t } = useTranslation()
+
   return (
     <>
       <div
@@ -95,7 +87,7 @@ export const CardWorkout = ({
                 }}
               >
                 <Pencil size={16} className="mr-2" />
-                Edit
+                {t('cardWorkout.menu.edit')}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -108,7 +100,7 @@ export const CardWorkout = ({
                   size={16}
                   className="mr-2"
                 />
-                Schedule
+                {t('cardWorkout.menu.schedule')}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -122,7 +114,7 @@ export const CardWorkout = ({
                   size={16}
                   className="mr-2"
                 />
-                Delete
+                {t('cardWorkout.menu.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -142,7 +134,7 @@ export const CardWorkout = ({
             </h3>
 
             <p className="text-sm text-muted-foreground font-medium">
-              {categoryMap[category]}
+              {t(`cardWorkout.categories.${category}`)}
             </p>
           </div>
         </div>
@@ -152,7 +144,7 @@ export const CardWorkout = ({
             <Dumbbell size={15} />
 
             <span>
-              {exerciseCount} exercises
+              {exerciseCount} {t('cardWorkout.exercises')}
             </span>
           </div>
 
@@ -165,7 +157,7 @@ export const CardWorkout = ({
 
         <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            Last done:{' '}
+            {t('cardWorkout.lastDone')}{' '}
             <span className="font-bold">
               {lastDone}
             </span>
@@ -176,7 +168,7 @@ export const CardWorkout = ({
           className="..."
           onClick={e => { e.stopPropagation(); onStart?.() }}
         >
-          <Play size={14} fill="currentColor" /> Start
+          <Play size={14} fill="currentColor" /> {t('cardWorkout.btnStart')}
         </Button>
         </div>
       </div>
